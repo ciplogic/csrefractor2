@@ -1,5 +1,6 @@
 ﻿using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
+using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Values;
 using NativeSharp.Operations.Vars;
 
@@ -18,7 +19,6 @@ class BlockBasedPropagation : BlockBasedOptimization
             result |= UpdateKnownOps(op, updates);
             if (op is not AssignOp assignOp)
             {
-                updates.Clear();
                 continue;
             }
 
@@ -41,8 +41,16 @@ class BlockBasedPropagation : BlockBasedOptimization
             CallOp callOp => UpdateExpressionT(callOp, MatchCall, updates),
             BranchOp branchOperation => UpdateExpressionT(branchOperation, MatchBranchOp, updates),
             BinaryOp binaryOp => UpdateExpressionT(binaryOp, MatchBinaryOp, updates),
+            NewArrayOp newArrayOp => UpdateExpressionT(newArrayOp, MatchNewArrayOp, updates),
             _ => false
         };
+    }
+
+    private static bool MatchNewArrayOp(NewArrayOp op, IValueExpression from, IValueExpression to)
+    {
+        var target = UpdateTargetExpression(op.Count, from, to);
+        op.Count = target.Mapped;
+        return target.Changed;
     }
 
     private bool MatchBinaryOp(BinaryOp op, IValueExpression from, IValueExpression to)

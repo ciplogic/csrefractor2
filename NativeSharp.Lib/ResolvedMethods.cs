@@ -38,7 +38,7 @@ public static class ResolvedMethods
                printf("%s\n", text);
              }
              """,
-        "cstdio", "")]
+        "<cstdio>,<cwchar>", "")]
     public static void System_Console_WriteLine(string text)
     {
         //Nothing for now. Will be filled by C++ code

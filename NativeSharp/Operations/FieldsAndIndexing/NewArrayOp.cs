@@ -7,7 +7,7 @@ namespace NativeSharp.Operations.FieldsAndIndexing;
 internal class NewArrayOp : LeftOp
 {
     public Type ElementType { get; }
-    public IValueExpression Count { get; }
+    public IValueExpression Count { get; set; }
 
     public NewArrayOp(VReg result, Type elementType, IValueExpression count)
     : base(result)

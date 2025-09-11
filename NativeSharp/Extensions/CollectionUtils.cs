@@ -37,6 +37,7 @@ public static class CollectionUtils
             ParameterInfo parameterInfo = methodParams[index];
             ArgumentVariable localVariable = new ArgumentVariable()
             {
+                Name = parameterInfo.Name ?? string.Empty,
                 Index = index,
                 ExpressionType = parameterInfo.ParameterType,
             };

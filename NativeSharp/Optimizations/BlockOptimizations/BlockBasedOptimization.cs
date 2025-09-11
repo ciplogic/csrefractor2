@@ -6,7 +6,8 @@ namespace NativeSharp.Optimizations.BlockOptimizations;
 public abstract class BlockBasedOptimization : CilMethodOptimization
 {
     public abstract bool OptimizeSegment(ArraySegment<BaseOp> segment);
-    ArraySegment<BaseOp>[] BasicBlocksExtraction(BaseOp[] ops)
+
+    private static ArraySegment<BaseOp>[] BasicBlocksExtraction(BaseOp[] ops)
     {
         var resultList = new List<ArraySegment<BaseOp>>();
         var startPos = 0;

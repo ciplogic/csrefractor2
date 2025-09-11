@@ -2,5 +2,12 @@ namespace NativeSharp.Operations.Vars;
 
 public class ArgumentVariable : IndexedVariable
 {
-    public override string GenCodeImpl() => $"arg_{Index}";
+    public string Name { get; set; } = string.Empty;
+
+    public override string GenCodeImpl()
+    {
+        return string.IsNullOrEmpty(Name)
+            ? $"arg_{Index}"
+            : Name;
+    }
 }

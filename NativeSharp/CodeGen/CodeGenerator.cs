@@ -14,6 +14,8 @@ public class CodeGenerator
     public void WriteMethodsAndMain(string entryPoint)
     {
         Code.AddLine("#include \"native_sharp.hpp\"");
+
+        AddNativeCppHeaders(MethodResolver.MethodCache);
         WriteReferencedTypes();
         WriteInitialCode();
 
@@ -41,6 +43,29 @@ public class CodeGenerator
         WriteStringPool();
 
         Code.WriteToFile();
+    }
+
+    private void AddNativeCppHeaders(Dictionary<MethodBase, BaseNativeMethod> methodCacheValues)
+    {
+        HashSet<string> headersHash = [];
+        Code.AddLine("// headers imported by native methods");
+        foreach (BaseNativeMethod method in methodCacheValues.Values)
+        {
+            if (method is not CppNativeMethod cppMethod)
+            {
+                continue;
+            }
+
+            var headers = cppMethod.Content.Headers;
+            foreach (var header in headers)
+            {
+                if (headersHash.Add(header))
+                {
+                    Code.AddLine($"#include {header}");
+                }
+            }
+        }
+        Code.AddLine();
     }
 
     private void WriteCppMethod(CppNativeMethod cppMethod)
@@ -135,7 +160,6 @@ public class CodeGenerator
         int startPos = 0;
         foreach (byte[] utf8Text in stringPool.Values)
         {
-            
             startPositions.Add(startPos);
             lenPos.Add(utf8Text.Length);
             startPos += utf8Text.Length;
@@ -147,7 +171,8 @@ public class CodeGenerator
             .AddLine($"    RefArr<int> _coders = new_ref_data<Arr<int>> ({{{string.Join(',', stringPool.Coders)}}});")
             .AddLine($"    RefArr<int> _startPos = new_ref_data<Arr<int>> ({{{string.Join(',', startPositions)}}});")
             .AddLine($"    RefArr<int> _lengths = new_ref_data<Arr<int>> ({{{string.Join(',', lenPos)}}});")
-            .AddLine($"    RefArr<uint8_t> _joinedTexts = new_ref_data<Arr<uint8_t>> ({{{string.Join(',', joinedTexts)}}});")
+            .AddLine(
+                $"    RefArr<uint8_t> _joinedTexts = new_ref_data<Arr<uint8_t>> ({{{string.Join(',', joinedTexts)}}});")
             .AddLine("""
                          Ref<System_String> _clr_str(int index) {
                             return Texts_FromIndex(index, _coders, _startPos, _lengths, _joinedTexts);
