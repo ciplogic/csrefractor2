@@ -8,8 +8,12 @@ public class OptimizationSteps
 {
     public CilMethodOptimization[] CilMethodOptimizations = BuildOptimizations();
 
-    private static CilMethodOptimization[] BuildOptimizations()
+    private static CilMethodOptimization[] BuildOptimizations(bool enable = false)
     {
+        if (!enable)
+        {
+            return [];
+        }
         return
         [
             new BlockBasedPropagation(),
