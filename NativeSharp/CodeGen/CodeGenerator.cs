@@ -28,13 +28,14 @@ public class CodeGenerator
 
         foreach (BaseNativeMethod method in MethodResolver.MethodCache.Values)
         {
-            if (method is CilNativeMethod cilMethod)
+            switch (method)
             {
-                WriteCilMethod(cilMethod);
-            }
-            else if (method is CppNativeMethod cppMethod)
-            {
-                WriteCppMethod(cppMethod);
+                case CilNativeMethod cilMethod:
+                    WriteCilMethod(cilMethod);
+                    break;
+                case CppNativeMethod cppMethod:
+                    WriteCppMethod(cppMethod);
+                    break;
             }
 
             Code.AddLine();
@@ -65,6 +66,7 @@ public class CodeGenerator
                 }
             }
         }
+
         Code.AddLine();
     }
 
@@ -93,20 +95,27 @@ public class CodeGenerator
 
         foreach (KeyValuePair<Type, Type> kv in mappedTypes)
         {
-            Code.AddLine($"struct {kv.Value.Mangle(RefKind.Value)} {{");
-            Type mappedType = kv.Key;
-            foreach (FieldInfo variable in mappedType.GetFields())
-            {
-                if (variable.IsStatic)
-                {
-                    continue;
-                }
+            WriteFieldsOfType(kv);
+        }
+    }
 
-                Code.AddLine($"{variable.FieldType.Mangle()} {variable.Name};");
+    private void WriteFieldsOfType(KeyValuePair<Type, Type> kv)
+    {
+        Code.AddLine($"struct {kv.Value.Mangle(RefKind.Value)} {{");
+        Type mappedType = kv.Key;
+        var regularFields = mappedType.GetFields();
+        FieldInfo[] fieldsOfType = mappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach (FieldInfo variable in fieldsOfType)
+        {
+            if (variable.IsStatic)
+            {
+                continue;
             }
 
-            Code.AddLine("};");
+            Code.AddLine($"{variable.FieldType.Mangle()} {variable.Name};");
         }
+
+        Code.AddLine("};");
     }
 
     private void WriteInitialCode()

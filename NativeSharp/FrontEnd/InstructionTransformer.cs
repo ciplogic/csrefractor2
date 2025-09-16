@@ -79,7 +79,7 @@ internal class InstructionTransformer
             return LoadOperationsTransformer.TransformLoadOp(instruction, Params, LocalVariablesStackAndState);
         }
 
-        if (opName.StartsWith("br"))
+        if (opName.StartsWith("b"))
         {
             return TransformBranchOperation(instruction, opName);
         }
@@ -108,7 +108,6 @@ internal class InstructionTransformer
         {
             return TransformStoreElement(instruction, LocalVariablesStackAndState);
         }
-
 
         if (LogicalBinaryOp.Contains(opName))
         {
@@ -163,10 +162,13 @@ internal class InstructionTransformer
 
         return new CompositeOp([assignOp1, assignOp2]);
     }
+    
+    static string[] BranchOps = ["brfalse", "brtrue", "blt", "bgt"];
 
     private BaseOp TransformBranchOperation(Instruction instruction, string opName)
     {
-        bool isConditional = opName.StartsWith("brfalse") || opName.StartsWith("brtrue");
+        bool isConditional = BranchOps.Any(opName.StartsWith);
+        
         Instruction targetInstruction = (Instruction)instruction.Operand;
         int targetInstructionOffset = targetInstruction.Offset;
         if (!isConditional)
@@ -187,7 +189,7 @@ internal class InstructionTransformer
         {
             LeftExpression = leftOp,
             RightExpression = rightOp,
-            Operator = instruction.OpCode.Name!
+            Operator = $"clr_{instruction.OpCode.Name!}"
         };
     }
 

@@ -25,7 +25,7 @@ class Program
         return true;
     }
 
-    static void Main()
+    static void MainPrimes()
     {
         Console.WriteLine("Hello, World!" + IsPrime(997));
     }

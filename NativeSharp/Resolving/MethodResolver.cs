@@ -1,16 +1,14 @@
 ﻿using System.Reflection;
 using NativeSharp.CodeGen;
 using NativeSharp.Common;
-using NativeSharp.Extensions;
 using NativeSharp.FrontEnd;
-using NativeSharp.Lib;
 using NativeSharp.Lib.Resolvers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Resolving;
 
-class MethodResolver
+internal static class MethodResolver
 {
     public static Dictionary<MethodBase, BaseNativeMethod> MethodCache { get; } = [];
     public static Dictionary<MethodBase, MethodBase> RemappedMethods { get; } = [];
@@ -18,55 +16,32 @@ class MethodResolver
 
     public static List<IMethodResolver> AllMethodResolvers { get; } = [];
 
-    private static BaseNativeMethod? ResolveSystemClrMethod(MethodInfo clrMethod)
+
+    public static Type ResolveType(Type targetType)
     {
-        if (MethodCache.TryGetValue(clrMethod, out BaseNativeMethod? method))
+        if (targetType.IsArray)
         {
-            return method;
+            ResolveType(targetType.GetElementType()!);
+            return targetType;
         }
-
-        ParameterInfo[] parameterInfos = clrMethod.GetParameters();
-        int parmeterCount = parameterInfos.Length;
-        if (!clrMethod.IsStatic)
+        if (MappedType.TryGetValue(targetType, out Type? type))
         {
-            parmeterCount++;
+            return type;
         }
+        var typeNamespace = targetType.Namespace ?? "";
 
-        string fullTargetMethodName = $"{clrMethod.MangleMethodName()}";
-        MethodInfo? mappedMethod = typeof(ResolvedMethods)
-            .GetMethods(BindingFlags.Static | BindingFlags.Public)
-            .Where(x => x.GetParameters().Length == parmeterCount)
-            .Where(x => x.Name == fullTargetMethodName)
-            .FirstOrDefault();
-
-        if (mappedMethod is null)
+        if (typeNamespace.StartsWith("System"))
         {
-            return null;
+            return targetType;
         }
-
-        ParameterInfo[] mappedMethodInfo = mappedMethod.GetParameters();
-        bool isStatic = clrMethod.IsStatic;
-        int offset = isStatic ? 0 : 1;
-        for (int i = offset; i < mappedMethodInfo.Length; i++)
+        
+        MappedType[targetType] = targetType;
+        FieldInfo[] fieldInfos = targetType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        foreach (FieldInfo fieldInfo in fieldInfos)
         {
-            ParameterInfo mappedParam = mappedMethodInfo[i];
-            ParameterInfo param = parameterInfos[i];
+            ResolveType(fieldInfo.FieldType);
         }
-
-        RemappedMethods[clrMethod] = mappedMethod;
-        CppCodeAttribute? cppCodeAttribute = mappedMethod.GetCustomAttribute<CppCodeAttribute>();
-        if (cppCodeAttribute is not null)
-        {
-            CppNativeMethod resolveSystemClrMethod = new(cppCodeAttribute.NativeContent)
-            {
-                Target = clrMethod,
-                Args = clrMethod.GetMethodArguments(),
-            };
-            MethodCache[clrMethod] = resolveSystemClrMethod;
-            return resolveSystemClrMethod;
-        }
-
-        return TransformCilMethod(clrMethod, mappedMethod);
+        return targetType;
     }
 
     public static BaseNativeMethod? Resolve(MethodBase clrMethod)
@@ -75,7 +50,7 @@ class MethodResolver
         string signature = clrMethod.MangleMethodName();
         if (signature.StartsWith("System"))
         {
-            BaseNativeMethod? systemClrMethod = ResolveSystemClrMethod(clrMethod as MethodInfo);
+            BaseNativeMethod? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod as MethodInfo);
             if (systemClrMethod != null)
             {
                 systemClrMethod.Target = clrMethod;
@@ -83,7 +58,7 @@ class MethodResolver
 
             return systemClrMethod;
         }
-
+        ResolveType(clrMethod.DeclaringType);
         return TransformCilMethod(clrMethod, clrMethod);
     }
 
@@ -111,7 +86,7 @@ class MethodResolver
             return;
         }
 
-        ResolveCilMethod(ResolveSystemClrMethod(clrMethod as MethodInfo));
+        ResolveCilMethod(ClrMethodResolver.ResolveSystemClrMethod(clrMethod as MethodInfo));
     }
 
     public static void ResolveCilMethod(BaseNativeMethod? method)

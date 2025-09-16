@@ -25,12 +25,12 @@ public static class ResolvedMethods
     }
 
     [CppCode("""
-             Arr<uint8_t> arrText {*(arg_0->Data)};
+             Arr<uint8_t> arrText {*(value->Data)};
              arrText.push_back(0);
-             if (arg_0->Coder != 0) {
+             if (value->Coder != 0) {
                 arrText.push_back(0);
              }
-             if (arg_0->Coder){
+             if (value->Coder){
                  wchar_t *text = (wchar_t*)arrText.data();
                  wprintf(L"%ls\n", text);
              } else {
@@ -39,9 +39,26 @@ public static class ResolvedMethods
              }
              """,
         "<cstdio>,<cwchar>", "")]
-    public static void System_Console_WriteLine(string text)
+    public static void System_Console_WriteLine(string value)
     {
         //Nothing for now. Will be filled by C++ code
+    }
+    [CppCode("""
+             std::cout<<value<<'\n';
+             """,
+        "<iostream>", "")]
+    public static void System_Console_WriteLine(double value)
+    {
+        //Nothing for now. Will be filled by C++ code
+    }
+
+    [CppCode("""
+             return std::sqrt(d);
+             """,
+        "<cmath>", "")]
+    public static double System_Math_Sqrt(double d)
+    {
+        return Math.Sqrt(d);
     }
 
     public static int System_String_get_Length(System_String text) => text.Data.Length;

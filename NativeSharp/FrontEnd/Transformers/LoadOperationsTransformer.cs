@@ -162,6 +162,12 @@ static class LoadOperationsTransformer
     public static BaseOp ExtractLoadConstant(Instruction instruction, string opName,
         LocalVariablesStackAndState localVariablesStackAndState)
     {
+        if (opName == "ldc.r8")
+        {
+            ConstantValueExpression constDoubleValue = ConstantValueExpression.Create(instruction.Operand);
+            return ExtractAssignFromConstant(constDoubleValue, localVariablesStackAndState);
+            
+        }
         int index = 0;
         if (opName.Length < 7 || !int.TryParse(opName.Substring(7), out index))
         {

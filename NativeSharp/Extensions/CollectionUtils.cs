@@ -30,7 +30,19 @@ public static class CollectionUtils
 
     public static ArgumentVariable[] GetMethodArguments(this MethodBase method)
     {
-        var argumentList = new List<ArgumentVariable>();
+        List<ArgumentVariable> argumentList = new ();
+        int startIndex = 0;
+        if (!method.IsStatic)
+        {
+            argumentList.Add(new ArgumentVariable()
+            {
+                ExpressionType = method.DeclaringType,
+                Index = 0,
+                Name = "_this"
+            });
+            startIndex = 1;
+        }
+        
         ParameterInfo[] methodParams = method.GetParameters() ?? [];
         for (int index = 0; index < methodParams.Length; index++)
         {
@@ -38,7 +50,7 @@ public static class CollectionUtils
             ArgumentVariable localVariable = new ArgumentVariable()
             {
                 Name = parameterInfo.Name ?? string.Empty,
-                Index = index,
+                Index = startIndex++,
                 ExpressionType = parameterInfo.ParameterType,
             };
             argumentList.Add(localVariable);
