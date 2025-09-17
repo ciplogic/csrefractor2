@@ -53,6 +53,15 @@ public static class ResolvedMethods
     }
 
     [CppCode("""
+             std::cout<<value<<'\n';
+             """,
+        "<iostream>", "")]
+    public static void System_Console_WriteLine(int value)
+    {
+        //Nothing for now. Will be filled by C++ code
+    }
+
+    [CppCode("""
              return std::sqrt(val);
              """,
         "<cmath>", "")]

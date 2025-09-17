@@ -6,6 +6,7 @@
 #include <memory>
 #else
 
+
 template <typename T> struct RcData {
     int _count = 1;
     int _typeId;
@@ -27,7 +28,9 @@ public:
         if (this != &other) {
             release();
             _data = other._data;
-            ++_data->_count;
+            if (_data) {
+                ++_data->_count;
+            }
         }
         return *this;
     }
@@ -74,7 +77,7 @@ template <typename T> Ref<T> new_ref(int typeId = 0) {
 #endif
 }
 
-template <typename T> Ref<T> new_ref_data(const T &dataItem, int typeId = 0) {
+template <typename T> Ref<T> new_ref_data(T &dataItem, int typeId = 0) {
 #ifdef OPTIMIZED_RC
     auto *data = new RcData<T>();
     data->_data = dataItem;

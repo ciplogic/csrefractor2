@@ -177,11 +177,11 @@ public class CodeGenerator
 
         Code
             .AddLine("namespace {")
-            .AddLine($"    RefArr<int> _coders = new_ref_data<Arr<int>> ({{{string.Join(',', stringPool.Coders)}}});")
-            .AddLine($"    RefArr<int> _startPos = new_ref_data<Arr<int>> ({{{string.Join(',', startPositions)}}});")
-            .AddLine($"    RefArr<int> _lengths = new_ref_data<Arr<int>> ({{{string.Join(',', lenPos)}}});")
+            .AddLine($"    RefArr<int> _coders = makeArr<int> ({{{string.Join(',', stringPool.Coders)}}});")
+            .AddLine($"    RefArr<int> _startPos = makeArr<int> ({{{string.Join(',', startPositions)}}});")
+            .AddLine($"    RefArr<int> _lengths = makeArr<int> ({{{string.Join(',', lenPos)}}});")
             .AddLine(
-                $"    RefArr<uint8_t> _joinedTexts = new_ref_data<Arr<uint8_t>> ({{{string.Join(',', joinedTexts)}}});")
+                $"    RefArr<uint8_t> _joinedTexts = makeArr<uint8_t> ({{{string.Join(',', joinedTexts)}}});")
             .AddLine("""
                          Ref<System_String> _clr_str(int index) {
                             return Texts_FromIndex(index, _coders, _startPos, _lengths, _joinedTexts);

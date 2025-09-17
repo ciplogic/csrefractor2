@@ -8,7 +8,7 @@ public class OptimizationSteps
 {
     public CilMethodOptimization[] CilMethodOptimizations = BuildOptimizations();
 
-    private static CilMethodOptimization[] BuildOptimizations(bool enable = false)
+    private static CilMethodOptimization[] BuildOptimizations(bool enable = true)
     {
         if (!enable)
         {

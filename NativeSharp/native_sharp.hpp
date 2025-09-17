@@ -5,15 +5,22 @@
 #include <vector>
 
 #include "native_rc.hpp"
+#include "native_heap_array.hpp"
 
-template <typename T> using Arr = std::vector<T>;
+template <typename T> using Arr = HeapArray<T>;
 template <typename T> using RefArr = Ref<Arr<T>>;
 
 template <class T> RefArr<T> new_arr(int size) {
-    RefArr<T> result = new_ref<Arr<T>>();
-    result->resize(size);
-    return result;
+    Arr<T> arr = Arr<T>::create(size);
+    return new_ref_data(arr);
 }
+
+template <class T>
+RefArr<T> makeArr(std::initializer_list<T> init) {
+    Arr<T> arr = Arr<T>::create(init);
+    return new_ref_data(arr);
+}
+
 
 template <typename T> T clr_add(T left, T right) { return left + right; }
 
