@@ -17,6 +17,7 @@ static class InstructionUsages
             LoadElementOp loadElementOp => [loadElementOp.Array.Code(), loadElementOp.Index.Code()],
             StoreFieldOp storeFieldOp => [storeFieldOp.ThisPtr.Code(), storeFieldOp.ValueToSet.Code()],
             LoadFieldOp loadFieldOp => [loadFieldOp.ThisPtr.Code()],
+            LdLenOp ldLen => [ldLen.Right.Code()],
             NewArrayOp newArray => [newArray.Count.Code()],
             BranchOp branchOperation => [branchOperation.Condition.Code()],
             BinaryOp binaryOp => [binaryOp.LeftExpression.Code(), binaryOp.RightExpression.Code()],

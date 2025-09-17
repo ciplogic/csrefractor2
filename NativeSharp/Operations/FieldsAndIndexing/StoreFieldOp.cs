@@ -6,7 +6,7 @@ namespace NativeSharp.Operations.FieldsAndIndexing;
 internal class StoreFieldOp(IndexedVariable thisPtr, IValueExpression valueToSet, string fieldName)
     : BaseOp
 {
-    public IndexedVariable ThisPtr { get; } = thisPtr;
+    public IndexedVariable ThisPtr { get; set; } = thisPtr;
     public IValueExpression ValueToSet { get; } = valueToSet;
     public string FieldName { get; } = fieldName;
 

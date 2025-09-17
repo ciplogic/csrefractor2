@@ -27,16 +27,6 @@ class Program
         return true;
     }
 
-    static void Main()
-    {
-        var sw = Stopwatch.StartNew();
-        var primeCount = GetPrimeCount(10_000_000);
-
-        Console.WriteLine(primeCount);
-        sw.Stop();
-        Console.WriteLine(sw.Elapsed);
-    }
-
     private static int GetPrimeCount(int rangeValue)
     {
         var primeCount = 0;
@@ -51,6 +41,16 @@ class Program
         return primeCount;
     }
 
+    static void MainPrimes()
+    {
+        var sw = Stopwatch.StartNew();
+        var primeCount = GetPrimeCount(10_000_000);
+
+        Console.WriteLine(primeCount);
+        sw.Stop();
+        Console.WriteLine(sw.Elapsed);
+    }
+    
     static void Main_()
     {
         bool isTrue = false;

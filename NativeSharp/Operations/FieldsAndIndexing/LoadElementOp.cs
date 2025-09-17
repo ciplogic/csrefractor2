@@ -5,8 +5,8 @@ namespace NativeSharp.Operations.FieldsAndIndexing;
 
 internal class LoadElementOp : LeftOp
 {
-    public IndexedVariable Array { get; }
-    public IValueExpression Index { get; }
+    public IndexedVariable Array { get; set; }
+    public IValueExpression Index { get; set; }
 
     public LoadElementOp(VReg resultElement, IndexedVariable array, IValueExpression index)
         : base(resultElement)

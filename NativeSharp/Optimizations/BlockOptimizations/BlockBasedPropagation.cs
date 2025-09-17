@@ -41,9 +41,42 @@ class BlockBasedPropagation : BlockBasedOptimization
             CallOp callOp => UpdateExpressionT(callOp, MatchCall, updates),
             BranchOp branchOperation => UpdateExpressionT(branchOperation, MatchBranchOp, updates),
             BinaryOp binaryOp => UpdateExpressionT(binaryOp, MatchBinaryOp, updates),
+            LoadElementOp loadElementOp => UpdateExpressionT(loadElementOp, MatchLoadElem, updates),
+            StoreElementOp storeElementOp => UpdateExpressionT(storeElementOp, MatchStoreElem, updates),
+            StoreFieldOp storeFieldOp => UpdateExpressionT(storeFieldOp, MapStoreField, updates),
+
             NewArrayOp newArrayOp => UpdateExpressionT(newArrayOp, MatchNewArrayOp, updates),
             _ => false
         };
+    }
+
+    private static bool MapStoreField(StoreFieldOp storeFieldOp, IValueExpression from, IValueExpression to)
+    {
+        var target = UpdateTargetExpression(storeFieldOp.ThisPtr, from, to);
+        storeFieldOp.ThisPtr = (IndexedVariable)target.Mapped;
+        return target.Changed;
+    }
+
+    private static bool MatchStoreElem(StoreElementOp storeElementOp, IValueExpression from, IValueExpression to)
+    {
+        var target = UpdateTargetExpression(storeElementOp.ArrPtr, from, to);
+        storeElementOp.ArrPtr = (IndexedVariable)target.Mapped;
+        var targetIndex = UpdateTargetExpression(storeElementOp.Index, from, to);
+        storeElementOp.Index = targetIndex.Mapped;
+        var targetValue = UpdateTargetExpression(storeElementOp.ValueToSet, from, to);
+        storeElementOp.ValueToSet = targetValue.Mapped;
+
+        return target.Changed || targetIndex.Changed || targetValue.Changed;
+    }
+
+    private static bool MatchLoadElem(LoadElementOp loadElementOp, IValueExpression from, IValueExpression to)
+    {
+        var target = UpdateTargetExpression(loadElementOp.Array, from, to);
+        loadElementOp.Array = (IndexedVariable)target.Mapped;
+
+        var targetIndex = UpdateTargetExpression(loadElementOp.Index, from, to);
+        loadElementOp.Index = targetIndex.Mapped;
+        return target.Changed || targetIndex.Changed;
     }
 
     private static bool MatchNewArrayOp(NewArrayOp op, IValueExpression from, IValueExpression to)
@@ -53,7 +86,7 @@ class BlockBasedPropagation : BlockBasedOptimization
         return target.Changed;
     }
 
-    private bool MatchBinaryOp(BinaryOp op, IValueExpression from, IValueExpression to)
+    private static bool MatchBinaryOp(BinaryOp op, IValueExpression from, IValueExpression to)
     {
         var target = UpdateTargetExpression(op.LeftExpression, from, to);
         op.LeftExpression = target.Mapped;
