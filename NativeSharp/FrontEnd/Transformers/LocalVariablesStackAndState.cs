@@ -14,6 +14,8 @@ class LocalVariablesStackAndState
     private int _vregIndex = 0;
 
 
+    public VReg NewVirtVar<T>() => NewVirtVar(typeof(T));
+
     public VReg NewVirtVar(Type varType)
     {
         VReg virtVar = new VReg()

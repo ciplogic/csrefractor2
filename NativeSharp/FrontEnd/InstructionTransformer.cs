@@ -23,8 +23,9 @@ internal class InstructionTransformer
         Instruction[] instructions2 = MethodBodyReader.GetInstructions(parentMethod);
 
         List<BaseOp> resultList = new List<BaseOp>();
-        foreach (Instruction instruction in instructions2)
+        for (var index = 0; index < instructions2.Length; index++)
         {
+            var instruction = instructions2[index];
             if (LocalVariablesStackAndState._targetBranches.Contains(instruction.Offset))
             {
                 resultList.Add(new LabelOp(instruction.Offset));
@@ -162,13 +163,21 @@ internal class InstructionTransformer
 
         return new CompositeOp([assignOp1, assignOp2]);
     }
-    
-    static string[] BranchOps = ["brfalse", "brtrue", "blt", "bgt"];
+
+    static string[] BranchOps = ["brfalse", "brtrue"];
+
+    private static string[] BoolBinaryOperations = ["blt", "bgt", "blt.s", "bgt.s"];
 
     private BaseOp TransformBranchOperation(Instruction instruction, string opName)
     {
+        bool isBoolBinary = BoolBinaryOperations.Contains(opName);
+        if (isBoolBinary)
+        {
+            return TransformBoolBinaryOp(instruction, opName);
+        }
+
         bool isConditional = BranchOps.Any(opName.StartsWith);
-        
+
         Instruction targetInstruction = (Instruction)instruction.Operand;
         int targetInstructionOffset = targetInstruction.Offset;
         if (!isConditional)
@@ -178,6 +187,25 @@ internal class InstructionTransformer
 
         return new BranchOp(targetInstructionOffset, opName,
             isConditional ? LocalVariablesStackAndState.Pop() : null);
+    }
+
+    private BaseOp TransformBoolBinaryOp(Instruction instruction, string opName)
+    {
+        IValueExpression rightOp = LocalVariablesStackAndState.Pop();
+        IValueExpression leftOp = LocalVariablesStackAndState.Pop();
+        var left = LocalVariablesStackAndState.NewVirtVar<bool>();
+        opName = opName.Replace('.', '_');
+        var binaryOp = new BinaryOp(left)
+        {
+            LeftExpression = leftOp,
+            RightExpression = rightOp,
+            Operator = $"clr_{opName}"
+        };
+
+        var targetIndex = instruction.Operand as Instruction;
+
+        var conditionalJump = new BranchOp(targetIndex.Offset, "brtrue", left);
+        return new CompositeOp([binaryOp, conditionalJump]);
     }
 
     private BaseOp TransformBinaryOp(Instruction instruction)

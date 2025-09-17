@@ -19,7 +19,10 @@ static class PhiFixup
                 throw new Exception("Expected label not found");
             }
 
-            var labelAssign = (AssignOp)ops[indexLabel - 1];
+            if (ops[indexLabel - 1] is not AssignOp labelAssign)
+            {
+                continue;
+            }
             var afterLabelAssign = (AssignOp)ops[indexLabel + 1];
             var sourceVreg = (VReg)gotoAssign.Left;
             labelAssign.Left = sourceVreg;

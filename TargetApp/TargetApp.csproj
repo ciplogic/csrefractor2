@@ -10,4 +10,8 @@
     <PropertyGroup>
       <OutputPath>..\bin\</OutputPath>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NativeSharp.Lib\NativeSharp.Lib.csproj" />
+    </ItemGroup>
 </Project>

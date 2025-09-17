@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using NativeSharp.Lib.Resolvers;
 
 namespace TargetApp;
 
@@ -11,7 +12,7 @@ class Program
             return true;
         }
 
-        if ((number & 1) == 0)
+        if ((number % 2) == 0)
         {
             return false;
         }
@@ -27,6 +28,7 @@ class Program
         return true;
     }
 
+    [CilPure]
     private static int GetPrimeCount(int rangeValue)
     {
         var primeCount = 0;
@@ -41,14 +43,11 @@ class Program
         return primeCount;
     }
 
-    static void MainPrimes()
+    static void Main()
     {
-        var sw = Stopwatch.StartNew();
         var primeCount = GetPrimeCount(10_000_000);
 
         Console.WriteLine(primeCount);
-        sw.Stop();
-        Console.WriteLine(sw.Elapsed);
     }
     
     static void Main_()

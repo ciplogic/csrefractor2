@@ -5,7 +5,7 @@ namespace NativeSharp.Operations.FieldsAndIndexing;
 
 internal class LoadFieldOp : LeftOp
 {
-    public IndexedVariable ThisPtr { get; }
+    public IndexedVariable ThisPtr { get; set; }
     public string FieldName { get; }
 
     public LoadFieldOp(IndexedVariable thisPtr, string fieldName, VReg resultVar)

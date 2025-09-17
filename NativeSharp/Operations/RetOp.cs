@@ -4,7 +4,7 @@ namespace NativeSharp.Operations;
 
 internal class RetOp : BaseOp
 {
-    public IValueExpression? ValueExpression { get; }
+    public IValueExpression? ValueExpression { get; set; }
 
     public RetOp(IValueExpression? valueExpression) => ValueExpression = valueExpression;
 

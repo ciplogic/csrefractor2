@@ -6,7 +6,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Optimizations.BlockOptimizations;
 
-class BlockBasedPropagation : BlockBasedOptimization
+internal class BlockBasedPropagation : BlockBasedOptimization
 {
     public override bool OptimizeSegment(ArraySegment<BaseOp> segment)
     {
@@ -22,7 +22,6 @@ class BlockBasedPropagation : BlockBasedOptimization
                 continue;
             }
 
-
             if (assignOp.Expression is ConstantValueExpression || assignOp.Expression is IndexedVariable)
             {
                 updates[assignOp.Left] = assignOp.Expression;
@@ -33,8 +32,7 @@ class BlockBasedPropagation : BlockBasedOptimization
     }
 
     public bool UpdateKnownOps(BaseOp op, Dictionary<IValueExpression, IValueExpression> updates)
-    {
-        return op switch
+        => op switch
         {
             AssignOp assignOp => UpdateExpressionT(assignOp, MatchAssign, updates),
             CallReturnOp callReturnOp => UpdateExpressionT(callReturnOp, MatchCallReturn, updates),
@@ -43,93 +41,100 @@ class BlockBasedPropagation : BlockBasedOptimization
             BinaryOp binaryOp => UpdateExpressionT(binaryOp, MatchBinaryOp, updates),
             LoadElementOp loadElementOp => UpdateExpressionT(loadElementOp, MatchLoadElem, updates),
             StoreElementOp storeElementOp => UpdateExpressionT(storeElementOp, MatchStoreElem, updates),
+            LoadFieldOp loadFieldOp => UpdateExpressionT(loadFieldOp, MatchLoadField, updates),
             StoreFieldOp storeFieldOp => UpdateExpressionT(storeFieldOp, MapStoreField, updates),
-
             NewArrayOp newArrayOp => UpdateExpressionT(newArrayOp, MatchNewArrayOp, updates),
+            RetOp retOp => UpdateExpressionT(retOp, MatchRetOp, updates),
             _ => false
         };
+
+    private bool MatchRetOp(RetOp op, FromTo fromTo)
+    {
+        return UpdateExpression(op,
+            x => x.ValueExpression,
+            (x, v) => x.ValueExpression = v,
+            fromTo);
     }
 
-    private static bool MapStoreField(StoreFieldOp storeFieldOp, IValueExpression from, IValueExpression to)
-    {
-        var target = UpdateTargetExpression(storeFieldOp.ThisPtr, from, to);
-        storeFieldOp.ThisPtr = (IndexedVariable)target.Mapped;
-        return target.Changed;
-    }
+    private bool MatchLoadField(LoadFieldOp op, FromTo fromTo)
+        => UpdateExpression(
+            op,
+            x => x.ThisPtr,
+            (x, v) => x.ThisPtr = (IndexedVariable)v,
+            fromTo);
 
-    private static bool MatchStoreElem(StoreElementOp storeElementOp, IValueExpression from, IValueExpression to)
+    private static bool MapStoreField(StoreFieldOp op, FromTo fromTo)
+        => UpdateExpression(op,
+            x => x.ThisPtr,
+            (x, field) => x.ThisPtr = (IndexedVariable)field,
+            fromTo);
+
+
+    private static bool MatchStoreElem(StoreElementOp storeElementOp, FromTo fromTo)
     {
-        var target = UpdateTargetExpression(storeElementOp.ArrPtr, from, to);
+        var target = UpdateTargetExpression(storeElementOp.ArrPtr, fromTo);
         storeElementOp.ArrPtr = (IndexedVariable)target.Mapped;
-        var targetIndex = UpdateTargetExpression(storeElementOp.Index, from, to);
+        var targetIndex = UpdateTargetExpression(storeElementOp.Index, fromTo);
         storeElementOp.Index = targetIndex.Mapped;
-        var targetValue = UpdateTargetExpression(storeElementOp.ValueToSet, from, to);
+        var targetValue = UpdateTargetExpression(storeElementOp.ValueToSet, fromTo);
         storeElementOp.ValueToSet = targetValue.Mapped;
 
         return target.Changed || targetIndex.Changed || targetValue.Changed;
     }
 
-    private static bool MatchLoadElem(LoadElementOp loadElementOp, IValueExpression from, IValueExpression to)
+    private static bool MatchLoadElem(LoadElementOp op, FromTo fromTo)
     {
-        var target = UpdateTargetExpression(loadElementOp.Array, from, to);
-        loadElementOp.Array = (IndexedVariable)target.Mapped;
+        var target = UpdateTargetExpression(op.Array, fromTo);
+        op.Array = (IndexedVariable)target.Mapped;
 
-        var targetIndex = UpdateTargetExpression(loadElementOp.Index, from, to);
-        loadElementOp.Index = targetIndex.Mapped;
+        var targetIndex = UpdateTargetExpression(op.Index, fromTo);
+        op.Index = targetIndex.Mapped;
         return target.Changed || targetIndex.Changed;
     }
 
-    private static bool MatchNewArrayOp(NewArrayOp op, IValueExpression from, IValueExpression to)
+    private static bool MatchNewArrayOp(NewArrayOp op, FromTo fromTo) =>
+        UpdateExpression(op,
+            x => x.Count,
+            (x, v) => x.Count = v,
+            fromTo);
+
+    private static bool MatchBinaryOp(BinaryOp op, FromTo fromTo)
     {
-        var target = UpdateTargetExpression(op.Count, from, to);
-        op.Count = target.Mapped;
-        return target.Changed;
+        var leftChanged = UpdateExpression(op,
+            x => x.LeftExpression,
+            (x, v) => x.LeftExpression = v,
+            fromTo);
+        var rightChanged = UpdateExpression(op,
+            x => x.RightExpression,
+            (x, v) => x.RightExpression = v,
+            fromTo);
+        return leftChanged || rightChanged;
     }
 
-    private static bool MatchBinaryOp(BinaryOp op, IValueExpression from, IValueExpression to)
-    {
-        var target = UpdateTargetExpression(op.LeftExpression, from, to);
-        op.LeftExpression = target.Mapped;
+    private bool MatchBranchOp(BranchOp op, FromTo fromTo)
+        => UpdateExpression(op,
+            x => x.Condition,
+            (x, v) => x.Condition = v,
+            fromTo);
 
-        var target2 = UpdateTargetExpression(op.RightExpression, from, to);
-        op.RightExpression = target2.Mapped;
-        return target.Changed || target2.Changed;
-    }
+    private static bool MatchAssign(AssignOp op, FromTo fromTo)
+        => UpdateExpression(op,
+            x => x.Expression,
+            (x, v) => x.Expression = v,
+            fromTo);
 
-    private bool MatchBranchOp(BranchOp op, IValueExpression from, IValueExpression to)
-    {
-        var target = UpdateTargetExpression(op.Condition, from, to);
-        op.Condition = target.Mapped;
-        return target.Changed;
-    }
+    private static bool MatchCallReturn(CallReturnOp op, FromTo fromTo)
+        => UpdateUsagesArguments(op.Args, fromTo);
 
-    private static bool MatchAssign(AssignOp op, IValueExpression from, IValueExpression to)
-    {
-        var target = UpdateTargetExpression(op.Expression, from, to);
-        op.Expression = target.Mapped;
-        return target.Changed;
-    }
+    private static bool MatchCall(CallOp op, FromTo fromTo)
+        => UpdateUsagesArguments(op.Args, fromTo);
 
-    private static bool MatchCallReturn(CallReturnOp op,
-        IValueExpression from, IValueExpression to)
-    {
-        return UpdateUsagesArguments(from, to, op.Args);
-    }
-
-    private static bool MatchCall(CallOp op,
-        IValueExpression from, IValueExpression to)
-    {
-        var parameters = op.Args;
-        return UpdateUsagesArguments(from, to, op.Args);
-    }
-
-    private static bool UpdateUsagesArguments(IValueExpression from, IValueExpression to, IValueExpression[] parameters)
+    private static bool UpdateUsagesArguments(IValueExpression[] parameters, FromTo fromTo)
     {
         var result = false;
         for (var index = 0; index < parameters.Length; index++)
         {
-            var arg = parameters[index];
-            var target = UpdateTargetExpression(arg, from, to);
+            var target = UpdateTargetExpression(parameters[index], fromTo);
             parameters[index] = target.Mapped;
             result |= target.Changed;
         }
@@ -137,27 +142,36 @@ class BlockBasedPropagation : BlockBasedOptimization
         return result;
     }
 
-    private static bool UpdateExpressionT<T>(T op, Func<T, IValueExpression, IValueExpression, bool> match,
+    private static bool UpdateExpressionT<T>(T op, Func<T, FromTo, bool> match,
         Dictionary<IValueExpression, IValueExpression> updates) where T : BaseOp
     {
         var result = false;
         foreach (var kv in updates)
         {
-            result |= match(op, kv.Key, kv.Value);
+            result |= match(op, new FromTo(kv.Key, kv.Value));
         }
 
         return result;
     }
 
-    static (IValueExpression Mapped, bool Changed) UpdateTargetExpression(IValueExpression targetExpression,
-        IValueExpression compareTo,
-        IValueExpression replaceWith)
+    private static bool UpdateExpression<T>(T storeFieldOp, Func<T, IValueExpression> getFieldFunc,
+        Action<T, IValueExpression> update,
+        FromTo fromTo) where T : BaseOp
     {
-        if (targetExpression == compareTo)
+        var target = UpdateTargetExpression(getFieldFunc(storeFieldOp), fromTo);
+        if (target.Changed)
         {
-            return (replaceWith, true);
+            update(storeFieldOp, target.Mapped);
         }
 
-        return (targetExpression, false);
+        return target.Changed;
     }
+
+    private static (IValueExpression Mapped, bool Changed) UpdateTargetExpression(IValueExpression targetExpression,
+        FromTo fromTo)
+        => targetExpression == fromTo.From
+            ? (fromTo.To, true)
+            : (targetExpression, false);
+
+    record struct FromTo(IValueExpression From, IValueExpression To);
 }

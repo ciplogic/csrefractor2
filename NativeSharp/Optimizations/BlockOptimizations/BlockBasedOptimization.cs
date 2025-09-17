@@ -14,7 +14,7 @@ public abstract class BlockBasedOptimization : CilMethodOptimization
         for (var index = 0; index < ops.Length; index++)
         {
             var op = ops[index];
-            if (IsJumpOp(op))
+            if (op.IsJumpOp())
             {
                 var len = index - startPos;
                 if (len > 0)
@@ -36,19 +36,6 @@ public abstract class BlockBasedOptimization : CilMethodOptimization
 
 
         return resultList.ToArray();
-    }
-
-    private static bool IsJumpOp(BaseOp op)
-    {
-        switch (op)
-        {
-            case LabelOp:
-            case BranchOp:
-            case GotoOp:
-                return true;
-            default:
-                return false;
-        }
     }
 
     public override bool Optimize(CilNativeMethod cilNativeMethod)
