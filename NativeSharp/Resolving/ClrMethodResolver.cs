@@ -75,7 +75,7 @@ static class ClrMethodResolver
             CppNativeMethod resolveSystemClrMethod = new(cppCodeAttribute.NativeContent)
             {
                 Target = clrMethod,
-                Args = clrMethod.GetMethodArguments(),
+                Args = mappedMethod.GetMethodArguments(),
             };
             MethodResolver.MethodCache[clrMethod] = resolveSystemClrMethod;
             return resolveSystemClrMethod;

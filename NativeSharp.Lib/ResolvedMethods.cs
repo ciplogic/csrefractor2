@@ -53,12 +53,12 @@ public static class ResolvedMethods
     }
 
     [CppCode("""
-             return std::sqrt(d);
+             return std::sqrt(val);
              """,
         "<cmath>", "")]
-    public static double System_Math_Sqrt(double d)
+    public static double System_Math_Sqrt(double val)
     {
-        return Math.Sqrt(d);
+        return Math.Sqrt(val);
     }
 
     public static int System_String_get_Length(System_String text) => text.Data.Length;
