@@ -3,7 +3,7 @@ using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Optimizations.DeadCodeElimination;
 
-public class RemovedUnusedAssignsAndVars : CilMethodOptimization
+public class RemovedUnusedAssignsAndVars : OptimizationBase
 {
     public override bool Optimize(CilNativeMethod cilNativeMethod)
     {

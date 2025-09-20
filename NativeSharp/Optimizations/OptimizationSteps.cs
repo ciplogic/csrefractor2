@@ -1,5 +1,6 @@
 ﻿using NativeSharp.Operations.Common;
 using NativeSharp.Optimizations.BlockOptimizations;
+using NativeSharp.Optimizations.ConstExprOptimization;
 using NativeSharp.Optimizations.DeadCodeElimination;
 using NativeSharp.Optimizations.GotosOptimizations;
 
@@ -7,9 +8,9 @@ namespace NativeSharp.Optimizations;
 
 public class OptimizationSteps
 {
-    public CilMethodOptimization[] CilMethodOptimizations = BuildOptimizations();
+    public OptimizationBase[] CilMethodOptimizations = BuildOptimizations();
 
-    private static CilMethodOptimization[] BuildOptimizations(bool enable = true)
+    private static OptimizationBase[] BuildOptimizations(bool enable = true)
     {
         if (!enable)
         {
@@ -20,7 +21,8 @@ public class OptimizationSteps
         [
             new BlockBasedPropagation(),
             new RemovedUnusedAssignsAndVars(),
-            new GotoOpsOptimization()
+            new GotoOpsOptimizationBase(),
+            new HandleConstMethodCalls()
         ];
     }
 

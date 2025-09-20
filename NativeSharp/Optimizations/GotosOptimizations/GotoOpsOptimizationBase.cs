@@ -5,7 +5,7 @@ using NativeSharp.Optimizations.DeadCodeElimination;
 
 namespace NativeSharp.Optimizations.GotosOptimizations;
 
-public class GotoOpsOptimization : CilMethodOptimization
+public class GotoOpsOptimizationBase : OptimizationBase
 {
     public override bool Optimize(CilNativeMethod cilNativeMethod)
     {

@@ -2,7 +2,7 @@
 
 namespace NativeSharp.Optimizations;
 
-public abstract class CilMethodOptimization
+public abstract class OptimizationBase
 {
     public abstract bool Optimize(CilNativeMethod cilNativeMethod);
 }

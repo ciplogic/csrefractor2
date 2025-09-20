@@ -6,7 +6,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Optimizations.BlockOptimizations;
 
-internal class BlockBasedPropagation : BlockBasedOptimization
+internal class BlockBasedPropagation : BlockBasedOptimizationBase
 {
     public override bool OptimizeSegment(ArraySegment<BaseOp> segment)
     {

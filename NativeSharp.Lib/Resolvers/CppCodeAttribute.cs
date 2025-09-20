@@ -4,7 +4,3 @@ public class CppCodeAttribute(string code, string headers, string libs) : Attrib
 {
     public CppNativeContent NativeContent { get; } = new(code, headers.Split(','), libs.Split(','));
 }
-
-public class CilPureAttribute : Attribute
-{
-}

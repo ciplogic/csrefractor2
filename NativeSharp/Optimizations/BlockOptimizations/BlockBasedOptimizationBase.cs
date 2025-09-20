@@ -3,7 +3,7 @@ using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Optimizations.BlockOptimizations;
 
-public abstract class BlockBasedOptimization : CilMethodOptimization
+public abstract class BlockBasedOptimizationBase : OptimizationBase
 {
     public abstract bool OptimizeSegment(ArraySegment<BaseOp> segment);
 

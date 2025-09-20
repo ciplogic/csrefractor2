@@ -28,7 +28,7 @@ class Program
         return true;
     }
 
-    [CilPure]
+    [PureMethod]
     private static int GetPrimeCount(int rangeValue)
     {
         var primeCount = 0;
