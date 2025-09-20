@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using NativeSharp.CodeGen;
-using NativeSharp.Operations.Common;
 using NativeSharp.Optimizations;
 using NativeSharp.Resolving;
 

@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Reflection;
 using NativeSharp.Lib.Resolvers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
@@ -39,13 +38,17 @@ public class HandleConstMethodCalls : OptimizationBase
 
     private bool MethodIsOptimizable(MethodBase targetMethod, IValueExpression[] args)
     {
-        var pureMethod = targetMethod.GetCustomAttributes<PureMethodAttribute>()
-            .FirstOrDefault();
-        if (pureMethod == null)
+        if (!AreMethodParameterConstants(args))
         {
             return false;
         }
+        var pureMethod = targetMethod.GetCustomAttributes<PureMethodAttribute>()
+            .FirstOrDefault();
+        return pureMethod is not null;
+    }
 
+    private static bool AreMethodParameterConstants(IValueExpression[] args)
+    {
         foreach (var arg in args)
         {
             if (arg is not ConstantValueExpression)

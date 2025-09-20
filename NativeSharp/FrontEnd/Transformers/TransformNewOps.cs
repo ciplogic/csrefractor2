@@ -5,7 +5,7 @@ using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 
-namespace NativeSharp.FrontEnd;
+namespace NativeSharp.FrontEnd.Transformers;
 
 static class TransformNewOps
 {

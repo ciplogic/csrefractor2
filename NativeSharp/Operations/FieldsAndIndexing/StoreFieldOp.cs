@@ -7,7 +7,7 @@ internal class StoreFieldOp(IndexedVariable thisPtr, IValueExpression valueToSet
     : BaseOp
 {
     public IndexedVariable ThisPtr { get; set; } = thisPtr;
-    public IValueExpression ValueToSet { get; } = valueToSet;
+    public IValueExpression ValueToSet { get; set; } = valueToSet;
     public string FieldName { get; } = fieldName;
 
     public override string GenCode()

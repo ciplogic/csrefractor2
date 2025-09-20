@@ -7,14 +7,17 @@ public class CodeGenToFile(string fileName)
     public string FileName { get; } = fileName;
     private StringBuilder Text { get; } = new();
 
-    public CodeGenToFile AddLine(string text)
+    public CodeGenToFile AddLine(string text, int indent = 0)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
             return this;
         }
 
-        Text.AppendLine(text);
+        var indentText = new string(' ', indent);
+        Text
+            .Append(indentText)
+            .AppendLine(text);
         return this;
     }
 

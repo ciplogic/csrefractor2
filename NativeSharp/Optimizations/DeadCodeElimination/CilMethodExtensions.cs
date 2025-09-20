@@ -7,16 +7,20 @@ public static class CilMethodExtensions
 {
     public static void RemoveIndices(CilNativeMethod cilNativeMethod, int[] indicesToRemove)
     {
-        var newOps = new List<BaseOp>();
+        if (indicesToRemove.Length == 0)
+        {
+            return;
+        }
+
+        var newOps = new List<BaseOp>(cilNativeMethod.Instructions.Length - indicesToRemove.Length);
         for (var index = 0; index < cilNativeMethod.Instructions.Length; index++)
         {
-            if (indicesToRemove.Contains(index))
+            if (!indicesToRemove.Contains(index))
             {
-                continue;
+                newOps.Add(cilNativeMethod.Instructions[index]);
             }
-            var op = cilNativeMethod.Instructions[index];
-            newOps.Add(op);
         }
+
         cilNativeMethod.Instructions = newOps.ToArray();
     }
 }

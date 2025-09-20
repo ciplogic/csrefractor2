@@ -1,6 +1,6 @@
 ﻿class nbody2
 {
-    public static void Mai3()
+    public static void Main2()
     {
         int n = 10000;
 

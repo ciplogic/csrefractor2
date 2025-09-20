@@ -4,7 +4,7 @@ using NativeSharp.Extensions;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
-namespace NativeSharp.FrontEnd;
+namespace NativeSharp.FrontEnd.Transformers;
 
 class LocalVariablesStackAndState
 {

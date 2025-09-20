@@ -3,6 +3,7 @@ using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Values;
 using NativeSharp.Operations.Vars;
+using NativeSharp.Optimizations.BlockOptimizations.Common;
 
 namespace NativeSharp.Optimizations.BlockOptimizations;
 
@@ -48,15 +49,13 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
             _ => false
         };
 
-    private bool MatchRetOp(RetOp op, FromTo fromTo)
-    {
-        return UpdateExpression(op,
+    private static bool MatchRetOp(RetOp op, FromTo fromTo)
+        => UpdateExpression(op,
             x => x.ValueExpression,
             (x, v) => x.ValueExpression = v,
             fromTo);
-    }
 
-    private bool MatchLoadField(LoadFieldOp op, FromTo fromTo)
+    private static bool MatchLoadField(LoadFieldOp op, FromTo fromTo)
         => UpdateExpression(
             op,
             x => x.ThisPtr,
@@ -65,22 +64,28 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
 
     private static bool MapStoreField(StoreFieldOp op, FromTo fromTo)
         => UpdateExpression(op,
-            x => x.ThisPtr,
-            (x, field) => x.ThisPtr = (IndexedVariable)field,
-            fromTo);
+               x => x.ThisPtr,
+               (x, field) => x.ThisPtr = (IndexedVariable)field,
+               fromTo) ||
+           UpdateExpression(op,
+               x => x.ValueToSet,
+               (x, v) => x.ValueToSet = v,
+               fromTo);
 
 
-    private static bool MatchStoreElem(StoreElementOp storeElementOp, FromTo fromTo)
-    {
-        var target = UpdateTargetExpression(storeElementOp.ArrPtr, fromTo);
-        storeElementOp.ArrPtr = (IndexedVariable)target.Mapped;
-        var targetIndex = UpdateTargetExpression(storeElementOp.Index, fromTo);
-        storeElementOp.Index = targetIndex.Mapped;
-        var targetValue = UpdateTargetExpression(storeElementOp.ValueToSet, fromTo);
-        storeElementOp.ValueToSet = targetValue.Mapped;
-
-        return target.Changed || targetIndex.Changed || targetValue.Changed;
-    }
+    private static bool MatchStoreElem(StoreElementOp op, FromTo fromTo)
+        => UpdateExpression(op,
+               x => x.ArrPtr,
+               (x, v) => x.ArrPtr = (IndexedVariable)v,
+               fromTo) ||
+           UpdateExpression(op,
+               x => x.Index,
+               (x, v) => x.Index = v,
+               fromTo) ||
+           UpdateExpression(op,
+               x => x.ValueToSet,
+               (x, v) => x.ValueToSet = v,
+               fromTo);
 
     private static bool MatchLoadElem(LoadElementOp op, FromTo fromTo)
     {
@@ -99,19 +104,16 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
             fromTo);
 
     private static bool MatchBinaryOp(BinaryOp op, FromTo fromTo)
-    {
-        var leftChanged = UpdateExpression(op,
-            x => x.LeftExpression,
-            (x, v) => x.LeftExpression = v,
-            fromTo);
-        var rightChanged = UpdateExpression(op,
-            x => x.RightExpression,
-            (x, v) => x.RightExpression = v,
-            fromTo);
-        return leftChanged || rightChanged;
-    }
+        => UpdateExpression(op,
+               x => x.LeftExpression,
+               (x, v) => x.LeftExpression = v,
+               fromTo) ||
+           UpdateExpression(op,
+               x => x.RightExpression,
+               (x, v) => x.RightExpression = v,
+               fromTo);
 
-    private bool MatchBranchOp(BranchOp op, FromTo fromTo)
+    private static bool MatchBranchOp(BranchOp op, FromTo fromTo)
         => UpdateExpression(op,
             x => x.Condition,
             (x, v) => x.Condition = v,

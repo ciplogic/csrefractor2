@@ -1,5 +1,6 @@
 ﻿using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
+using NativeSharp.Optimizations.Common;
 
 namespace NativeSharp.Optimizations.DeadCodeElimination;
 
@@ -26,6 +27,21 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
             }
         }
 
+        var indicesToRemove = GetAssignmentIndicesToRemove(cilNativeMethod, candidatesForRemoval);
+
+        CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove);
+        HashSet<string> usedVariables = GetHashOfUsedVariables(cilNativeMethod);
+
+        var vars = cilNativeMethod.Locals
+            .Where(localVar => usedVariables.Contains(localVar.Code()))
+            .ToArray();
+        cilNativeMethod.Locals = vars;
+
+        return candidatesForRemoval.Count != 0;
+    }
+
+    private static int[] GetAssignmentIndicesToRemove(CilNativeMethod cilNativeMethod, HashSet<string> candidatesForRemoval)
+    {
         var indicesToRemove = new List<int>();
         for (var index = 0; index < cilNativeMethod.Instructions.Length; index++)
         {
@@ -38,14 +54,24 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
                 }
             }
         }
-        
-        CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove.ToArray());
-        var vars = cilNativeMethod.Locals
-            .Where(localVar => !candidatesForRemoval.Contains(localVar.Code()))
-            .ToArray();
-        cilNativeMethod.Locals = vars;
 
-        return candidatesForRemoval.Count != 0;
+        return indicesToRemove.ToArray();
+    }
+
+    private static HashSet<string> GetHashOfUsedVariables(CilNativeMethod cilNativeMethod)
+    {
+        var usedVariables = new HashSet<string>();
+        foreach (var instruction in cilNativeMethod.Instructions)
+        {
+            var usages = InstructionUsages.GetUsagesOf(instruction);
+            foreach (var usage in usages)
+            {
+                if (!string.IsNullOrEmpty(usage))
+                    usedVariables.Add(usage);
+            }
+        }
+
+        return usedVariables;
     }
 
     private void RemoveUsages(BaseOp instruction, HashSet<string> candidatesForRemoval)

@@ -5,7 +5,7 @@ using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Resolving;
 
-namespace NativeSharp.FrontEnd;
+namespace NativeSharp.FrontEnd.Transformers;
 
 static class CallOperationsTransformer
 {

@@ -50,7 +50,7 @@ class Program
         Console.WriteLine(primeCount);
     }
     
-    static void Main()
+    static void MainSimple()
     {
         bool isTrue = false;
         var trueText = isTrue.ToString();

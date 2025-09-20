@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
+using NativeSharp.CodeGen.Methods;
 using NativeSharp.FrontEnd;
-using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
-using NativeSharp.Operations.Vars;
 using NativeSharp.Resolving;
 
 namespace NativeSharp.CodeGen;
@@ -10,6 +9,12 @@ namespace NativeSharp.CodeGen;
 public class CodeGenerator
 {
     private CodeGenToFile Code { get; } = new("output.cpp");
+    private readonly CilMethodCodeGen cilMethodCodeGen;
+
+    public CodeGenerator()
+    {
+        cilMethodCodeGen = new CilMethodCodeGen(Code);
+    }
 
     public void WriteMethodsAndMain(string entryPoint)
     {
@@ -33,7 +38,7 @@ public class CodeGenerator
             switch (method)
             {
                 case CilNativeMethod cilMethod:
-                    WriteCilMethod(cilMethod);
+                    cilMethodCodeGen.WriteCilMethod(cilMethod);
                     break;
                 case CppNativeMethod cppMethod:
                     WriteCppMethod(cppMethod);
@@ -64,12 +69,12 @@ public class CodeGenerator
                 if (text->Coder) {
                   result.push_back(0);
                 }
-            
+
                 return result;
               };
             }
             """
-            );
+        );
     }
 
     private void AddNativeCppHeaders(Dictionary<MethodBase, BaseNativeMethod> methodCacheValues)
@@ -130,7 +135,8 @@ public class CodeGenerator
         Code.AddLine($"struct {kv.Value.Mangle(RefKind.Value)} {{");
         Type mappedType = kv.Key;
         var regularFields = mappedType.GetFields();
-        FieldInfo[] fieldsOfType = mappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        FieldInfo[] fieldsOfType =
+            mappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         foreach (FieldInfo variable in fieldsOfType)
         {
             if (variable.IsStatic)
@@ -154,37 +160,12 @@ public class CodeGenerator
             """);
     }
 
-    private void WriteInstructions(BaseOp[] instructions)
-    {
-        foreach (BaseOp instruction in instructions)
-        {
-            Code.AddLine(instruction.GenCode());
-        }
-    }
 
     private void WriteCilMethodHeader(BaseNativeMethod cilNativeMethod)
     {
         Code.AddLine($"{cilNativeMethod.MangledMethodHeader()};");
     }
 
-    private void WriteCilMethod(CilNativeMethod cilNativeMethod)
-    {
-        string methodHeader = cilNativeMethod.MangledMethodHeader();
-        Code.AddLine(methodHeader);
-
-        Code.AddLine("{");
-        WriteLocals(cilNativeMethod.Locals);
-        WriteInstructions(cilNativeMethod.Instructions);
-        Code.AddLine("}");
-    }
-
-    private void WriteLocals(IndexedVariable[] cilMethodLocals)
-    {
-        foreach (IndexedVariable localVariable in cilMethodLocals)
-        {
-            Code.AddLine($"{localVariable.ExpressionType.Mangle()} {localVariable.GenCodeImpl()};");
-        }
-    }
 
     private void WriteStringPool()
     {
