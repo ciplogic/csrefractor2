@@ -25,11 +25,7 @@ public static class ResolvedMethods
     }
 
     [CppCode("""
-             Arr<uint8_t> arrText {*(value->Data)};
-             arrText.push_back(0);
-             if (value->Coder != 0) {
-                arrText.push_back(0);
-             }
+             auto arrText= marshallStringCharStar(value.get());
              if (value->Coder){
                  wchar_t *text = (wchar_t*)arrText.data();
                  wprintf(L"%ls\n", text);
@@ -43,6 +39,7 @@ public static class ResolvedMethods
     {
         //Nothing for now. Will be filled by C++ code
     }
+
     [CppCode("""
              printf("%lf\n", value);
              """,

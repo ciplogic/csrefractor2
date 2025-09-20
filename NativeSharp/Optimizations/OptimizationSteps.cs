@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations.Common;
+﻿using System.Reflection;
+using NativeSharp.Operations.Common;
 using NativeSharp.Optimizations.BlockOptimizations;
 using NativeSharp.Optimizations.ConstExprOptimization;
 using NativeSharp.Optimizations.DeadCodeElimination;
@@ -26,18 +27,23 @@ public class OptimizationSteps
         ];
     }
 
-    public bool OptimizeMethod(CilNativeMethod method)
+    public void OptimizeMethodSet(BaseNativeMethod[] methodCacheValues)
     {
-        bool result = false;
-        while (OptimizeMethodOptimizations(method))
+        bool canOptimize;
+        do
         {
-            result = true;
-        }
-
-        return result;
+            canOptimize = false;
+            foreach (var method in methodCacheValues)
+            {
+                if (method is CilNativeMethod cilNativeMethod)
+                {
+                    canOptimize |= OptimizeMethod(cilNativeMethod);
+                }
+            }
+        } while (canOptimize);
     }
 
-    public bool OptimizeMethodOptimizations(CilNativeMethod method)
+    private bool OptimizeMethod(CilNativeMethod method)
     {
         var result = false;
         foreach (var opt in CilMethodOptimizations)

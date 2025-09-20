@@ -24,13 +24,8 @@ internal class Program
         MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
         var optimizer = new OptimizationSteps();
-        foreach (var baseNativeMethod in MethodResolver.MethodCache.Values)
-        {
-            if (baseNativeMethod is CilNativeMethod cilNativeMethod)
-            {
-                optimizer.OptimizeMethod(cilNativeMethod);
-            }
-        }
+        optimizer.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray());
+        
 
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName());

@@ -43,14 +43,14 @@ class Program
         return primeCount;
     }
 
-    static void Main()
+    static void MainPri()
     {
         var primeCount = GetPrimeCount(10_000_000);
 
         Console.WriteLine(primeCount);
     }
     
-    static void Main_()
+    static void Main()
     {
         bool isTrue = false;
         var trueText = isTrue.ToString();
