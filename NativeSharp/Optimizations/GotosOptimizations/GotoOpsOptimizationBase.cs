@@ -69,14 +69,8 @@ public class GotoOpsOptimizationBase : OptimizationBase
             {
                 continue;
             }
-
-            if (op is GotoOp gotoOp)
-            {
-                result.Add(gotoOp.Offset);
-                continue;
-            }
-
-            if (op is BranchOp branchOp)
+            
+            if (op is OffsetOp branchOp)
             {
                 result.Add(branchOp.Offset);
             }
@@ -87,7 +81,7 @@ public class GotoOpsOptimizationBase : OptimizationBase
 
     private static int[] GotosIndicesToNextLine(CilNativeMethod cilNativeMethod)
     {
-        var indicesToRemove = new List<int>();
+        List<int> indicesToRemove = [];
         var ops = cilNativeMethod.Instructions;
         for (var index = 0; index < ops.Length - 1; index++)
         {

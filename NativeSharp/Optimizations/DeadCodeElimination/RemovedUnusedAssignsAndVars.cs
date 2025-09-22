@@ -18,29 +18,28 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
             }
         }
 
-        foreach (BaseOp instruction in cilNativeMethod.Instructions)
+        HashSet<string> usages = cilNativeMethod.Instructions.GetUsagesOfOps();
+
+        foreach (var usage in usages)
         {
-            RemoveUsages(instruction, candidatesForRemoval);
-            if (candidatesForRemoval.Count == 0)
-            {
-                return false;
-            }
+            candidatesForRemoval.Remove(usage);
         }
+
+        if (candidatesForRemoval.Count == 0)
+        {
+            return false;
+        }
+
 
         var indicesToRemove = GetAssignmentIndicesToRemove(cilNativeMethod, candidatesForRemoval);
 
-        CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove);
-        HashSet<string> usedVariables = GetHashOfUsedVariables(cilNativeMethod);
-
-        var vars = cilNativeMethod.Locals
-            .Where(localVar => usedVariables.Contains(localVar.Code()))
-            .ToArray();
-        cilNativeMethod.Locals = vars;
-
+        CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove); 
+        
         return candidatesForRemoval.Count != 0;
     }
 
-    private static int[] GetAssignmentIndicesToRemove(CilNativeMethod cilNativeMethod, HashSet<string> candidatesForRemoval)
+    private static int[] GetAssignmentIndicesToRemove(CilNativeMethod cilNativeMethod,
+        HashSet<string> candidatesForRemoval)
     {
         var indicesToRemove = new List<int>();
         for (var index = 0; index < cilNativeMethod.Instructions.Length; index++)
@@ -63,11 +62,10 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
         var usedVariables = new HashSet<string>();
         foreach (var instruction in cilNativeMethod.Instructions)
         {
-            var usages = InstructionUsages.GetUsagesOf(instruction);
+            var usages = InstructionUsages.GetUsagesOfArr(instruction);
             foreach (var usage in usages)
             {
-                if (!string.IsNullOrEmpty(usage))
-                    usedVariables.Add(usage);
+                usedVariables.Add(usage);
             }
         }
 
@@ -76,12 +74,10 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
 
     private void RemoveUsages(BaseOp instruction, HashSet<string> candidatesForRemoval)
     {
-        IEnumerable<string> usagesOfOp = InstructionUsages.GetUsagesOf(instruction);
+        string[] usagesOfOp = InstructionUsages.GetUsagesOfArr(instruction);
         foreach (string usage in usagesOfOp)
         {
             candidatesForRemoval.Remove(usage);
         }
     }
-
-    
 }

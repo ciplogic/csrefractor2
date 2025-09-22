@@ -22,7 +22,9 @@ public class OptimizationSteps
             new BlockBasedPropagation(),
             new RemovedUnusedAssignsAndVars(),
             new GotoOpsOptimizationBase(),
-            new HandleConstMethodCalls()
+            new HandleConstMethodCalls(),
+            new OneAssignPropagation(),
+            new RemoveUnusedVars(),
         ];
     }
 

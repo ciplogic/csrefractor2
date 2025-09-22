@@ -6,22 +6,24 @@ public record ClassFieldsWriter(CodeGenToFile Code, Type sourceType, Type mapped
 {
     public void WriteFieldsOfType()
     {
-        Code.AddLine($"struct {sourceType.Mangle(RefKind.Value)} {{");
         FieldInfo[] fieldsOfType =
             mappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+        string className = sourceType.Mangle(RefKind.Value);
+        if (fieldsOfType.Length == 0)
+        {
+            Code.AddLine($"struct {className} {{}};");
+            return;
+        }
+        Code.AddLine($"struct {className} {{");
         string currentType = String.Empty;
         List<string> fieldNames = [];
         foreach (FieldInfo variable in fieldsOfType)
         {
-            if (variable.IsStatic)
-            {
-                continue;
-            }
-
             var fieldCurrentType = variable.FieldType.Mangle();
             if (fieldCurrentType != currentType)
             {
-                WriteCurrentFields(fieldCurrentType, fieldNames);
+                WriteCurrentFields(currentType, fieldNames);
             }
 
             fieldNames.Add(variable.Name);
@@ -29,7 +31,7 @@ public record ClassFieldsWriter(CodeGenToFile Code, Type sourceType, Type mapped
         }
 
         WriteCurrentFields(currentType, fieldNames);
-        Code.AddLine("}");
+        Code.AddLine("};");
     }
 
     private void WriteCurrentFields(string fieldType, List<string> fieldNames)
@@ -39,7 +41,7 @@ public record ClassFieldsWriter(CodeGenToFile Code, Type sourceType, Type mapped
             return;
         }
 
-        var variableNames = string.Join(", ", fieldNames);
+        var variableNames = string.Join(',', fieldNames);
         Code.AddLine($"{fieldType} {variableNames};", 2);
         fieldNames.Clear();
     }
