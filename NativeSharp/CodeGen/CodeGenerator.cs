@@ -126,28 +126,9 @@ public class CodeGenerator
 
         foreach (KeyValuePair<Type, Type> kv in mappedTypes)
         {
-            WriteFieldsOfType(kv);
+            var writer = new ClassFieldsWriter(Code, kv.Value, kv.Key);
+            writer.WriteFieldsOfType();
         }
-    }
-
-    private void WriteFieldsOfType(KeyValuePair<Type, Type> kv)
-    {
-        Code.AddLine($"struct {kv.Value.Mangle(RefKind.Value)} {{");
-        Type mappedType = kv.Key;
-        var regularFields = mappedType.GetFields();
-        FieldInfo[] fieldsOfType =
-            mappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        foreach (FieldInfo variable in fieldsOfType)
-        {
-            if (variable.IsStatic)
-            {
-                continue;
-            }
-
-            Code.AddLine($"{variable.FieldType.Mangle()} {variable.Name};");
-        }
-
-        Code.AddLine("};");
     }
 
     private void WriteInitialCode()

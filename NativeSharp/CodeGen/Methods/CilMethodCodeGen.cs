@@ -6,7 +6,7 @@ namespace NativeSharp.CodeGen.Methods;
 
 class CilMethodCodeGen(CodeGenToFile Code)
 {
-    VariablesBulkWriter _writer = new();
+    private readonly VariablesBulkWriter _writer = new();
 
     public void WriteCilMethod(CilNativeMethod cilNativeMethod)
     {

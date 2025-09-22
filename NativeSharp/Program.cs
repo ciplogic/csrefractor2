@@ -14,7 +14,6 @@ internal class Program
         AssemblyScanner.DefaultMappings();
         AssemblyScanner.ScanAssembly(typeof(Texts).Assembly);
 
-
         MethodResolver.ResolveAllTree(entryPoint);
 
         MethodResolver.ResolveCilMethod(MethodResolver.Resolve(entryPoint));
@@ -25,7 +24,6 @@ internal class Program
         var optimizer = new OptimizationSteps();
         optimizer.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray());
         
-
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName());
         CodeGeneratorBaseTypes.GenerateNativeMappings();

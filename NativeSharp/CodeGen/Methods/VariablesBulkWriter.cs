@@ -14,7 +14,7 @@ public class VariablesBulkWriter
             var variableType = line.ExpressionType.Mangle();
             if (!_variables.TryGetValue(variableType, out List<string>? variableList))
             {
-                variableList = new List<string>();
+                variableList = [];
                 _variables[variableType] = variableList;
             }
 
@@ -26,14 +26,14 @@ public class VariablesBulkWriter
 
     public string Write()
     {
-        StringBuilder builder = new (200);
+        StringBuilder builder = new(200);
         foreach (var variable in _variables)
         {
             builder
                 .Append("  ")
                 .Append(variable.Key)
                 .Append(' ')
-                .Append(string.Join(", ", variable.Value))
+                .Append(string.Join(',', variable.Value))
                 .Append(';')
                 .AppendLine();
         }
