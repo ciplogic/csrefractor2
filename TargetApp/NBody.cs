@@ -1,5 +1,5 @@
 ﻿ class nbody {
-    public static void Main() {
+    public static void Main2() {
         int n = 10000;
 
         NBodySystem bodies = new NBodySystem();

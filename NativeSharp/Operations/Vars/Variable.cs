@@ -2,16 +2,11 @@
 
 namespace NativeSharp.Operations.Vars;
 
-public abstract class Variable : IRefValue, IValueExpression
+public abstract class Variable : IValueExpression
 {
     public Type ExpressionType { get; set; }
 
     public string Code()
-    {
-        return GenCodeImpl();
-    }
-
-    public string GenCode()
     {
         return GenCodeImpl();
     }

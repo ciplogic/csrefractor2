@@ -13,5 +13,5 @@ class AssignOp : LeftOp
     }
 
     public override string GenCode()
-        => $"{Left.GenCode()} = {Expression.Code()};";
+        => $"{Left.Code()} = {Expression.Code()};";
 }

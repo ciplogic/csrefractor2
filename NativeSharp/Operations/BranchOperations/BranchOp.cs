@@ -1,17 +1,16 @@
 ﻿using NativeSharp.CodeGen;
 using NativeSharp.Operations.Common;
 
-namespace NativeSharp.Operations;
+namespace NativeSharp.Operations.BranchOperations;
 
-internal class BranchOp : BaseOp
+internal class BranchOp : OffsetOp
 {
-    public int Offset { get; }
     public string Name { get; }
     public IValueExpression Condition { get; set; }
 
     public BranchOp(int offset, string name, IValueExpression condition)
+        : base(offset)
     {
-        Offset = offset;
         Name = name;
         Condition = condition;
     }

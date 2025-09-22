@@ -3,6 +3,7 @@ using NativeSharp.Common;
 using NativeSharp.Extensions;
 using NativeSharp.FrontEnd.Transformers;
 using NativeSharp.Operations;
+using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;

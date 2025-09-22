@@ -16,5 +16,5 @@ internal class LoadElementOp : LeftOp
     }
 
     public override string GenCode()
-        => $"{Left.GenCode()} = (*{Array.GenCode()})[{Index.Code()}];";
+        => $"{Left.Code()} = (*{Array.Code()})[{Index.Code()}];";
 }

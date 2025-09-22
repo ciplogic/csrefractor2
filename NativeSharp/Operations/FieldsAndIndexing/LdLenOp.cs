@@ -14,5 +14,5 @@ internal class LdLenOp : LeftOp
     }
 
     public override string GenCode()
-        => $"{Left.GenCode()} = {Right.GenCode()}->size();";
+        => $"{Left.Code()} = {Right.Code()}->size();";
 }

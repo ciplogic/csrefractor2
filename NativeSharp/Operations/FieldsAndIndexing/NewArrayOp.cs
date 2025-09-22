@@ -17,5 +17,5 @@ internal class NewArrayOp : LeftOp
     }
 
     public override string GenCode() 
-        => $"{Left.GenCode()} = new_arr<{ElementType.Mangle()}>({Count.Code()});";
+        => $"{Left.Code()} = new_arr<{ElementType.Mangle()}>({Count.Code()});";
 }

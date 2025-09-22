@@ -43,7 +43,7 @@ class Program
         return primeCount;
     }
 
-    static void MainPri()
+    static void Main()
     {
         var primeCount = GetPrimeCount(10_000_000);
 

@@ -14,5 +14,5 @@ class BinaryOp : LeftOp
     public IValueExpression RightExpression { get; set; }
 
     public override string GenCode()
-        => $"{Left.GenCode()} = {Operator} ({LeftExpression.Code()}, {RightExpression.Code()});";
+        => $"{Left.Code()} = {Operator} ({LeftExpression.Code()}, {RightExpression.Code()});";
 }

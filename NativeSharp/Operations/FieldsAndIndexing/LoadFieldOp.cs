@@ -20,6 +20,6 @@ internal class LoadFieldOp : LeftOp
         Type type = ThisPtr.ExpressionType;
         bool isByRef = !type.IsValueType;
         string derefText = isByRef ? "->" : ".";
-        return $"{Left.GenCode()} = {ThisPtr.Code()}{derefText}{FieldName};";
+        return $"{Left.Code()} = {ThisPtr.Code()}{derefText}{FieldName};";
     }
 }

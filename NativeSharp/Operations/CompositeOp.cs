@@ -1,13 +1,8 @@
 ﻿namespace NativeSharp.Operations;
 
-class CompositeOp : BaseOp
+class CompositeOp(BaseOp[] ops) : BaseOp
 {
-    public BaseOp[] Ops { get; }
-
-    public CompositeOp(BaseOp[] ops)
-    {
-        Ops = ops;
-    }
+    public BaseOp[] Ops { get; } = ops;
 
     public override string GenCode()
     {

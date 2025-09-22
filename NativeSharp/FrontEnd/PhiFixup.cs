@@ -1,5 +1,6 @@
 ﻿using NativeSharp.Extensions;
 using NativeSharp.Operations;
+using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd;

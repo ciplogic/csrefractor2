@@ -2,11 +2,9 @@
 
 namespace NativeSharp.Operations;
 
-internal class RetOp : BaseOp
+internal class RetOp(IValueExpression? valueExpression) : BaseOp
 {
-    public IValueExpression? ValueExpression { get; set; }
-
-    public RetOp(IValueExpression? valueExpression) => ValueExpression = valueExpression;
+    public IValueExpression? ValueExpression { get; set; } = valueExpression;
 
     public override string GenCode()
         => ValueExpression is null
