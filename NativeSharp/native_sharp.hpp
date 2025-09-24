@@ -41,6 +41,9 @@ T clr_div(T left, T right) { return left / right; }
 template <typename T>
 T clr_rem(T left, T right) { return left % right; }
 
+template <typename T>
+T clr_neg(T left) { return -left; }
+
 inline bool cgt(int left, int right) { return left > right; }
 
 inline bool clt(int left, int right) { return left < right; }

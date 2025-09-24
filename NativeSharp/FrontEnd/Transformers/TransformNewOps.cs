@@ -9,7 +9,8 @@ namespace NativeSharp.FrontEnd.Transformers;
 
 static class TransformNewOps
 {
-    public static BaseOp TransformNewDeclarations(Instruction instruction, LocalVariablesStackAndState localVariablesStackAndState)
+    public static BaseOp TransformNewDeclarations(Instruction instruction,
+        LocalVariablesStackAndState localVariablesStackAndState)
     {
         string? opName = instruction.OpCode.Name;
 
@@ -26,7 +27,8 @@ static class TransformNewOps
         throw new InvalidOperationException(opName);
     }
 
-    private static BaseOp TransformNewObj(Instruction instruction, LocalVariablesStackAndState localVariablesStackAndState)
+    private static BaseOp TransformNewObj(Instruction instruction,
+        LocalVariablesStackAndState localVariablesStackAndState)
     {
         ConstructorInfo constructorInfo = (ConstructorInfo)instruction.Operand;
         int argumentCount = constructorInfo.GetParameters().Length;
@@ -37,19 +39,29 @@ static class TransformNewOps
         }
 
         VReg result = localVariablesStackAndState.NewVirtVar(constructorInfo.DeclaringType!);
-        NewObjOp newObjOp = new (result);
-        CallOp callOp = new ()
+        NewObjOp newObjOp = new(result);
+
+        List<IValueExpression> argsCombined = [];
+        argsCombined.Add(result);
+        argsCombined.AddRange(args);
+        if (CallOperationsTransformer.EmptyConstructorTypes.Contains(constructorInfo.DeclaringType!))
         {
-            Args = args.ToArray(),
+            return newObjOp;
+        }
+
+        CallOp callOp = new()
+        {
+            Args = argsCombined.ToArray(),
             TargetMethod = constructorInfo,
             CallType = CallType.Static
         };
-        
+
         var combinedOps = new CompositeOp([newObjOp, callOp]);
         return combinedOps;
     }
 
-    private static BaseOp TransformNewArr(Instruction instruction, LocalVariablesStackAndState localVariablesStackAndState)
+    private static BaseOp TransformNewArr(Instruction instruction,
+        LocalVariablesStackAndState localVariablesStackAndState)
     {
         IValueExpression popCount = localVariablesStackAndState.Pop();
 

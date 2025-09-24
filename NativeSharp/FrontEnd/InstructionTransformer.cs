@@ -48,7 +48,7 @@ internal class InstructionTransformer
         }
 
         BaseOp[] ops = resultList.ToArray();
-        PhiFixup.FixupMerges(ops);
+        ops = PhiFixup.FixupMerges(ops);
 
         return ops;
     }
@@ -179,14 +179,14 @@ internal class InstructionTransformer
 
     static string[] BranchOps = ["brfalse", "brtrue"];
 
-    private static string[] BoolBinaryOperations = ["blt", "bgt", "blt.s", "bgt.s"];
+    private static string[] BoolUnaryOperations = ["blt", "bgt", "blt.s", "bgt.s"];
 
     private BaseOp TransformBranchOperation(Instruction instruction, string opName)
     {
-        bool isBoolBinary = BoolBinaryOperations.Contains(opName);
-        if (isBoolBinary)
+        bool isBoolConditional = BoolUnaryOperations.Contains(opName);
+        if (isBoolConditional)
         {
-            return TransformBoolBinaryOp(instruction, opName);
+            return TransformBoolUnaryOp(instruction, opName);
         }
 
         bool isConditional = BranchOps.Any(opName.StartsWith);
@@ -202,16 +202,14 @@ internal class InstructionTransformer
             isConditional ? LocalVariablesStackAndState.Pop() : null);
     }
 
-    private BaseOp TransformBoolBinaryOp(Instruction instruction, string opName)
+    private BaseOp TransformBoolUnaryOp(Instruction instruction, string opName)
     {
-        IValueExpression rightOp = LocalVariablesStackAndState.Pop();
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
         var left = LocalVariablesStackAndState.NewVirtVar<bool>();
         opName = opName.Replace('.', '_');
-        var binaryOp = new BinaryOp(left)
+        var binaryOp = new UnaryOp(left)
         {
             LeftExpression = leftOp,
-            RightExpression = rightOp,
             Operator = $"clr_{opName}"
         };
 

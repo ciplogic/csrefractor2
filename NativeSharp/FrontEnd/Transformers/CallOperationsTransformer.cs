@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using NativeSharp.Common;
+using NativeSharp.Lib.System;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
@@ -7,11 +8,19 @@ using NativeSharp.Resolving;
 
 namespace NativeSharp.FrontEnd.Transformers;
 
-static class CallOperationsTransformer
+internal static class CallOperationsTransformer
 {
+    public static readonly Type[] EmptyConstructorTypes = [typeof(object)];
+
     public static BaseOp TransformCallOp(LocalVariablesStackAndState locals, Instruction instruction)
     {
         MethodBase operand = (MethodBase)instruction.Operand;
+        if (EmptyConstructorTypes.Contains(operand.DeclaringType))
+        {
+            locals.Pop();
+            return new CompositeOp([]);
+        }
+
         MethodInfo? operandAsMethodInfo = operand as MethodInfo;
 
         int paramCount = operandAsMethodInfo?.GetParameters().Length ?? 0;
@@ -44,7 +53,7 @@ static class CallOperationsTransformer
             };
         }
 
-        
+
         CallOp result = new CallOp()
         {
             CallType = CallType.Static,

@@ -41,18 +41,18 @@ public static class ResolvedMethods
     }
 
     [CppCode("""
-             printf("%lf\n", value);
+             std::cout<<value<<'\n';
              """,
-        "<cstdio>", "")]
+        "<iostream>", "")]
     public static void System_Console_WriteLine(double value)
     {
         //Nothing for now. Will be filled by C++ code
     }
 
     [CppCode("""
-             printf("%i\n", value);
+             std::cout<<value<<'\n';
              """,
-        "<cstdio>", "")]
+        "<iostream>", "")]
     public static void System_Console_WriteLine(int value)
     {
         //Nothing for now. Will be filled by C++ code

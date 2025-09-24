@@ -48,7 +48,7 @@ static class InstructionUsages
 
     public static bool RefreshLocalVariables(this CilNativeMethod cilNativeMethod)
     {
-        var usages = cilNativeMethod.Instructions.GetUsagesOfOps();
+        var usages = cilNativeMethod.Instructions.GetUsagesAndDeclarationsOfOps();
         var oldLocalCount = cilNativeMethod.Locals.Length;
         var vars = cilNativeMethod.Locals
             .Where(localVar => usages.Contains(localVar.Code()))
@@ -65,6 +65,19 @@ static class InstructionUsages
             foreach (string usage in usagesArr)
             {
                 result.Add(usage);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<string> GetUsagesAndDeclarationsOfOps(this IEnumerable<BaseOp> instructions)
+    {
+        HashSet<string> result = GetUsagesOfOps(instructions);
+        foreach (BaseOp op in instructions)
+        {
+            if (op is LeftOp leftOp)
+            {
+                result.Add(leftOp.Left.Code());
             }
         }
         return result;

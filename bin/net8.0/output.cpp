@@ -1,12 +1,13 @@
 #include "native_sharp.hpp"
 // headers imported by native methods
-#include <cstdio>
+#include <iostream>
 #include <cmath>
 
 struct System_String;
 struct nbody;
 struct NBodySystem;
 struct Body;
+struct Texts;
 struct System_String {
   System_Int32 Coder;
   RefArr<System_Byte> Data;
@@ -18,6 +19,7 @@ struct NBodySystem {
 struct Body {
   System_Double x,y,z,vx,vy,vz,mass;
 };
+struct Texts {};
 namespace {
     Ref<System_String> _clr_str(int index);
 }
@@ -32,11 +34,15 @@ Ref<Body> Body_uranus();
 Ref<Body> Body_neptune();
 Ref<Body> Body_offsetMomentum(Ref<Body> _this, System_Double px, System_Double py, System_Double pz);
 System_Void NBodySystem_advance(Ref<NBodySystem> _this, System_Double dt);
+System_Void NBodySystem_AdvanceTwoLoops(Ref<NBodySystem> _this, System_Double dt);
+System_Void NBodySystem_advanceInnerLoop(Ref<NBodySystem> _this, System_Double dt, Ref<Body> iBody, System_Int32 j);
 System_Double System_Math_Sqrt(System_Double val);
+System_Void NBodySystem_AdvanceBodiesEnergy(Ref<NBodySystem> _this, System_Double dt);
 System_Double NBodySystem_energy(Ref<NBodySystem> _this);
 Ref<System_String> Texts_FromIndex(System_Int32 index, RefArr<System_Int32> codes, RefArr<System_Int32> startPos, RefArr<System_Int32> lengths, RefArr<System_Byte> data);
 Ref<System_String> Texts_BuildSystemString(System_Int32 code, RefArr<System_Byte> data, System_Int32 startPos, System_Int32 len);
 System_Void System_Array_Copy(RefArr<System_Byte> sourceArray, System_Int32 sourceIndex, RefArr<System_Byte> destinationArray, System_Int32 destinationIndex, System_Int32 len);
+System_Void System_String_ctor(Ref<System_String> _this);
 int main() {
 nbody_Main();
 return 0;
@@ -65,7 +71,7 @@ System_Void nbody_Main()
 
   local_0 = 10000;
   vreg_1 = new_ref<NBodySystem>();
-  NBodySystem_ctor();
+  NBodySystem_ctor(vreg_1);
   local_1 = vreg_1;
   vreg_3 = NBodySystem_energy(vreg_1);
   System_Console_WriteLine(vreg_3);
@@ -82,7 +88,7 @@ System_Void nbody_Main()
 }
 
 System_Void System_Console_WriteLine(System_Double value) {
-printf("%lf\n", value);
+std::cout<<value<<'\n';
 }
 
 System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
@@ -90,10 +96,9 @@ System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
   System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65;
   System_Int32 local_3,vreg_74,vreg_75;
   RefArr<Ref<Body>> vreg_3,vreg_30,vreg_35,vreg_43,vreg_48,vreg_56,vreg_61,vreg_72,vreg_78;
-  Ref<Body> vreg_7,vreg_11,vreg_15,vreg_19,vreg_23,vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80;
+  Ref<Body> vreg_7,vreg_11,vreg_15,vreg_19,vreg_23,vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_84;
   System_UInt32 vreg_73;
 
-  System_Object_ctor();
   vreg_3 = new_arr<Ref<Body>>(5);
   vreg_7 = Body_sun();
   (*vreg_3)[0] = vreg_7;
@@ -153,14 +158,13 @@ Ref<Body> Body_sun()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor();
+  Body_ctor(vreg_0);
   vreg_0->mass = 39.47841760435743;
   return vreg_0;
 }
 
 System_Void Body_ctor(Ref<Body> _this)
 {
-  System_Object_ctor();
 }
 
 Ref<Body> Body_jupiter()
@@ -168,7 +172,7 @@ Ref<Body> Body_jupiter()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor();
+  Body_ctor(vreg_0);
   vreg_0->x = 4.841431442464721;
   vreg_0->y = -1.1603200440274284;
   vreg_0->z = -0.10362204447112311;
@@ -184,7 +188,7 @@ Ref<Body> Body_saturn()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor();
+  Body_ctor(vreg_0);
   vreg_0->x = 8.34336671824458;
   vreg_0->y = 4.124798564124305;
   vreg_0->z = -0.4035234171143214;
@@ -200,7 +204,7 @@ Ref<Body> Body_uranus()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor();
+  Body_ctor(vreg_0);
   vreg_0->x = 12.894369562139131;
   vreg_0->y = -15.111151401698631;
   vreg_0->z = -0.22330757889265573;
@@ -216,7 +220,7 @@ Ref<Body> Body_neptune()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor();
+  Body_ctor(vreg_0);
   vreg_0->x = 15.379697114850917;
   vreg_0->y = -25.919314609987964;
   vreg_0->z = 0.17925877295037118;
@@ -229,14 +233,17 @@ Ref<Body> Body_neptune()
 
 Ref<Body> Body_offsetMomentum(Ref<Body> _this, System_Double px, System_Double py, System_Double pz)
 {
-  System_Double vreg_2,vreg_4,vreg_7,vreg_9,vreg_12,vreg_14;
+  System_Double vreg_1,vreg_2,vreg_4,vreg_6,vreg_7,vreg_9,vreg_11,vreg_12,vreg_14;
 
+  vreg_1 = px;
   vreg_2 = clr_neg (vreg_1);
   vreg_4 = clr_div (vreg_2, 39.47841760435743);
   _this->vx = vreg_4;
+  vreg_6 = py;
   vreg_7 = clr_neg (vreg_6);
   vreg_9 = clr_div (vreg_7, 39.47841760435743);
   _this->vy = vreg_9;
+  vreg_11 = pz;
   vreg_12 = clr_neg (vreg_11);
   vreg_14 = clr_div (vreg_12, 39.47841760435743);
   _this->vz = vreg_14;
@@ -245,137 +252,161 @@ Ref<Body> Body_offsetMomentum(Ref<Body> _this, System_Double px, System_Double p
 
 System_Void NBodySystem_advance(Ref<NBodySystem> _this, System_Double dt)
 {
-  System_Int32 local_0,local_2,local_12,vreg_141,vreg_142,vreg_151,vreg_152,vreg_193;
-  Ref<Body> local_1,vreg_13,vreg_21,vreg_29,vreg_58,vreg_72,vreg_86,vreg_95,vreg_109,vreg_123,vreg_159;
-  RefArr<Ref<Body>> local_11,vreg_2,vreg_11,vreg_19,vreg_27,vreg_56,vreg_70,vreg_84,vreg_93,vreg_107,vreg_121,vreg_139,vreg_149,vreg_191;
-  System_Double vreg_9,vreg_14,vreg_15,vreg_17,vreg_22,vreg_23,vreg_25,vreg_30,vreg_31,vreg_34,vreg_37,vreg_38,vreg_41,vreg_42,vreg_44,vreg_48,vreg_49,vreg_53,vreg_59,vreg_60,vreg_62,vreg_63,vreg_67,vreg_73,vreg_74,vreg_76,vreg_77,vreg_81,vreg_87,vreg_88,vreg_90,vreg_91,vreg_98,vreg_101,vreg_102,vreg_104,vreg_105,vreg_112,vreg_115,vreg_116,vreg_118,vreg_119,vreg_126,vreg_129,vreg_130,vreg_132,vreg_133,vreg_163,vreg_166,vreg_167,vreg_168,vreg_172,vreg_175,vreg_176,vreg_177,vreg_181,vreg_184,vreg_185,vreg_186;
-  System_UInt32 vreg_140,vreg_150,vreg_192;
-  System_Boolean vreg_194;
+  NBodySystem_AdvanceTwoLoops(_this, dt);
+  NBodySystem_AdvanceBodiesEnergy(_this, dt);
+}
+
+System_Void NBodySystem_AdvanceTwoLoops(Ref<NBodySystem> _this, System_Double dt)
+{
+  System_Int32 local_0,local_2,vreg_19,vreg_20,vreg_29,vreg_30;
+  Ref<Body> local_1;
+  RefArr<Ref<Body>> vreg_2,vreg_17,vreg_27;
+  System_UInt32 vreg_18,vreg_28;
 
   local_0 = 0;
-  goto label_348;
-  label_8:
+  goto label_57;
+  label_5:
   vreg_2 = _this->bodies;
   local_1 = (*vreg_2)[local_0];
   local_2 = clr_add (local_0, 1);
-  goto label_323;
-  label_27:
-  vreg_9 = local_1->x;
-  vreg_11 = _this->bodies;
-  vreg_13 = (*vreg_11)[local_2];
-  vreg_14 = vreg_13->x;
-  vreg_15 = clr_sub (vreg_9, vreg_14);
-  vreg_17 = local_1->y;
-  vreg_19 = _this->bodies;
-  vreg_21 = (*vreg_19)[local_2];
-  vreg_22 = vreg_21->y;
-  vreg_23 = clr_sub (vreg_17, vreg_22);
-  vreg_25 = local_1->z;
-  vreg_27 = _this->bodies;
-  vreg_29 = (*vreg_27)[local_2];
-  vreg_30 = vreg_29->z;
-  vreg_31 = clr_sub (vreg_25, vreg_30);
-  vreg_34 = clr_mul (vreg_15, vreg_15);
-  vreg_37 = clr_mul (vreg_23, vreg_23);
-  vreg_38 = clr_add (vreg_34, vreg_37);
-  vreg_41 = clr_mul (vreg_31, vreg_31);
-  vreg_42 = clr_add (vreg_38, vreg_41);
-  vreg_44 = System_Math_Sqrt(vreg_42);
-  vreg_48 = clr_mul (vreg_42, vreg_44);
-  vreg_49 = clr_div (dt, vreg_48);
-  vreg_53 = local_1->vx;
-  vreg_56 = _this->bodies;
-  vreg_58 = (*vreg_56)[local_2];
-  vreg_59 = vreg_58->mass;
-  vreg_60 = clr_mul (vreg_15, vreg_59);
-  vreg_62 = clr_mul (vreg_60, vreg_49);
-  vreg_63 = clr_sub (vreg_53, vreg_62);
-  local_1->vx = vreg_63;
-  vreg_67 = local_1->vy;
-  vreg_70 = _this->bodies;
-  vreg_72 = (*vreg_70)[local_2];
-  vreg_73 = vreg_72->mass;
-  vreg_74 = clr_mul (vreg_23, vreg_73);
-  vreg_76 = clr_mul (vreg_74, vreg_49);
-  vreg_77 = clr_sub (vreg_67, vreg_76);
-  local_1->vy = vreg_77;
-  vreg_81 = local_1->vz;
-  vreg_84 = _this->bodies;
-  vreg_86 = (*vreg_84)[local_2];
-  vreg_87 = vreg_86->mass;
-  vreg_88 = clr_mul (vreg_31, vreg_87);
-  vreg_90 = clr_mul (vreg_88, vreg_49);
-  vreg_91 = clr_sub (vreg_81, vreg_90);
-  local_1->vz = vreg_91;
-  vreg_93 = _this->bodies;
-  vreg_95 = (*vreg_93)[local_2];
-  vreg_98 = vreg_95->vx;
-  vreg_101 = local_1->mass;
-  vreg_102 = clr_mul (vreg_15, vreg_101);
-  vreg_104 = clr_mul (vreg_102, vreg_49);
-  vreg_105 = clr_add (vreg_98, vreg_104);
-  vreg_95->vx = vreg_105;
-  vreg_107 = _this->bodies;
-  vreg_109 = (*vreg_107)[local_2];
-  vreg_112 = vreg_109->vy;
-  vreg_115 = local_1->mass;
-  vreg_116 = clr_mul (vreg_23, vreg_115);
-  vreg_118 = clr_mul (vreg_116, vreg_49);
-  vreg_119 = clr_add (vreg_112, vreg_118);
-  vreg_109->vy = vreg_119;
-  vreg_121 = _this->bodies;
-  vreg_123 = (*vreg_121)[local_2];
-  vreg_126 = vreg_123->vz;
-  vreg_129 = local_1->mass;
-  vreg_130 = clr_mul (vreg_31, vreg_129);
-  vreg_132 = clr_mul (vreg_130, vreg_49);
-  vreg_133 = clr_add (vreg_126, vreg_132);
-  vreg_123->vz = vreg_133;
+  goto label_37;
+  label_21:
+  NBodySystem_advanceInnerLoop(_this, dt, local_1, local_2);
   local_2 = clr_add (local_2, 1);
-  label_323:
-  vreg_139 = _this->bodies;
-  vreg_140 = vreg_139->size();
-  vreg_141 = conv_i4 (vreg_140);
-  vreg_142 = clt (local_2, vreg_141);
-  if (brtrue(vreg_142)) goto label_27;
+  label_37:
+  vreg_17 = _this->bodies;
+  vreg_18 = vreg_17->size();
+  vreg_19 = conv_i4 (vreg_18);
+  vreg_20 = clt (local_2, vreg_19);
+  if (brtrue_s(vreg_20)) goto label_21;
   local_0 = clr_add (local_0, 1);
-  label_348:
-  vreg_149 = _this->bodies;
-  vreg_150 = vreg_149->size();
-  vreg_151 = conv_i4 (vreg_150);
-  vreg_152 = clt (local_0, vreg_151);
-  if (brtrue(vreg_152)) goto label_8;
-  local_11 = _this->bodies;
-  local_12 = 0;
-  goto label_466;
-  label_382:
-  vreg_159 = (*local_11)[local_12];
-  vreg_163 = vreg_159->x;
-  vreg_166 = vreg_159->vx;
-  vreg_167 = clr_mul (dt, vreg_166);
-  vreg_168 = clr_add (vreg_163, vreg_167);
-  vreg_159->x = vreg_168;
-  vreg_172 = vreg_159->y;
-  vreg_175 = vreg_159->vy;
-  vreg_176 = clr_mul (dt, vreg_175);
-  vreg_177 = clr_add (vreg_172, vreg_176);
-  vreg_159->y = vreg_177;
-  vreg_181 = vreg_159->z;
-  vreg_184 = vreg_159->vz;
-  vreg_185 = clr_mul (dt, vreg_184);
-  vreg_186 = clr_add (vreg_181, vreg_185);
-  vreg_159->z = vreg_186;
-  local_12 = clr_add (local_12, 1);
-  label_466:
-  vreg_191 = local_11;
-  vreg_192 = vreg_191->size();
-  vreg_193 = conv_i4 (vreg_192);
-  vreg_194 = clr_blt_s (local_12, vreg_193);
-  if (brtrue(vreg_194)) goto label_382;
+  label_57:
+  vreg_27 = _this->bodies;
+  vreg_28 = vreg_27->size();
+  vreg_29 = conv_i4 (vreg_28);
+  vreg_30 = clt (local_0, vreg_29);
+  if (brtrue_s(vreg_30)) goto label_5;
+}
+
+System_Void NBodySystem_advanceInnerLoop(Ref<NBodySystem> _this, System_Double dt, Ref<Body> iBody, System_Int32 j)
+{
+  System_Double vreg_1,vreg_6,vreg_7,vreg_9,vreg_14,vreg_15,vreg_17,vreg_22,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125;
+  RefArr<Ref<Body>> vreg_3,vreg_11,vreg_19,vreg_48,vreg_62,vreg_76,vreg_85,vreg_99,vreg_113;
+  Ref<Body> vreg_5,vreg_13,vreg_21,vreg_50,vreg_64,vreg_78,vreg_87,vreg_101,vreg_115;
+
+  vreg_1 = iBody->x;
+  vreg_3 = _this->bodies;
+  vreg_5 = (*vreg_3)[j];
+  vreg_6 = vreg_5->x;
+  vreg_7 = clr_sub (vreg_1, vreg_6);
+  vreg_9 = iBody->y;
+  vreg_11 = _this->bodies;
+  vreg_13 = (*vreg_11)[j];
+  vreg_14 = vreg_13->y;
+  vreg_15 = clr_sub (vreg_9, vreg_14);
+  vreg_17 = iBody->z;
+  vreg_19 = _this->bodies;
+  vreg_21 = (*vreg_19)[j];
+  vreg_22 = vreg_21->z;
+  vreg_23 = clr_sub (vreg_17, vreg_22);
+  vreg_26 = clr_mul (vreg_7, vreg_7);
+  vreg_29 = clr_mul (vreg_15, vreg_15);
+  vreg_30 = clr_add (vreg_26, vreg_29);
+  vreg_33 = clr_mul (vreg_23, vreg_23);
+  vreg_34 = clr_add (vreg_30, vreg_33);
+  vreg_36 = System_Math_Sqrt(vreg_34);
+  vreg_40 = clr_mul (vreg_34, vreg_36);
+  vreg_41 = clr_div (dt, vreg_40);
+  vreg_45 = iBody->vx;
+  vreg_48 = _this->bodies;
+  vreg_50 = (*vreg_48)[j];
+  vreg_51 = vreg_50->mass;
+  vreg_52 = clr_mul (vreg_7, vreg_51);
+  vreg_54 = clr_mul (vreg_52, vreg_41);
+  vreg_55 = clr_sub (vreg_45, vreg_54);
+  iBody->vx = vreg_55;
+  vreg_59 = iBody->vy;
+  vreg_62 = _this->bodies;
+  vreg_64 = (*vreg_62)[j];
+  vreg_65 = vreg_64->mass;
+  vreg_66 = clr_mul (vreg_15, vreg_65);
+  vreg_68 = clr_mul (vreg_66, vreg_41);
+  vreg_69 = clr_sub (vreg_59, vreg_68);
+  iBody->vy = vreg_69;
+  vreg_73 = iBody->vz;
+  vreg_76 = _this->bodies;
+  vreg_78 = (*vreg_76)[j];
+  vreg_79 = vreg_78->mass;
+  vreg_80 = clr_mul (vreg_23, vreg_79);
+  vreg_82 = clr_mul (vreg_80, vreg_41);
+  vreg_83 = clr_sub (vreg_73, vreg_82);
+  iBody->vz = vreg_83;
+  vreg_85 = _this->bodies;
+  vreg_87 = (*vreg_85)[j];
+  vreg_90 = vreg_87->vx;
+  vreg_93 = iBody->mass;
+  vreg_94 = clr_mul (vreg_7, vreg_93);
+  vreg_96 = clr_mul (vreg_94, vreg_41);
+  vreg_97 = clr_add (vreg_90, vreg_96);
+  vreg_87->vx = vreg_97;
+  vreg_99 = _this->bodies;
+  vreg_101 = (*vreg_99)[j];
+  vreg_104 = vreg_101->vy;
+  vreg_107 = iBody->mass;
+  vreg_108 = clr_mul (vreg_15, vreg_107);
+  vreg_110 = clr_mul (vreg_108, vreg_41);
+  vreg_111 = clr_add (vreg_104, vreg_110);
+  vreg_101->vy = vreg_111;
+  vreg_113 = _this->bodies;
+  vreg_115 = (*vreg_113)[j];
+  vreg_118 = vreg_115->vz;
+  vreg_121 = iBody->mass;
+  vreg_122 = clr_mul (vreg_23, vreg_121);
+  vreg_124 = clr_mul (vreg_122, vreg_41);
+  vreg_125 = clr_add (vreg_118, vreg_124);
+  vreg_115->vz = vreg_125;
 }
 
 System_Double System_Math_Sqrt(System_Double val) {
 return std::sqrt(val);
+}
+
+System_Void NBodySystem_AdvanceBodiesEnergy(Ref<NBodySystem> _this, System_Double dt)
+{
+  RefArr<Ref<Body>> local_0,vreg_37;
+  System_Int32 local_1,vreg_39;
+  Ref<Body> vreg_5;
+  System_Double vreg_9,vreg_12,vreg_13,vreg_14,vreg_18,vreg_21,vreg_22,vreg_23,vreg_27,vreg_30,vreg_31,vreg_32;
+  System_UInt32 vreg_38;
+  System_Boolean vreg_40;
+
+  local_0 = _this->bodies;
+  local_1 = 0;
+  goto label_86;
+  label_13:
+  vreg_5 = (*local_0)[local_1];
+  vreg_9 = vreg_5->x;
+  vreg_12 = vreg_5->vx;
+  vreg_13 = clr_mul (dt, vreg_12);
+  vreg_14 = clr_add (vreg_9, vreg_13);
+  vreg_5->x = vreg_14;
+  vreg_18 = vreg_5->y;
+  vreg_21 = vreg_5->vy;
+  vreg_22 = clr_mul (dt, vreg_21);
+  vreg_23 = clr_add (vreg_18, vreg_22);
+  vreg_5->y = vreg_23;
+  vreg_27 = vreg_5->z;
+  vreg_30 = vreg_5->vz;
+  vreg_31 = clr_mul (dt, vreg_30);
+  vreg_32 = clr_add (vreg_27, vreg_31);
+  vreg_5->z = vreg_32;
+  local_1 = clr_add (local_1, 1);
+  label_86:
+  vreg_37 = local_0;
+  vreg_38 = vreg_37->size();
+  vreg_39 = conv_i4 (vreg_38);
+  vreg_40 = clr_blt_s (vreg_39);
+  if (brtrue(vreg_40)) goto label_13;
 }
 
 System_Double NBodySystem_energy(Ref<NBodySystem> _this)
@@ -470,7 +501,7 @@ Ref<System_String> Texts_BuildSystemString(System_Int32 code, RefArr<System_Byte
   vreg_1 = new_arr<System_Byte>(len);
   System_Array_Copy(data, startPos, vreg_1, 0, len);
   vreg_7 = new_ref<System_String>();
-  System_String_ctor();
+  System_String_ctor(vreg_7);
   vreg_7->Coder = code;
   vreg_7->Data = vreg_1;
   return vreg_7;
@@ -492,6 +523,11 @@ System_Void System_Array_Copy(RefArr<System_Byte> sourceArray, System_Int32 sour
   label_27:
   vreg_18 = clt (local_0, len);
   if (brtrue_s(vreg_18)) goto label_5;
+}
+
+System_Void System_String_ctor(Ref<System_String> _this)
+{
+  _this->Data = nullptr;
 }
 
 namespace {
