@@ -35,6 +35,7 @@ static class InstructionUsages
             BranchOp branchOperation => [branchOperation.Condition.VarCode()],
             ConvOp convOp => [convOp.RightSideVar.VarCode()],
             BinaryOp binaryOp => [binaryOp.LeftExpression.VarCode(), binaryOp.RightExpression.VarCode()],
+            UnaryOp unaryOp => [unaryOp.LeftExpression.VarCode()],
             RetOp retOp => [retOp.ValueExpression.VarCode()],
             _ => []
         };

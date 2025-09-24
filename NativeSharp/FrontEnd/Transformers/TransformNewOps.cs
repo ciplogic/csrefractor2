@@ -37,7 +37,16 @@ static class TransformNewOps
         }
 
         VReg result = localVariablesStackAndState.NewVirtVar(constructorInfo.DeclaringType!);
-        return new NewObjOp(result, args.ToArray());
+        NewObjOp newObjOp = new (result);
+        CallOp callOp = new ()
+        {
+            Args = args.ToArray(),
+            TargetMethod = constructorInfo,
+            CallType = CallType.Static
+        };
+        
+        var combinedOps = new CompositeOp([newObjOp, callOp]);
+        return combinedOps;
     }
 
     private static BaseOp TransformNewArr(Instruction instruction, LocalVariablesStackAndState localVariablesStackAndState)

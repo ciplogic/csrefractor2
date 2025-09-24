@@ -41,7 +41,7 @@ public class OneAssignPropagation : OptimizationBase
         return false;
     }
 
-    private bool ValidateOp(BaseOp[] ops, int i, string varCode)
+    private static bool ValidateOp(BaseOp[] ops, int i, string varCode)
     {
         for (var j = 0; j < ops.Length; j++)
         {

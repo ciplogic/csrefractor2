@@ -117,14 +117,25 @@ internal class InstructionTransformer
             return TransformLogicalBinaryOp(instruction);
         }
 
-        if (BinaryOp.Contains(opName))
+        if (BinaryOps.Contains(opName))
         {
             return TransformBinaryOp(instruction);
+        }
+
+        if (UnaryOps.Contains(opName))
+        {
+            return TransformUnaryOp(instruction);
         }
 
         if (opName.StartsWith("new"))
         {
             return TransformNewOps.TransformNewDeclarations(instruction, LocalVariablesStackAndState);
+        }
+
+        if (opName == "pop")
+        {
+            LocalVariablesStackAndState.Pop();
+            return new CompositeOp([]);
         }
 
         if (opName == "dup")
@@ -223,6 +234,18 @@ internal class InstructionTransformer
         };
     }
 
+    private BaseOp TransformUnaryOp(Instruction instruction)
+    {
+        IValueExpression leftOp = LocalVariablesStackAndState.Pop();
+        var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
+        return new UnaryOp(left)
+        {
+            LeftExpression = leftOp,
+            Operator = $"clr_{instruction.OpCode.Name!}"
+        };
+    }
+
+
     private BaseOp TransformLogicalBinaryOp(Instruction instruction)
     {
         IValueExpression rightOp = LocalVariablesStackAndState.Pop();
@@ -238,7 +261,8 @@ internal class InstructionTransformer
 
     string[] LogicalBinaryOp = ["cgt", "ceq", "clt", "cle", "cgt.un", "clt.un", "ceq.un", "cne.un"];
 
-    string[] BinaryOp = ["rem", "add", "sub", "mul", "div"];
+    string[] BinaryOps = ["rem", "add", "sub", "mul", "div"];
+    string[] UnaryOps = ["neg"];
 
     private BaseOp TransformStoreOp(Instruction instruction)
     {
