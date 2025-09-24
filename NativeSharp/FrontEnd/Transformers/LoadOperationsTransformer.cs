@@ -23,7 +23,14 @@ static class LoadOperationsTransformer
         }
 
         if (opName == "ldlen")
+        {
             return ParseLoadLen(variablesStackAndState);
+        }
+
+        if (opName.StartsWith("ldnull"))
+        {
+            return new LoadNullOp(variablesStackAndState.NewVirtVar<string>());
+        }
 
         if (opName.StartsWith("ldc"))
         {
@@ -166,8 +173,8 @@ static class LoadOperationsTransformer
         {
             ConstantValueExpression constDoubleValue = ConstantValueExpression.Create(instruction.Operand);
             return ExtractAssignFromConstant(constDoubleValue, localVariablesStackAndState);
-            
         }
+
         int index = 0;
         if (opName.Length < 7 || !int.TryParse(opName.Substring(7), out index))
         {

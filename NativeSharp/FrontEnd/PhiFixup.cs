@@ -1,13 +1,16 @@
 ﻿using NativeSharp.Extensions;
+using NativeSharp.FrontEnd.Transformers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
+using NativeSharp.Operations.FieldsAndIndexing;
+using NativeSharp.Operations.Values;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd;
 
 static class PhiFixup
 {
-    public static void FixupMerges(BaseOp[] ops)
+    public static BaseOp[] FixupMerges(BaseOp[] ops)
     {
         var indicesGotos = VregGotos(ops);
         foreach (var index in indicesGotos)
@@ -24,10 +27,39 @@ static class PhiFixup
             {
                 continue;
             }
+
             var afterLabelAssign = (AssignOp)ops[indexLabel + 1];
             var sourceVreg = (VReg)gotoAssign.Left;
             labelAssign.Left = sourceVreg;
             afterLabelAssign.Expression = sourceVreg;
+        }
+
+        for (int index = 0; index < ops.Length; index++)
+        {
+            BaseOp op = ops[index];
+            if (op is LoadNullOp loadNullOp)
+            {
+                var nextRow = ops[index + 1];
+                var leftExpressionType = nextRow.EvaluateRightSideExpression();
+                var assignOp = new AssignOp(loadNullOp.Left,
+                    new ConstantValueExpression(null) { ExpressionType = leftExpressionType });
+                ops[index] = assignOp;
+            }
+        }
+
+        return ops;
+    }
+
+    static Type EvaluateRightSideExpression(this BaseOp baseOp)
+    {
+        switch (baseOp)
+        {
+            case StoreFieldOp storeElementOp:
+                var thisPtr = storeElementOp.ThisPtr.ExpressionType;
+                var field = thisPtr.GetField(storeElementOp.FieldName);
+                return field!.FieldType;
+            default:
+                throw new NotImplementedException();
         }
     }
 

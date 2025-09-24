@@ -18,8 +18,8 @@ internal class Program
 
         MethodResolver.ResolveCilMethod(MethodResolver.Resolve(entryPoint));
 
-        MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("FromIndex")!);
-        MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
+        MethodResolver.ResolveAllTree(typeof(Texts).GetMethod("FromIndex")!);
+        //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
         var optimizer = new OptimizationSteps();
         optimizer.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray());

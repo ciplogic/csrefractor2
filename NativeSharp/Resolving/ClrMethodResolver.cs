@@ -9,7 +9,7 @@ namespace NativeSharp.Resolving;
 
 static class ClrMethodResolver
 {
-    public static BaseNativeMethod? ResolveSystemClrMethod(MethodInfo? clrMethod)
+    public static BaseNativeMethod? ResolveSystemClrMethod(MethodBase clrMethod)
     {
         if (clrMethod == null)
         {
@@ -19,6 +19,14 @@ static class ClrMethodResolver
         if (MethodResolver.MethodCache.TryGetValue(clrMethod, out BaseNativeMethod? method))
         {
             return method;
+        }
+
+        if (clrMethod.IsConstructor)
+        {
+            return new CilNativeMethod()
+            {
+                Args = clrMethod.GetMethodArguments(),
+            };
         }
 
         int parmeterCount = clrMethod.ParameterCount();
@@ -84,16 +92,33 @@ static class ClrMethodResolver
         return MethodResolver.TransformCilMethod(clrMethod, mappedMethod);
     }
 
-    private static bool AreParameterEquivalent(MethodInfo methodInfo, MethodInfo clrMethod)
+    static Type[] ExtractArgumentTypesOfMethod(this MethodBase method)
     {
-        ParameterInfo[] parameterInfos = clrMethod.GetParameters();
+        var result = new List<Type>();
+        if (!method.IsStatic || method.IsConstructor)
+        {
+            result.Add(method.DeclaringType);
+        }
 
-        ParameterInfo[] mappedMethodInfo = methodInfo.GetParameters();
+        var args = method.GetParameters();
+        for (int i = 0; i < args.Length; i++)
+        {
+            result.Add(args[i].ParameterType);
+        }
+
+        return result.ToArray();
+    }
+
+    private static bool AreParameterEquivalent(MethodInfo methodInfo, MethodBase clrMethod)
+    {
+        Type[] parameterInfos = clrMethod.ExtractArgumentTypesOfMethod();
+
+        Type[] mappedMethodInfo = methodInfo.ExtractArgumentTypesOfMethod();
         for (var i = 0; i < parameterInfos.Length; i++)
         {
-            ParameterInfo mappedParam = mappedMethodInfo[i];
-            ParameterInfo param = parameterInfos[i];
-            if (mappedParam.ParameterType != param.ParameterType)
+            Type mappedParam = mappedMethodInfo[i];
+            Type param = parameterInfos[i];
+            if (mappedParam != param)
             {
                 return false;
             }

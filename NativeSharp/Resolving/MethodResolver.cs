@@ -50,10 +50,11 @@ internal static class MethodResolver
         string signature = clrMethod.MangleMethodName();
         if (signature.StartsWith("System"))
         {
-            BaseNativeMethod? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod as MethodInfo);
+            BaseNativeMethod? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod);
             if (systemClrMethod != null)
             {
                 systemClrMethod.Target = clrMethod;
+                TransformCilMethod(clrMethod, clrMethod);
             }
 
             return systemClrMethod;

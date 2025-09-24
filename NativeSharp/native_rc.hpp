@@ -18,7 +18,7 @@ template <typename T> class Rc {
 
 public:
     // Constructor
-    explicit Rc(RcData<T> *p = nullptr) : _data(p) {}
+    Rc(RcData<T> *p = nullptr) : _data(p) {}
 
     // Copy constructor
     Rc(const Rc &other) : _data(other._data) { ++_data->_count; }

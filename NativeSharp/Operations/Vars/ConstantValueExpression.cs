@@ -5,19 +5,23 @@ namespace NativeSharp.Operations.Values;
 
 internal class ConstantValueExpression(object value) : IValueExpression
 {
-    public object Value { get; } = value;
+    public object? Value { get; } = value;
     public Type ExpressionType { get; set; }
 
     public string Code()
     {
-        ArgumentNullException.ThrowIfNull(Value);
+        if (Value is null)
+        {
+            return "nullptr";
+        }
+
         if (Value is string text)
         {
             int index = StringPool.Instance.GetIndex(text);
             return $"_clr_str({index})";
         }
 
-        return Value.ToString();
+        return Value.ToString()!;
     }
 
     public override bool Equals(object? obj)
