@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using NativeSharp.CodeGen;
 using NativeSharp.Optimizations;
 using NativeSharp.Resolving;
@@ -13,6 +14,15 @@ internal class Program
         {
             Optimize = true
         };
+        if (!File.Exists("compiler_options.json"))
+        {
+            File.WriteAllText("compiler_options.json", JsonSerializer.Serialize(options));
+        }
+        else
+        {
+            var json = File.ReadAllText("compiler_options.json");
+            options = JsonSerializer.Deserialize<CompilerOptions>(json) ?? new CompilerOptions();
+        }
         Assembly asm = Assembly.LoadFrom("TargetApp.dll");
         MethodInfo entryPoint = asm.EntryPoint!;
         AssemblyScanner.DefaultMappings();

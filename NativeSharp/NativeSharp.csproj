@@ -37,4 +37,10 @@
       <Folder Include="Operations\Values\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="native_sharp.cpp">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

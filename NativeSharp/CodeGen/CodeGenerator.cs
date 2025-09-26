@@ -29,9 +29,7 @@ public class CodeGenerator
             WriteCilMethodHeader(method);
         }
 
-        WriteMainBody(entryPoint);
-
-        WriteMarshallCode();
+        WriteMainBody(entryPoint, "args");
 
         foreach (BaseNativeMethod method in MethodResolver.MethodCache.Values)
         {
@@ -51,30 +49,6 @@ public class CodeGenerator
         WriteStringPool();
 
         Code.WriteToFile();
-    }
-
-    private void WriteMarshallCode()
-    {
-        Code.AddLine(
-            """
-            namespace {
-              std::vector<uint8_t> marshallStringCharStar(System_String* text) {
-                std::vector<uint8_t> result;
-                uint8_t* dataPtr = text->Data->data();
-                int textLen = text->Data->size();
-                for (int i = 0; i < textLen; i++) {
-                  result.push_back(dataPtr[i]);
-                }
-                result.push_back(0);
-                if (text->Coder) {
-                  result.push_back(0);
-                }
-
-                return result;
-              };
-            }
-            """
-        );
     }
 
     private void AddNativeCppHeaders(Dictionary<MethodBase, BaseNativeMethod> methodCacheValues)
@@ -109,12 +83,11 @@ public class CodeGenerator
         Code.AddLine("}");
     }
 
-    private void WriteMainBody(string entryPoint, string args = "") =>
-        Code
-            .AddLine("int main() {")
-            .AddLine(entryPoint + "();")
-            .AddLine("return 0;")
-            .AddLine("}");
+    private void WriteMainBody(string entryPoint, string args = "")
+    {
+        var mainCodeGen = new MainMethodCodeGenerator();
+        mainCodeGen.WriteMainMethodBody(Code, entryPoint, TimingMainKind.Millisecond, args );
+    }
 
     public void WriteReferencedTypes()
     {

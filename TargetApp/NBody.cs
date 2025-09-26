@@ -1,6 +1,6 @@
 ﻿class nbody
 {
-    public static void Main()
+    public static void Main(string[] args)
     {
         int n = 10_000_000;
 

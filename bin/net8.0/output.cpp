@@ -23,7 +23,7 @@ struct Texts {};
 namespace {
     Ref<System_String> _str(int index);
 }
-System_Void nbody_Main();
+System_Void nbody_Main(RefArr<Ref<System_String>> args);
 System_Void System_Console_WriteLine(System_Double value);
 System_Void NBodySystem_ctor(Ref<NBodySystem> _this);
 Ref<Body> Body_sun();
@@ -43,27 +43,13 @@ Ref<System_String> Texts_FromIndex(System_Int32 index, RefArr<System_Int32> code
 Ref<System_String> Texts_BuildSystemString(System_Int32 code, RefArr<System_Byte> data, System_Int32 startPos, System_Int32 len);
 System_Void System_Array_Copy(RefArr<System_Byte> sourceArray, System_Int32 sourceIndex, RefArr<System_Byte> destinationArray, System_Int32 destinationIndex, System_Int32 len);
 System_Void System_String_ctor(Ref<System_String> _this);
-int main() {
-nbody_Main();
+#include "native_sharp.cpp"
+int main(int argc, char**argv) {
+auto ARGS = argsToStrings(argc, argv);
+timeItMilliseconds([&]{ nbody_Main (ARGS); });
 return 0;
 }
-namespace {
-  std::vector<uint8_t> marshallStringCharStar(System_String* text) {
-    std::vector<uint8_t> result;
-    uint8_t* dataPtr = text->Data->data();
-    int textLen = text->Data->size();
-    for (int i = 0; i < textLen; i++) {
-      result.push_back(dataPtr[i]);
-    }
-    result.push_back(0);
-    if (text->Coder) {
-      result.push_back(0);
-    }
-
-    return result;
-  };
-}
-System_Void nbody_Main()
+System_Void nbody_Main(RefArr<Ref<System_String>> args)
 {
   System_Int32 local_0,local_2,vreg_12;
   Ref<NBodySystem> local_1,vreg_1;

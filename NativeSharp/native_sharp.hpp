@@ -3,6 +3,7 @@
 #include "native_sharp_primitives.hpp"
 
 #include <vector>
+#include <chrono>
 
 #include "native_rc.hpp"
 #include "native_heap_array.hpp"
@@ -55,7 +56,10 @@ inline bool brtrue_s(int left) { return left; }
 inline bool brfalse(int left) { return !left; }
 inline bool brtrue(int left) { return left; }
 
-inline bool blt_s(int left, int right) { return left < right; }
-inline bool blt(int left, int right) { return left < right; }
+template <typename T>
+bool blt_s(T left, T right) { return left < right; }
+
+template <typename T>
+bool blt(T left, T right) { return left < right; }
 
 inline int32_t conv_i4(uint32_t left) { return left; }
