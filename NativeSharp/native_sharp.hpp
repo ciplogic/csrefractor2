@@ -27,22 +27,22 @@ RefArr<T> makeArr(std::initializer_list<T> init)
 }
 
 template <typename T>
-T clr_add(T left, T right) { return left + right; }
+T add(T left, T right) { return left + right; }
 
 template <typename T>
-T clr_sub(T left, T right) { return left - right; }
+T sub(T left, T right) { return left - right; }
 
 template <typename T>
-T clr_mul(T left, T right) { return left * right; }
+T mul(T left, T right) { return left * right; }
 
 template <typename T>
-T clr_div(T left, T right) { return left / right; }
+T div(T left, T right) { return left / right; }
 
 template <typename T>
-T clr_rem(T left, T right) { return left % right; }
+T rem(T left, T right) { return left % right; }
 
 template <typename T>
-T clr_neg(T left) { return -left; }
+T neg(T left) { return -left; }
 
 inline bool cgt(int left, int right) { return left > right; }
 
@@ -55,7 +55,7 @@ inline bool brtrue_s(int left) { return left; }
 inline bool brfalse(int left) { return !left; }
 inline bool brtrue(int left) { return left; }
 
-inline bool clr_blt_s(int left, int right) { return left < right; }
-inline bool clr_blt(int left, int right) { return left < right; }
+inline bool blt_s(int left, int right) { return left < right; }
+inline bool blt(int left, int right) { return left < right; }
 
 inline int32_t conv_i4(uint32_t left) { return left; }

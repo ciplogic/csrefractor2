@@ -6,13 +6,13 @@ using NativeSharp.Optimizations.GotosOptimizations;
 
 namespace NativeSharp.Optimizations;
 
-public class OptimizationSteps
+public class OptimizationSteps(bool isOptimizing)
 {
-    public OptimizationBase[] CilMethodOptimizations = BuildOptimizations();
+    public OptimizationBase[] CilMethodOptimizations = BuildOptimizations(isOptimizing);
 
-    private static OptimizationBase[] BuildOptimizations(bool enable = true)
+    private static OptimizationBase[] BuildOptimizations(bool isOptimizing)
     {
-        if (!enable)
+        if (!isOptimizing)
         {
             return [];
         }

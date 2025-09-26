@@ -18,7 +18,7 @@ internal class ConstantValueExpression(object value) : IValueExpression
         if (Value is string text)
         {
             int index = StringPool.Instance.GetIndex(text);
-            return $"_clr_str({index})";
+            return $"_str({index})";
         }
 
         return Value.ToString()!;

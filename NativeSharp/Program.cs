@@ -9,6 +9,10 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        CompilerOptions options = new()
+        {
+            Optimize = true
+        };
         Assembly asm = Assembly.LoadFrom("TargetApp.dll");
         MethodInfo entryPoint = asm.EntryPoint!;
         AssemblyScanner.DefaultMappings();
@@ -21,7 +25,7 @@ internal class Program
         MethodResolver.ResolveAllTree(typeof(Texts).GetMethod("FromIndex")!);
         //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
-        var optimizer = new OptimizationSteps();
+        var optimizer = new OptimizationSteps(options.Optimize);
         optimizer.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray());
         
         CodeGenerator codeGen = new CodeGenerator();

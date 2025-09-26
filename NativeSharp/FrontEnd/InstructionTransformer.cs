@@ -186,7 +186,7 @@ internal class InstructionTransformer
     {
         if (BoolBinaryOperations.Contains(opName))
         {
-            return TransformBoolBinaryOp(instruction, opName);
+            return TransformBoolBinaryOp(instruction, opName, LocalVariablesStackAndState);
         }
 
         bool isBoolConditional = BoolUnaryOperations.Contains(opName);
@@ -208,17 +208,17 @@ internal class InstructionTransformer
             isConditional ? LocalVariablesStackAndState.Pop() : null);
     }
 
-    private BaseOp TransformBoolBinaryOp(Instruction instruction, string opName)
+    private static BaseOp TransformBoolBinaryOp(Instruction instruction, string opName, LocalVariablesStackAndState localVariablesStackAndState)
     {
-        IValueExpression leftOp = LocalVariablesStackAndState.Pop();
-        IValueExpression right = LocalVariablesStackAndState.Pop();
-        var left = LocalVariablesStackAndState.NewVirtVar<bool>();
+        IValueExpression leftOp = localVariablesStackAndState.Pop();
+        IValueExpression right = localVariablesStackAndState.Pop();
+        var left = localVariablesStackAndState.NewVirtVar<bool>();
         opName = opName.Replace('.', '_');
         var binaryOp = new BinaryOp(left)
         {
             LeftExpression = leftOp,
             RightExpression = right,
-            Operator = $"clr_{opName}"
+            Operator = $"{opName}"
         };
         var operand = (Instruction)instruction.Operand;
         BranchOp branchOp = new(operand.Offset, "brtrue", left);
@@ -235,7 +235,7 @@ internal class InstructionTransformer
         var binaryOp = new UnaryOp(left)
         {
             LeftExpression = leftOp,
-            Operator = $"clr_{opName}"
+            Operator = $"{opName}"
         };
 
         var targetIndex = instruction.Operand as Instruction;
@@ -253,7 +253,7 @@ internal class InstructionTransformer
         {
             LeftExpression = leftOp,
             RightExpression = rightOp,
-            Operator = $"clr_{instruction.OpCode.Name!}"
+            Operator = $"{instruction.OpCode.Name!}"
         };
     }
 
@@ -264,7 +264,7 @@ internal class InstructionTransformer
         return new UnaryOp(left)
         {
             LeftExpression = leftOp,
-            Operator = $"clr_{instruction.OpCode.Name!}"
+            Operator = $"{instruction.OpCode.Name!}"
         };
     }
 

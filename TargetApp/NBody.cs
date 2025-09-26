@@ -2,7 +2,7 @@
 {
     public static void Main()
     {
-        int n = 10000;
+        int n = 10_000_000;
 
         NBodySystem bodies = new NBodySystem();
         Console.WriteLine(bodies.energy());

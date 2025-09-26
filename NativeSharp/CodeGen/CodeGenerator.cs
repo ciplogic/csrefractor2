@@ -136,7 +136,7 @@ public class CodeGenerator
         Code.AddLine(
             """
             namespace {
-                Ref<System_String> _clr_str(int index);
+                Ref<System_String> _str(int index);
             }
             """);
     }
@@ -171,7 +171,7 @@ public class CodeGenerator
             .AddLine(
                 $"    RefArr<uint8_t> _joinedTexts = makeArr<uint8_t> ({{{string.Join(',', joinedTexts)}}});")
             .AddLine("""
-                         Ref<System_String> _clr_str(int index) {
+                         Ref<System_String> _str(int index) {
                             return Texts_FromIndex(index, _coders, _startPos, _lengths, _joinedTexts);
                          }
                      }
