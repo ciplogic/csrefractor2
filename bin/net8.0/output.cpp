@@ -405,7 +405,7 @@ System_Void NBodySystem_AdvanceBodiesEnergy(Ref<NBodySystem> _this, System_Doubl
   vreg_37 = local_0;
   vreg_38 = vreg_37->size();
   vreg_39 = conv_i4 (vreg_38);
-  vreg_40 = clr_blt_s (vreg_39);
+  vreg_40 = clr_blt_s (vreg_39, local_1);
   if (brtrue(vreg_40)) goto label_13;
 }
 

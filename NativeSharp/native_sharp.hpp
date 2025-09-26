@@ -55,7 +55,7 @@ inline bool brtrue_s(int left) { return left; }
 inline bool brfalse(int left) { return !left; }
 inline bool brtrue(int left) { return left; }
 
-inline bool blt_s(int left) { return left >= 0; }
-inline bool blt(int left) { return left >= 0; }
+inline bool clr_blt_s(int left, int right) { return left < right; }
+inline bool clr_blt(int left, int right) { return left < right; }
 
 inline int32_t conv_i4(uint32_t left) { return left; }
