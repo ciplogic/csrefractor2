@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using NativeSharp.CodeGen;
 using NativeSharp.Common;
 using NativeSharp.Extensions;
 using NativeSharp.FrontEnd.Transformers;
@@ -163,7 +164,7 @@ internal class InstructionTransformer
         IValueExpression valueToSet = localVariablesStackAndState.Pop();
         IndexedVariable thisPtr = (IndexedVariable)localVariablesStackAndState.Pop();
 
-        return new StoreFieldOp(thisPtr, valueToSet, fieldInfo.Name);
+        return new StoreFieldOp(thisPtr, valueToSet, fieldInfo.Name.CleanupFieldName());
     }
 
     private BaseOp TransformDup()
