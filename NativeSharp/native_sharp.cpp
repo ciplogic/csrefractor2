@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "native_rc.hpp"
+
 namespace {
     std::vector<uint8_t> marshallStringCharStar(System_String *text) {
         std::vector<uint8_t> result;
@@ -46,15 +48,21 @@ namespace {
         std::cout << "Time to run: " << duration.count() << " nanoseconds\n";
     }
 
+    Ref<System_String> marshallStringCharStar(System_String *text)
+    {
+        int len = strlen(text);
+        auto vreg_1 = new_arr<System_Byte>(len);
+        memcpy(vreg_1->data(), text, len);
+        Ref<System_String> item = new_ref<System_String>();
+        item->Data = vreg_1;
+        return item;
+        
+    }
+
     RefArr<Ref<System_String>> argsToStrings(int argc, char **argv) {
         RefArr<Ref<System_String>> result = new_arr<Ref<System_String>>(argc);
         for (int i = 1; i < argc; i++) {
-            int len = strlen(argv[i]);
-            auto vreg_1 = new_arr<System_Byte>(len);
-            memcpy(vreg_1->data(), argv[i], len);
-            Ref<System_String> item = new_ref<System_String>();
-            item->Data = vreg_1;
-            (*result)[i] = item;
+            (*result)[i] = marshallStringCharStar(argv[i]);
         }
         
         return result;

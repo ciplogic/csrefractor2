@@ -41,6 +41,7 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
             CallOp callOp => UpdateExpressionT(callOp, MatchCall, updates),
             BranchOp branchOperation => UpdateExpressionT(branchOperation, MatchBranchOp, updates),
             BinaryOp binaryOp => UpdateExpressionT(binaryOp, MatchBinaryOp, updates),
+            UnaryOp unaryOp => UpdateExpressionT(unaryOp, MatchUnaryOp, updates),
             LoadElementOp loadElementOp => UpdateExpressionT(loadElementOp, MatchLoadElem, updates),
             StoreElementOp storeElementOp => UpdateExpressionT(storeElementOp, MatchStoreElem, updates),
             LoadFieldOp loadFieldOp => UpdateExpressionT(loadFieldOp, MatchLoadField, updates),
@@ -49,6 +50,12 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
             RetOp retOp => UpdateExpressionT(retOp, MatchRetOp, updates),
             _ => false
         };
+
+    private static bool MatchUnaryOp(UnaryOp op, FromTo fromTo)
+        => UpdateExpression(op,
+            x => x.LeftExpression,
+            (x, v) => x.LeftExpression = v,
+            fromTo);
 
     private static bool MatchRetOp(RetOp op, FromTo fromTo)
         => UpdateExpression(op,

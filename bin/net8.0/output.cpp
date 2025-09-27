@@ -144,7 +144,6 @@ Ref<Body> Body_sun()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor(vreg_0);
   vreg_0->mass = 39.47841760435743;
   return vreg_0;
 }
@@ -158,7 +157,6 @@ Ref<Body> Body_jupiter()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor(vreg_0);
   vreg_0->x = 4.841431442464721;
   vreg_0->y = -1.1603200440274284;
   vreg_0->z = -0.10362204447112311;
@@ -174,7 +172,6 @@ Ref<Body> Body_saturn()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor(vreg_0);
   vreg_0->x = 8.34336671824458;
   vreg_0->y = 4.124798564124305;
   vreg_0->z = -0.4035234171143214;
@@ -190,7 +187,6 @@ Ref<Body> Body_uranus()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor(vreg_0);
   vreg_0->x = 12.894369562139131;
   vreg_0->y = -15.111151401698631;
   vreg_0->z = -0.22330757889265573;
@@ -206,7 +202,6 @@ Ref<Body> Body_neptune()
   Ref<Body> vreg_0;
 
   vreg_0 = new_ref<Body>();
-  Body_ctor(vreg_0);
   vreg_0->x = 15.379697114850917;
   vreg_0->y = -25.919314609987964;
   vreg_0->z = 0.17925877295037118;
@@ -219,18 +214,15 @@ Ref<Body> Body_neptune()
 
 Ref<Body> Body_offsetMomentum(Ref<Body> _this, System_Double px, System_Double py, System_Double pz)
 {
-  System_Double vreg_1,vreg_2,vreg_4,vreg_6,vreg_7,vreg_9,vreg_11,vreg_12,vreg_14;
+  System_Double vreg_2,vreg_4,vreg_7,vreg_9,vreg_12,vreg_14;
 
-  vreg_1 = px;
-  vreg_2 = neg (vreg_1);
+  vreg_2 = neg (px);
   vreg_4 = div (vreg_2, 39.47841760435743);
   _this->vx = vreg_4;
-  vreg_6 = py;
-  vreg_7 = neg (vreg_6);
+  vreg_7 = neg (py);
   vreg_9 = div (vreg_7, 39.47841760435743);
   _this->vy = vreg_9;
-  vreg_11 = pz;
-  vreg_12 = neg (vreg_11);
+  vreg_12 = neg (pz);
   vreg_14 = div (vreg_12, 39.47841760435743);
   _this->vz = vreg_14;
   return _this;
