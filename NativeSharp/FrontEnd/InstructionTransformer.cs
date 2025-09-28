@@ -214,12 +214,11 @@ internal class InstructionTransformer
         IValueExpression leftOp = localVariablesStackAndState.Pop();
         IValueExpression right = localVariablesStackAndState.Pop();
         var left = localVariablesStackAndState.NewVirtVar<bool>();
-        opName = opName.Replace('.', '_');
         var binaryOp = new BinaryOp(left)
         {
             LeftExpression = leftOp,
             RightExpression = right,
-            Operator = $"{opName}"
+            Operator = opName.CleanupFieldName()
         };
         var operand = (Instruction)instruction.Operand;
         BranchOp branchOp = new(operand.Offset, "brtrue", left);
@@ -228,15 +227,14 @@ internal class InstructionTransformer
         return combinedOp;
     }
 
-    private BaseOp TransformBoolUnaryOp(Instruction instruction, string opName)
+    public BaseOp TransformBoolUnaryOp(Instruction instruction, string opName)
     {
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
         var left = LocalVariablesStackAndState.NewVirtVar<bool>();
-        opName = opName.Replace('.', '_');
         var binaryOp = new UnaryOp(left)
         {
             ValueExpression = leftOp,
-            Operator = $"{opName}"
+            Operator = opName.CleanupFieldName()
         };
 
         var targetIndex = instruction.Operand as Instruction;

@@ -28,7 +28,7 @@ internal static class CppNameMangler
         };
     }
 
-    public static string Mangle(this string fullName) => fullName.Replace('.', '_');
+    public static string Mangle(this string fullName) => fullName.CleanupFieldName();
 
     public static string MangleMethodName(this MethodBase method)
     {
