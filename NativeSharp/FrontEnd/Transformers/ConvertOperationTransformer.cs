@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations;
+﻿using NativeSharp.CodeGen;
+using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
@@ -6,8 +7,6 @@ namespace NativeSharp.FrontEnd.Transformers;
 
 static class ConvertOperationTransformer
 {
-    
-
     public static BaseOp TransformConvOperation(string opName, LocalVariablesStackAndState localVariablesStackAndState)
     {
         IValueExpression localVar = localVariablesStackAndState.Pop();
@@ -20,6 +19,10 @@ static class ConvertOperationTransformer
         };
 
         VReg resultVar = localVariablesStackAndState.NewVirtVar(targetType);
-        return new ConvOp(opName, resultVar, localVar);
+        return new UnaryOp(resultVar)
+        {
+            Operator = opName.CleanupFieldName(),
+            ValueExpression = localVar
+        };
     }
 }

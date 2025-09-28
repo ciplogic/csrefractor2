@@ -33,9 +33,8 @@ static class InstructionUsages
             LdLenOp ldLen => [ldLen.Right.VarCode()],
             NewArrayOp newArray => [newArray.Count.VarCode()],
             BranchOp branchOperation => [branchOperation.Condition.VarCode()],
-            ConvOp convOp => [convOp.RightSideVar.VarCode()],
             BinaryOp binaryOp => [binaryOp.LeftExpression.VarCode(), binaryOp.RightExpression.VarCode()],
-            UnaryOp unaryOp => [unaryOp.LeftExpression.VarCode()],
+            UnaryOp unaryOp => [unaryOp.ValueExpression.VarCode()],
             RetOp retOp => [retOp.ValueExpression.VarCode()],
             _ => []
         };

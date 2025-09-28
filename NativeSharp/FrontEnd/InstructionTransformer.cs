@@ -235,7 +235,7 @@ internal class InstructionTransformer
         opName = opName.Replace('.', '_');
         var binaryOp = new UnaryOp(left)
         {
-            LeftExpression = leftOp,
+            ValueExpression = leftOp,
             Operator = $"{opName}"
         };
 
@@ -264,7 +264,7 @@ internal class InstructionTransformer
         var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
         return new UnaryOp(left)
         {
-            LeftExpression = leftOp,
+            ValueExpression = leftOp,
             Operator = $"{instruction.OpCode.Name!}"
         };
     }

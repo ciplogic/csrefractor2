@@ -52,8 +52,8 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
 
     private static bool MatchUnaryOp(UnaryOp op, FromTo fromTo)
         => UpdateExpression(op,
-            x => x.LeftExpression,
-            (x, v) => x.LeftExpression = v,
+            x => x.ValueExpression,
+            (x, v) => x.ValueExpression = v,
             fromTo);
 
     private static bool MatchRetOp(RetOp op, FromTo fromTo)

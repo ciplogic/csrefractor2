@@ -10,15 +10,15 @@ class UnaryOp : LeftOp
     }
 
     public string Operator { get; set; } = null!;
-    public IValueExpression LeftExpression { get; set; }
+    public IValueExpression ValueExpression { get; set; }
 
     public override string GenCode()
-        => $"{Left.Code()} = {Operator} ({LeftExpression.Code()});";
+        => $"{Left.Code()} = {Operator} ({ValueExpression.Code()});";
 
     public override BaseOp Clone()
         => new UnaryOp(Left)
         {
-            LeftExpression = LeftExpression,
+            ValueExpression = ValueExpression,
             Operator = Operator
         };
 }
