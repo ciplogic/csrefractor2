@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using NativeSharp.CodeGen;
 using NativeSharp.Common;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
@@ -96,7 +97,7 @@ static class LoadOperationsTransformer
         IndexedVariable thisPtr = (IndexedVariable)localVariablesStackAndState.Pop();
         FieldInfo fieldInfo = (FieldInfo)instruction.Operand;
         VReg resultVar = localVariablesStackAndState.NewVirtVar(fieldInfo.FieldType);
-        return new LoadFieldOp(thisPtr, fieldInfo.Name, resultVar);
+        return new LoadFieldOp(thisPtr, fieldInfo.Name.CleanupFieldName(), resultVar);
     }
 
 

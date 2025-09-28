@@ -26,7 +26,7 @@ public record ClassFieldsWriter(CodeGenToFile Code, Type sourceType, Type mapped
                 WriteCurrentFields(currentType, fieldNames);
             }
 
-            fieldNames.Add(variable.Name);
+            fieldNames.Add(variable.Name.CleanupFieldName());
             currentType = fieldCurrentType;
         }
 
