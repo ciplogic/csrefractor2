@@ -15,4 +15,7 @@ internal class StoreFieldOp(IndexedVariable thisPtr, IValueExpression valueToSet
         string derefText = ThisPtr.ExpressionType.IsValueType ? "." : "->";
         return $"{ThisPtr.Code()}{derefText}{FieldName} = {ValueToSet.Code()};";
     }
+
+    public override BaseOp Clone() 
+        => new StoreFieldOp(ThisPtr, ValueToSet, FieldName);
 }

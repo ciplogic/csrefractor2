@@ -1,7 +1,6 @@
 ﻿using NativeSharp.FrontEnd;
-using NativeSharp.Operations.Common;
 
-namespace NativeSharp.Operations.Values;
+namespace NativeSharp.Operations.Vars;
 
 internal class ConstantValueExpression(object value) : IValueExpression
 {

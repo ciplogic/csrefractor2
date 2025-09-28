@@ -8,7 +8,7 @@ internal class LoadElementOp : LeftOp
     public IndexedVariable Array { get; set; }
     public IValueExpression Index { get; set; }
 
-    public LoadElementOp(VReg resultElement, IndexedVariable array, IValueExpression index)
+    public LoadElementOp(IndexedVariable resultElement, IndexedVariable array, IValueExpression index)
         : base(resultElement)
     {
         Array = array;
@@ -17,4 +17,7 @@ internal class LoadElementOp : LeftOp
 
     public override string GenCode()
         => $"{Left.Code()} = (*{Array.Code()})[{Index.Code()}];";
+
+    public override BaseOp Clone()
+        => new LoadElementOp(Left, Array, Index);
 }

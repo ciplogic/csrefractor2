@@ -8,4 +8,9 @@ class CompositeOp(BaseOp[] ops) : BaseOp
     {
         return string.Join("\n", Ops.Select(op => op.GenCode()));
     }
+
+    public override BaseOp Clone()
+    {
+        return new CompositeOp(Ops.ToArray());
+    }
 }

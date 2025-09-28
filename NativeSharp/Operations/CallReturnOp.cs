@@ -14,6 +14,14 @@ public class CallReturnOp(IndexedVariable left, CallType callType)
 
     public MethodBase TargetMethod { get; set; } = null!;
 
+    public override BaseOp Clone() =>
+        new CallReturnOp(Left, CallType)
+        {
+            Args = Args.ToArray(),
+            ReturnValue = ReturnValue,
+            TargetMethod = TargetMethod
+        };
+
     public override string ToString() => $"call {TargetMethod.Name}";
 
     public override string GenCode()

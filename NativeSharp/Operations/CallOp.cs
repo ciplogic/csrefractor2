@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using NativeSharp.CodeGen;
 using NativeSharp.Operations.Common;
+using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
@@ -10,6 +11,16 @@ public class CallOp : BaseOp
     public IValueExpression[] Args { get; set; } = [];
     
     public MethodBase TargetMethod { get; set; } = null!;
+
+    public override BaseOp Clone()
+    {
+        return new CallOp()
+        {
+            TargetMethod = TargetMethod,
+            CallType = CallType,
+            Args = Args.ToArray()
+        };
+    }
 
     public override string ToString() => $"call {TargetMethod.Name}";
 

@@ -15,4 +15,7 @@ internal class LdLenOp : LeftOp
 
     public override string GenCode()
         => $"{Left.Code()} = {Right.Code()}->size();";
+
+    public override BaseOp Clone() 
+        => new LdLenOp(Left, Right);
 }

@@ -3,7 +3,8 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
-internal class ConvOp(string opName, VReg resultVar, IValueExpression rightSideVar)
+//TODO: Make it an unary operation 
+internal class ConvOp(string opName, IndexedVariable resultVar, IValueExpression rightSideVar)
     : LeftOp(resultVar)
 {
     public string OpName { get; } = opName.Replace('.', '_');
@@ -12,5 +13,10 @@ internal class ConvOp(string opName, VReg resultVar, IValueExpression rightSideV
     public override string GenCode()
     {
         return $"{Left.Code()} = {OpName} ({RightSideVar.Code()});";
+    }
+
+    public override BaseOp Clone()
+    {
+        return new ConvOp(OpName, Left, RightSideVar);
     }
 }

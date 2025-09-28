@@ -2,7 +2,7 @@
 using NativeSharp.Lib.Resolvers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
-using NativeSharp.Operations.Values;
+using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Optimizations.ConstExprOptimization;
 

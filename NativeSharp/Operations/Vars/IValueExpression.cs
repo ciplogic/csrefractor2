@@ -1,4 +1,4 @@
-﻿namespace NativeSharp.Operations.Common;
+﻿namespace NativeSharp.Operations.Vars;
 
 public interface IValueExpression
 {

@@ -14,4 +14,11 @@ class UnaryOp : LeftOp
 
     public override string GenCode()
         => $"{Left.Code()} = {Operator} ({LeftExpression.Code()});";
+
+    public override BaseOp Clone()
+        => new UnaryOp(Left)
+        {
+            LeftExpression = LeftExpression,
+            Operator = Operator
+        };
 }

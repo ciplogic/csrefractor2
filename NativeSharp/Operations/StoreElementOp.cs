@@ -13,4 +13,6 @@ internal class StoreElementOp(IndexedVariable arrPtr, IValueExpression index, IV
     {
         return $"(*{ArrPtr.Code()})[{Index.Code()}] = {ValueToSet.Code()};";
     }
+
+    public override BaseOp Clone() => new StoreElementOp(ArrPtr, Index, ValueToSet);
 }

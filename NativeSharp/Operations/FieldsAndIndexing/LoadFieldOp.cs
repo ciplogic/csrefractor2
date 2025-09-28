@@ -8,8 +8,8 @@ internal class LoadFieldOp : LeftOp
     public IndexedVariable ThisPtr { get; set; }
     public string FieldName { get; }
 
-    public LoadFieldOp(IndexedVariable thisPtr, string fieldName, VReg resultVar)
-    : base(resultVar)
+    public LoadFieldOp(IndexedVariable thisPtr, string fieldName, IndexedVariable left)
+        : base(left)
     {
         ThisPtr = thisPtr;
         FieldName = fieldName;
@@ -22,4 +22,6 @@ internal class LoadFieldOp : LeftOp
         string derefText = isByRef ? "->" : ".";
         return $"{Left.Code()} = {ThisPtr.Code()}{derefText}{FieldName};";
     }
+
+    public override BaseOp Clone() => new LoadFieldOp(ThisPtr, FieldName, Left);
 }

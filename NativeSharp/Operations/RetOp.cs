@@ -1,4 +1,5 @@
 ﻿using NativeSharp.Operations.Common;
+using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
@@ -10,4 +11,9 @@ internal class RetOp(IValueExpression? valueExpression) : BaseOp
         => ValueExpression is null
             ? ""
             : $"return {ValueExpression.Code()};";
+
+    public override BaseOp Clone()
+    {
+        return new RetOp(ValueExpression);
+    }
 }

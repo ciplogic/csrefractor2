@@ -1,8 +1,8 @@
-﻿namespace NativeSharp.Operations;
+﻿namespace NativeSharp.Operations.BranchOperations;
 
-internal class LabelOp(int offset) : BaseOp
+internal class LabelOp(int offset) : OffsetOp(offset)
 {
-    public int Offset { get; } = offset;
+    public override BaseOp Clone() => new LabelOp(Offset);
 
     public override string ToString() => GenCode();
 

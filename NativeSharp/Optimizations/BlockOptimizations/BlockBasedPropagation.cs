@@ -2,7 +2,6 @@
 using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
-using NativeSharp.Operations.Values;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations.BlockOptimizations.Common;
 

@@ -15,4 +15,14 @@ class BinaryOp : LeftOp
 
     public override string GenCode()
         => $"{Left.Code()} = {Operator} ({LeftExpression.Code()}, {RightExpression.Code()});";
+
+    public override BaseOp Clone()
+    {
+        return new BinaryOp(Left)
+        {
+            Operator = Operator,
+            LeftExpression = LeftExpression,
+            RightExpression = RightExpression
+        };
+    }
 }
