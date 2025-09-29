@@ -85,24 +85,52 @@ std::cout<<value<<'\n';
 
 System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
 {
-  System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65;
+  System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65,vreg_90,vreg_91,vreg_92,vreg_93,vreg_94,vreg_95;
   System_Int32 local_3,vreg_74,vreg_75;
   RefArr<Ref<Body>> vreg_3,vreg_30,vreg_35,vreg_43,vreg_48,vreg_56,vreg_61,vreg_72,vreg_78;
-  Ref<Body> vreg_11,vreg_15,vreg_19,vreg_23,vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_84,vreg_85;
+  Ref<Body> vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_96,vreg_97,vreg_98,vreg_99,vreg_100;
   System_UInt32 vreg_73;
 
   vreg_3 = new_arr<Ref<Body>>(5);
-  vreg_85 = new_ref<Body>();
-  vreg_85->Mass = 39.47841760435743;
-  (*vreg_3)[0] = vreg_85;
-  vreg_11 = Body_jupiter();
-  (*vreg_3)[1] = vreg_11;
-  vreg_15 = Body_saturn();
-  (*vreg_3)[2] = vreg_15;
-  vreg_19 = Body_uranus();
-  (*vreg_3)[3] = vreg_19;
-  vreg_23 = Body_neptune();
-  (*vreg_3)[4] = vreg_23;
+  vreg_96 = new_ref<Body>();
+  vreg_96->Mass = 39.47841760435743;
+  (*vreg_3)[0] = vreg_96;
+  vreg_97 = new_ref<Body>();
+  vreg_97->_X_k__BackingField = 4.841431442464721;
+  vreg_97->_Y_k__BackingField = -1.1603200440274284;
+  vreg_97->_Z_k__BackingField = -0.10362204447112311;
+  vreg_97->Vx = 0.606326392995832;
+  vreg_97->Vy = 2.81198684491626;
+  vreg_97->Vz = -0.02521836165988763;
+  vreg_97->Mass = 0.03769367487038949;
+  (*vreg_3)[1] = vreg_97;
+  vreg_98 = new_ref<Body>();
+  vreg_98->_X_k__BackingField = 8.34336671824458;
+  vreg_98->_Y_k__BackingField = 4.124798564124305;
+  vreg_98->_Z_k__BackingField = -0.4035234171143214;
+  vreg_98->Vx = -1.0107743461787924;
+  vreg_98->Vy = 1.8256623712304119;
+  vreg_98->Vz = 0.008415761376584154;
+  vreg_98->Mass = 0.011286326131968767;
+  (*vreg_3)[2] = vreg_98;
+  vreg_99 = new_ref<Body>();
+  vreg_99->_X_k__BackingField = 12.894369562139131;
+  vreg_99->_Y_k__BackingField = -15.111151401698631;
+  vreg_99->_Z_k__BackingField = -0.22330757889265573;
+  vreg_99->Vx = 1.0827910064415354;
+  vreg_99->Vy = 0.8687130181696082;
+  vreg_99->Vz = -0.010832637401363636;
+  vreg_99->Mass = 0.0017237240570597112;
+  (*vreg_3)[3] = vreg_99;
+  vreg_100 = new_ref<Body>();
+  vreg_100->_X_k__BackingField = 15.379697114850917;
+  vreg_100->_Y_k__BackingField = -25.919314609987964;
+  vreg_100->_Z_k__BackingField = 0.17925877295037118;
+  vreg_100->Vx = 0.979090732243898;
+  vreg_100->Vy = 0.5946989986476762;
+  vreg_100->Vz = -0.034755955504078104;
+  vreg_100->Mass = 0.0020336868699246304;
+  (*vreg_3)[4] = vreg_100;
   _this->bodies = vreg_3;
   local_0 = 0;
   local_1 = 0;
@@ -143,7 +171,15 @@ System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
   if (brtrue_s(vreg_75)) goto label_94;
   vreg_78 = _this->bodies;
   vreg_80 = (*vreg_78)[0];
-  vreg_84 = Body_offsetMomentum(vreg_80, local_0, local_1, local_2);
+  vreg_90 = neg (local_0);
+  vreg_91 = div (vreg_90, 39.47841760435743);
+  vreg_80->Vx = vreg_91;
+  vreg_92 = neg (local_1);
+  vreg_93 = div (vreg_92, 39.47841760435743);
+  vreg_80->Vy = vreg_93;
+  vreg_94 = neg (local_2);
+  vreg_95 = div (vreg_94, 39.47841760435743);
+  vreg_80->Vz = vreg_95;
 }
 
 Ref<Body> Body_sun()

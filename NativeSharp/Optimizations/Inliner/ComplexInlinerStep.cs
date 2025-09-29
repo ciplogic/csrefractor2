@@ -30,7 +30,7 @@ public class ComplexInlinerStep
             return true;
         }
 
-        if (opsToInline.OpsCloned.Length > 5)
+        if (opsToInline.OpsCloned.Length > 45)
         {
             return false;
         }
