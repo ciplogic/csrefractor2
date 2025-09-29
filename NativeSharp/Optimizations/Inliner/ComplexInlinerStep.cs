@@ -30,7 +30,7 @@ public class ComplexInlinerStep
             return true;
         }
 
-        if (opsToInline.OpsCloned.Length > 3)
+        if (opsToInline.OpsCloned.Length > 5)
         {
             return false;
         }
@@ -45,6 +45,8 @@ public class ComplexInlinerStep
         IValueExpression? returnValueExpression)
     {
         var newOps = new List<BaseOp>();
+
+        newOps.AddRange(cilNativeMethod.Instructions.Take(row));
         var argumentsOps = GetCallArguments(cilNativeMethod.Instructions[row]);
         for (var index = 0; index < argumentsOps.Length; index++)
         {
@@ -52,8 +54,6 @@ public class ComplexInlinerStep
             var leftSide = newVars[index];
             newOps.Add(new AssignOp(leftSide, argument));
         }
-
-        newOps.AddRange(cilNativeMethod.Instructions.Take(row));
         newOps.AddRange(OpsCloned);
         if (returnValueExpression is not null)
         {

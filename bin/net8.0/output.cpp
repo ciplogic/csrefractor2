@@ -88,12 +88,13 @@ System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
   System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65;
   System_Int32 local_3,vreg_74,vreg_75;
   RefArr<Ref<Body>> vreg_3,vreg_30,vreg_35,vreg_43,vreg_48,vreg_56,vreg_61,vreg_72,vreg_78;
-  Ref<Body> vreg_7,vreg_11,vreg_15,vreg_19,vreg_23,vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_84;
+  Ref<Body> vreg_11,vreg_15,vreg_19,vreg_23,vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_84,vreg_85;
   System_UInt32 vreg_73;
 
   vreg_3 = new_arr<Ref<Body>>(5);
-  vreg_7 = Body_sun();
-  (*vreg_3)[0] = vreg_7;
+  vreg_85 = new_ref<Body>();
+  vreg_85->Mass = 39.47841760435743;
+  (*vreg_3)[0] = vreg_85;
   vreg_11 = Body_jupiter();
   (*vreg_3)[1] = vreg_11;
   vreg_15 = Body_saturn();
@@ -289,25 +290,25 @@ System_Void NBodySystem_AdvanceTwoLoops(Ref<NBodySystem> _this, System_Double dt
 
 System_Void NBodySystem_advanceInnerLoop(Ref<NBodySystem> _this, System_Double dt, Ref<Body> iBody, System_Int32 j)
 {
-  System_Double vreg_1,vreg_6,vreg_7,vreg_9,vreg_14,vreg_15,vreg_17,vreg_22,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125;
   RefArr<Ref<Body>> vreg_3,vreg_11,vreg_19,vreg_48,vreg_62,vreg_76,vreg_85,vreg_99,vreg_113;
   Ref<Body> vreg_5,vreg_13,vreg_21,vreg_50,vreg_64,vreg_78,vreg_87,vreg_101,vreg_115;
+  System_Double vreg_7,vreg_15,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125,vreg_127,vreg_129,vreg_131,vreg_133,vreg_135,vreg_137;
 
-  vreg_1 = Body_get_X(iBody);
+  vreg_127 = iBody->_X_k__BackingField;
   vreg_3 = _this->bodies;
   vreg_5 = (*vreg_3)[j];
-  vreg_6 = Body_get_X(vreg_5);
-  vreg_7 = sub (vreg_1, vreg_6);
-  vreg_9 = Body_get_Y(iBody);
+  vreg_129 = vreg_5->_X_k__BackingField;
+  vreg_7 = sub (vreg_127, vreg_129);
+  vreg_131 = iBody->_Y_k__BackingField;
   vreg_11 = _this->bodies;
   vreg_13 = (*vreg_11)[j];
-  vreg_14 = Body_get_Y(vreg_13);
-  vreg_15 = sub (vreg_9, vreg_14);
-  vreg_17 = Body_get_Z(iBody);
+  vreg_133 = vreg_13->_Y_k__BackingField;
+  vreg_15 = sub (vreg_131, vreg_133);
+  vreg_135 = iBody->_Z_k__BackingField;
   vreg_19 = _this->bodies;
   vreg_21 = (*vreg_19)[j];
-  vreg_22 = Body_get_Z(vreg_21);
-  vreg_23 = sub (vreg_17, vreg_22);
+  vreg_137 = vreg_21->_Z_k__BackingField;
+  vreg_23 = sub (vreg_135, vreg_137);
   vreg_26 = mul (vreg_7, vreg_7);
   vreg_29 = mul (vreg_15, vreg_15);
   vreg_30 = add (vreg_26, vreg_29);
@@ -399,7 +400,7 @@ System_Void NBodySystem_AdvanceBodiesEnergy(Ref<NBodySystem> _this, System_Doubl
   RefArr<Ref<Body>> local_0,vreg_37;
   System_Int32 local_1,vreg_39;
   Ref<Body> vreg_5;
-  System_Double vreg_9,vreg_12,vreg_13,vreg_14,vreg_18,vreg_21,vreg_22,vreg_23,vreg_27,vreg_30,vreg_31,vreg_32;
+  System_Double vreg_12,vreg_13,vreg_14,vreg_21,vreg_22,vreg_23,vreg_30,vreg_31,vreg_32,vreg_42,vreg_44,vreg_46;
   System_UInt32 vreg_38;
   System_Boolean vreg_40;
 
@@ -408,20 +409,20 @@ System_Void NBodySystem_AdvanceBodiesEnergy(Ref<NBodySystem> _this, System_Doubl
   goto label_89;
   label_13:
   vreg_5 = (*local_0)[local_1];
-  vreg_9 = Body_get_X(vreg_5);
+  vreg_42 = vreg_5->_X_k__BackingField;
   vreg_12 = vreg_5->Vx;
   vreg_13 = mul (dt, vreg_12);
-  vreg_14 = add (vreg_9, vreg_13);
+  vreg_14 = add (vreg_42, vreg_13);
   vreg_5->_X_k__BackingField = vreg_14;
-  vreg_18 = Body_get_Y(vreg_5);
+  vreg_44 = vreg_5->_Y_k__BackingField;
   vreg_21 = vreg_5->Vy;
   vreg_22 = mul (dt, vreg_21);
-  vreg_23 = add (vreg_18, vreg_22);
+  vreg_23 = add (vreg_44, vreg_22);
   vreg_5->_Y_k__BackingField = vreg_23;
-  vreg_27 = Body_get_Z(vreg_5);
+  vreg_46 = vreg_5->_Z_k__BackingField;
   vreg_30 = vreg_5->Vz;
   vreg_31 = mul (dt, vreg_30);
-  vreg_32 = add (vreg_27, vreg_31);
+  vreg_32 = add (vreg_46, vreg_31);
   vreg_5->_Z_k__BackingField = vreg_32;
   local_1 = add (local_1, 1);
   label_89:
@@ -434,7 +435,7 @@ System_Void NBodySystem_AdvanceBodiesEnergy(Ref<NBodySystem> _this, System_Doubl
 
 System_Double NBodySystem_energy(Ref<NBodySystem> _this)
 {
-  System_Double local_4,vreg_9,vreg_10,vreg_12,vreg_14,vreg_15,vreg_17,vreg_19,vreg_20,vreg_21,vreg_23,vreg_25,vreg_26,vreg_27,vreg_28,vreg_38,vreg_40,vreg_41,vreg_43,vreg_45,vreg_46,vreg_48,vreg_50,vreg_51,vreg_54,vreg_57,vreg_58,vreg_61,vreg_62,vreg_63,vreg_66,vreg_68,vreg_69,vreg_71;
+  System_Double local_4,vreg_9,vreg_10,vreg_12,vreg_14,vreg_15,vreg_17,vreg_19,vreg_20,vreg_21,vreg_23,vreg_25,vreg_26,vreg_27,vreg_28,vreg_41,vreg_46,vreg_51,vreg_54,vreg_57,vreg_58,vreg_61,vreg_62,vreg_63,vreg_66,vreg_68,vreg_69,vreg_71,vreg_93,vreg_95,vreg_97,vreg_99,vreg_101,vreg_103;
   System_Int32 local_5,local_7,vreg_80,vreg_81,vreg_90,vreg_91;
   Ref<Body> local_6,vreg_5,vreg_36;
   RefArr<Ref<Body>> vreg_3,vreg_34,vreg_78,vreg_88;
@@ -467,15 +468,15 @@ System_Double NBodySystem_energy(Ref<NBodySystem> _this)
   label_110:
   vreg_34 = _this->bodies;
   vreg_36 = (*vreg_34)[local_7];
-  vreg_38 = Body_get_X(local_6);
-  vreg_40 = Body_get_X(vreg_36);
-  vreg_41 = sub (vreg_38, vreg_40);
-  vreg_43 = Body_get_Y(local_6);
-  vreg_45 = Body_get_Y(vreg_36);
-  vreg_46 = sub (vreg_43, vreg_45);
-  vreg_48 = Body_get_Z(local_6);
-  vreg_50 = Body_get_Z(vreg_36);
-  vreg_51 = sub (vreg_48, vreg_50);
+  vreg_93 = local_6->_X_k__BackingField;
+  vreg_95 = vreg_36->_X_k__BackingField;
+  vreg_41 = sub (vreg_93, vreg_95);
+  vreg_97 = local_6->_Y_k__BackingField;
+  vreg_99 = vreg_36->_Y_k__BackingField;
+  vreg_46 = sub (vreg_97, vreg_99);
+  vreg_101 = local_6->_Z_k__BackingField;
+  vreg_103 = vreg_36->_Z_k__BackingField;
+  vreg_51 = sub (vreg_101, vreg_103);
   vreg_54 = mul (vreg_41, vreg_41);
   vreg_57 = mul (vreg_46, vreg_46);
   vreg_58 = add (vreg_54, vreg_57);
