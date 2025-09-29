@@ -91,13 +91,13 @@ public class CodeGenerator
 
     public void WriteReferencedTypes()
     {
-        Dictionary<Type, Type> mappedTypes = MethodResolver.MappedType.Straight;
-        foreach (KeyValuePair<Type, Type> kv in mappedTypes)
+        Dictionary<Type?, Type?> mappedTypes = MethodResolver.MappedType.Straight;
+        foreach (KeyValuePair<Type?, Type?> kv in mappedTypes)
         {
             Code.AddLine($"struct {kv.Value.Mangle(RefKind.Value)};");
         }
 
-        foreach (KeyValuePair<Type, Type> kv in mappedTypes)
+        foreach (KeyValuePair<Type?, Type?> kv in mappedTypes)
         {
             var writer = new ClassFieldsWriter(Code, kv.Value, kv.Key);
             writer.WriteFieldsOfType();

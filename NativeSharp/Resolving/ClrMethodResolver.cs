@@ -29,14 +29,14 @@ static class ClrMethodResolver
             };
         }
 
-        int parmeterCount = clrMethod.ParameterCount();
+        int parameterCount = clrMethod.ParameterCount();
 
 
         string fullTargetMethodName = $"{clrMethod.MangleMethodName()}";
         MethodInfo[] methodInfos = typeof(ResolvedMethods)
             .GetMethods(BindingFlags.Static | BindingFlags.Public)
             .Where(x => x.Name == fullTargetMethodName)
-            .Where(x => x.ParameterCount() == parmeterCount)
+            .Where(x => x.ParameterCount() == parameterCount)
             .ToArray();
         if (methodInfos.Length == 0)
         {

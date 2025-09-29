@@ -1,8 +1,8 @@
 ﻿namespace NativeSharp.Common;
 
-class TwoWayDictionary<T>
+class TwoWayDictionary<T> where T : notnull
 {
-    public Dictionary<T, T> Straight { get; } = [];
+    public Dictionary<T, T?> Straight { get; } = [];
     public Dictionary<T, T> Reverse { get; } = [];
 
     public void Add(T key, T value)
@@ -16,10 +16,10 @@ class TwoWayDictionary<T>
 
     public T this[T key]
     {
-        get => Straight[key];
-        set => Add(key, value);
+        get => Straight[key]!;
+        set => Add(key, value!);
     }
 
-    public bool TryGetValue(T keyType, out T valueOut)
+    public bool TryGetValue(T keyType, out T? valueOut)
         => Straight.TryGetValue(keyType, out valueOut);
 }

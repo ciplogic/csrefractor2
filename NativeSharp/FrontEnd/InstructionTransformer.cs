@@ -180,7 +180,6 @@ internal class InstructionTransformer
 
     static string[] BranchOps = ["brfalse", "brtrue"];
 
-    private static string[] BoolUnaryOperations = [];
     private static string[] BoolBinaryOperations = ["blt", "bgt", "blt.s", "bgt.s"];
 
     private BaseOp TransformBranchOperation(Instruction instruction, string opName)
@@ -188,12 +187,6 @@ internal class InstructionTransformer
         if (BoolBinaryOperations.Contains(opName))
         {
             return TransformBoolBinaryOp(instruction, opName, LocalVariablesStackAndState);
-        }
-
-        bool isBoolConditional = BoolUnaryOperations.Contains(opName);
-        if (isBoolConditional)
-        {
-            return TransformBoolUnaryOp(instruction, opName);
         }
 
         bool isConditional = BranchOps.Any(opName.StartsWith);
@@ -225,22 +218,6 @@ internal class InstructionTransformer
         CompositeOp combinedOp = new([binaryOp, branchOp]);
 
         return combinedOp;
-    }
-
-    public BaseOp TransformBoolUnaryOp(Instruction instruction, string opName)
-    {
-        IValueExpression leftOp = LocalVariablesStackAndState.Pop();
-        var left = LocalVariablesStackAndState.NewVirtVar<bool>();
-        var binaryOp = new UnaryOp(left)
-        {
-            ValueExpression = leftOp,
-            Operator = opName.CleanupFieldName()
-        };
-
-        var targetIndex = instruction.Operand as Instruction;
-
-        var conditionalJump = new BranchOp(targetIndex.Offset, "brtrue", left);
-        return new CompositeOp([binaryOp, conditionalJump]);
     }
 
     private BaseOp TransformBinaryOp(Instruction instruction)

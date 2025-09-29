@@ -22,34 +22,59 @@ public class OptimizationSteps(bool isOptimizing)
         [
             new BlockBasedPropagation(),
             new RemovedUnusedAssignsAndVars(),
-            new GotoOpsOptimizationBase(),
+            new GotoOpsOptimization(),
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
-            new RemoveUnusedVars(),
-            new InlinerOptimization()
+            new RemoveUnusedVars()
         ];
     }
 
     public void OptimizeMethodSet(BaseNativeMethod[] methodCacheValues)
     {
+        var methodsToOptimize = CilMethodsFromCache(methodCacheValues);
         bool canOptimize;
         do
         {
             canOptimize = false;
-            foreach (var method in methodCacheValues)
+            foreach (var cilNativeMethod in methodsToOptimize)
             {
-                if (method is CilNativeMethod cilNativeMethod)
-                {
-                    canOptimize |= OptimizeMethod(cilNativeMethod);
-                }
+                canOptimize |= OptimizeMethod(cilNativeMethod, CilMethodOptimizations);
+            }
+
+            if (canOptimize)
+            {
+                InlineSets(methodsToOptimize);
             }
         } while (canOptimize);
     }
 
-    private bool OptimizeMethod(CilNativeMethod method)
+    private static CilNativeMethod[] CilMethodsFromCache(BaseNativeMethod[] methodCacheValues)
+    {
+        List<CilNativeMethod> cilMethods = [];
+        foreach (var method in methodCacheValues)
+        {
+            if (method is CilNativeMethod cilNativeMethod)
+            {
+                cilMethods.Add(cilNativeMethod);
+            }
+        }
+
+        return cilMethods.ToArray();
+    }
+
+    private static void InlineSets(CilNativeMethod[] methodCacheValues)
+    {
+        var inliner = new InlinerOptimization();
+        foreach (var cilNativeMethod in methodCacheValues)
+        {
+            inliner.Optimize(cilNativeMethod);
+        }
+    }
+
+    private static bool OptimizeMethod(CilNativeMethod method, OptimizationBase[] cilMethodOptimizations)
     {
         var result = false;
-        foreach (var opt in CilMethodOptimizations)
+        foreach (var opt in cilMethodOptimizations)
         {
             result |= opt.Optimize(method);
         }

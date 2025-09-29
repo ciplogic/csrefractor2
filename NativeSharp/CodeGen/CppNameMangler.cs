@@ -6,9 +6,9 @@ namespace NativeSharp.CodeGen;
 
 internal static class CppNameMangler
 {
-    public static string Mangle(this Type clrType, RefKind refKind = RefKind.Default)
+    public static string Mangle(this Type? clrType, RefKind refKind = RefKind.Default)
     {
-        if (MethodResolver.MappedType.TryGetValue(clrType, out Type mappedClrType))
+        if (MethodResolver.MappedType.TryGetValue(clrType, out Type? mappedClrType))
         {
             clrType = mappedClrType;
         }

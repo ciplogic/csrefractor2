@@ -2,7 +2,7 @@
 
 namespace NativeSharp.CodeGen.Methods;
 
-public record ClassFieldsWriter(CodeGenToFile Code, Type sourceType, Type mappedType)
+public record ClassFieldsWriter(CodeGenToFile Code, Type? sourceType, Type? mappedType)
 {
     public void WriteFieldsOfType()
     {

@@ -12,12 +12,12 @@ internal static class MethodResolver
 {
     public static Dictionary<MethodBase, BaseNativeMethod> MethodCache { get; } = [];
     public static Dictionary<MethodBase, MethodBase> RemappedMethods { get; } = [];
-    public static TwoWayDictionary<Type> MappedType { get; } = new();
+    public static TwoWayDictionary<Type?> MappedType { get; } = new();
 
     public static List<IMethodResolver> AllMethodResolvers { get; } = [];
 
 
-    public static Type ResolveType(Type targetType)
+    public static Type? ResolveType(Type? targetType)
     {
         if (targetType.IsArray)
         {

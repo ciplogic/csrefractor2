@@ -2,6 +2,7 @@
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
+using NativeSharp.Optimizations.Common;
 using NativeSharp.Optimizations.DeadCodeElimination;
 
 namespace NativeSharp.Optimizations.Inliner;
@@ -51,23 +52,39 @@ public class InlinerOptimization : OptimizationBase
             CilMethodExtensions.RemoveIndices(cilNativeMethod, [row]);
             return true;
         }
-        
+
+        if (targetOps.Length == 2)
+        {
+            var clonedOp = targetToInline.Instructions[0].Clone();
+            Dictionary<IValueExpression, IValueExpression> fromTo = new();
+            for (var i = 0; i < callOp.Args.Length; i++)
+            {
+                fromTo[targetToInline.Args[i]] = callOp.Args[i];
+            }
+
+            InstructionUsages.UpdateKnownOps(clonedOp, fromTo);
+            cilNativeMethod.Instructions[row] = clonedOp;
+
+            return true;
+        }
+
         return TryInlineComplexCall(cilNativeMethod, row, callOp, targetToInline);
 
         return false;
-
     }
 
-    private bool TryInlineComplexCall(CilNativeMethod cilNativeMethod, int row, CallOp callOp, CilNativeMethod targetToInline)
+    private bool TryInlineComplexCall(CilNativeMethod cilNativeMethod, int row, CallOp callOp,
+        CilNativeMethod targetToInline)
     {
         var targetOps = targetToInline.Instructions;
         if (targetOps.Length > 120)
         {
             return false;
         }
-        
-        Dictionary<IValueExpression, IValueExpression> mappedFromInline = new Dictionary<IValueExpression, IValueExpression>();
-        
+
+        Dictionary<IValueExpression, IValueExpression> mappedFromInline =
+            new Dictionary<IValueExpression, IValueExpression>();
+
 
         return false;
     }

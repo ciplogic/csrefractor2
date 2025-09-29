@@ -6,7 +6,7 @@ using NativeSharp.Optimizations.DeadCodeElimination;
 
 namespace NativeSharp.Optimizations.GotosOptimizations;
 
-public class GotoOpsOptimizationBase : OptimizationBase
+public class GotoOpsOptimization : OptimizationBase
 {
     public override bool Optimize(CilNativeMethod cilNativeMethod)
     {
@@ -19,7 +19,7 @@ public class GotoOpsOptimizationBase : OptimizationBase
             CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove.ToArray());
             result = true;
         }
-        
+
         var labelsToRemove = LabelsToRemove(cilNativeMethod);
         if (labelsToRemove.Length != 0)
         {
@@ -38,9 +38,10 @@ public class GotoOpsOptimizationBase : OptimizationBase
         {
             labels.Remove(referencedLabel);
         }
+
         return labels.Values.ToArray();
     }
-    
+
     static Dictionary<int, int> LabelsAtRows(CilNativeMethod cilNativeMethod)
     {
         Dictionary<int, int> result = [];
@@ -51,28 +52,21 @@ public class GotoOpsOptimizationBase : OptimizationBase
             if (op is LabelOp labelOp)
             {
                 result[labelOp.Offset] = index;
-
             }
         }
 
         return result;
-
     }
 
-    static HashSet<int> ReferencedJumps(CilNativeMethod cilNativeMethod)
+    private static HashSet<int> ReferencedJumps(CilNativeMethod cilNativeMethod)
     {
         HashSet<int> result = [];
         var ops = cilNativeMethod.Instructions;
         foreach (var op in ops)
         {
-            if (!op.IsJumpOp())
+            if (op is JumpToOffset jumpToOp)
             {
-                continue;
-            }
-            
-            if (op is OffsetOp branchOp)
-            {
-                result.Add(branchOp.Offset);
+                result.Add(jumpToOp.Offset);
             }
         }
 

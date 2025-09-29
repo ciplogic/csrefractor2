@@ -1,10 +1,9 @@
 ﻿using NativeSharp.CodeGen;
-using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations.BranchOperations;
 
-internal class BranchOp : OffsetOp
+internal class BranchOp : JumpToOffset
 {
     public string Name { get; }
     public IValueExpression Condition { get; set; }
