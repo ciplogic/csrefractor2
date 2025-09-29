@@ -9,9 +9,9 @@ namespace NativeSharp.Resolving;
 
 static class ClrMethodResolver
 {
-    public static BaseNativeMethod? ResolveSystemClrMethod(MethodBase clrMethod)
+    public static BaseNativeMethod? ResolveSystemClrMethod(MethodBase? clrMethod)
     {
-        if (clrMethod == null)
+        if (clrMethod is null)
         {
             return null;
         }
@@ -63,17 +63,6 @@ static class ClrMethodResolver
         if (mappedMethod is null)
         {
             return null;
-        }
-
-        ParameterInfo[] parameterInfos = clrMethod.GetParameters();
-
-        ParameterInfo[] mappedMethodInfo = mappedMethod.GetParameters();
-        bool isStatic = clrMethod.IsStatic;
-        int offset = isStatic ? 0 : 1;
-        for (int i = offset; i < mappedMethodInfo.Length; i++)
-        {
-            ParameterInfo mappedParam = mappedMethodInfo[i];
-            ParameterInfo param = parameterInfos[i];
         }
 
         MethodResolver.RemappedMethods[clrMethod] = mappedMethod;

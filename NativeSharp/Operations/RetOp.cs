@@ -1,5 +1,4 @@
-﻿using NativeSharp.Operations.Common;
-using NativeSharp.Operations.Vars;
+﻿using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 

@@ -8,4 +8,9 @@ public class ArgumentVariable : IndexedVariable
         => string.IsNullOrEmpty(Name)
             ? $"arg_{Index}"
             : Name;
+
+    public override string ToString()
+    {
+        return Code();
+    }
 }

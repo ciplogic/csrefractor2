@@ -101,7 +101,20 @@ static class InstructionUsages
         return valueExpression.Code();
     }
 
-    public static bool UpdateKnownOps(BaseOp op, Dictionary<IValueExpression, IValueExpression> updates)
+    public static void UpdateUsagesAndDefinitions(BaseOp instruction,
+        Dictionary<IValueExpression, IValueExpression> updates)
+    {
+        UpdateKnownOpUsages(instruction, updates);
+        if (instruction is LeftOp leftOp)
+        {
+            if (updates.TryGetValue(leftOp.Left, out var update))
+            {
+                leftOp.Left = (IndexedVariable)update;
+            }
+        }
+    }
+
+    public static bool UpdateKnownOpUsages(BaseOp op, Dictionary<IValueExpression, IValueExpression> updates)
         => op switch
         {
             AssignOp assignOp => UpdateExpressionT(assignOp, MatchAssign, updates),

@@ -1,17 +1,16 @@
 ﻿using System.Reflection;
 using NativeSharp.Common;
 using NativeSharp.Extensions;
-using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd.Transformers;
 
-class LocalVariablesStackAndState
+class LocalVariablesStackAndState(int vregIndex = 0)
 {
     public List<IndexedVariable> LocalVariables { get; } = [];
-    private readonly Stack<IValueExpression> _variableStack = new();
-    public int[] _targetBranches = [];
-    private int _vregIndex = 0;
+    private readonly Stack<IValueExpression> variableStack = new();
+    public int[] TargetBranches = [];
+    private int vregIndex = vregIndex;
 
 
     public VReg NewVirtVar<T>() => NewVirtVar(typeof(T));
@@ -20,18 +19,18 @@ class LocalVariablesStackAndState
     {
         VReg virtVar = new VReg()
         {
-            Index = _vregIndex++,
+            Index = vregIndex++,
             ExpressionType = varType
         };
         LocalVariables.Add(virtVar);
-        _variableStack.Push(virtVar);
+        variableStack.Push(virtVar);
         return virtVar;
     }
 
     public void BuildLocalVariables(MethodBase parentMethod)
     {
-        _vregIndex = 0;
-        _variableStack.Clear();
+        vregIndex = 0;
+        variableStack.Clear();
         LocalVariables.Clear();
 
         IList<LocalVariableInfo> locals = parentMethod.GetMethodBody()!.LocalVariables ?? [];
@@ -46,8 +45,8 @@ class LocalVariablesStackAndState
         }
 
         Instruction[] instructions2 = MethodBodyReader.GetInstructions(parentMethod);
-        _targetBranches = instructions2.BuildTargetBranches();
+        TargetBranches = instructions2.BuildTargetBranches();
     }
 
-    public IValueExpression Pop() => _variableStack.Pop();
+    public IValueExpression Pop() => variableStack.Pop();
 }

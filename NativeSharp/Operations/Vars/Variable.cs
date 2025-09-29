@@ -1,6 +1,4 @@
-﻿using NativeSharp.Operations.Common;
-
-namespace NativeSharp.Operations.Vars;
+﻿namespace NativeSharp.Operations.Vars;
 
 public abstract class Variable : IValueExpression
 {

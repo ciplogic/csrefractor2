@@ -1,5 +1,4 @@
-﻿using NativeSharp.Lib;
-using NativeSharp.Operations;
+﻿using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations.Common;
@@ -32,13 +31,8 @@ public class InlinerOptimization : OptimizationBase
 
     private bool TryInline(CilNativeMethod cilNativeMethod, int row)
     {
-        var op = cilNativeMethod.Instructions[row];
-        if (op is CallOp callOp)
-        {
-            return TryInlineCallOp(cilNativeMethod, row, callOp);
-        }
-
-        return false;
+        var complexInliner = new ComplexInlinerStep();
+        return complexInliner.InlineComplex(cilNativeMethod, row);
     }
 
     private bool TryInlineCallOp(CilNativeMethod cilNativeMethod, int row, CallOp callOp)
@@ -62,7 +56,7 @@ public class InlinerOptimization : OptimizationBase
                 fromTo[targetToInline.Args[i]] = callOp.Args[i];
             }
 
-            InstructionUsages.UpdateKnownOps(clonedOp, fromTo);
+            InstructionUsages.UpdateKnownOpUsages(clonedOp, fromTo);
             cilNativeMethod.Instructions[row] = clonedOp;
 
             return true;

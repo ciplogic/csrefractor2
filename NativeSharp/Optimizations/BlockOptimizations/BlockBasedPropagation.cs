@@ -1,7 +1,4 @@
 ﻿using NativeSharp.Operations;
-using NativeSharp.Operations.BranchOperations;
-using NativeSharp.Operations.Common;
-using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations.BlockOptimizations.Common;
 using NativeSharp.Optimizations.Common;
@@ -18,7 +15,7 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
         for (var i = 0; i < segment.Count; i++)
         {
             var op = segment[i];
-            result |= InstructionUsages.UpdateKnownOps(op, updates);
+            result |= InstructionUsages.UpdateKnownOpUsages(op, updates);
             if (op is not AssignOp assignOp)
             {
                 continue;

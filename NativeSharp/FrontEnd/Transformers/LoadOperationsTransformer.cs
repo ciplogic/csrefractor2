@@ -2,7 +2,6 @@
 using NativeSharp.CodeGen;
 using NativeSharp.Common;
 using NativeSharp.Operations;
-using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 

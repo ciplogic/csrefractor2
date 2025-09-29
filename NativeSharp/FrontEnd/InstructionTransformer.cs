@@ -5,7 +5,6 @@ using NativeSharp.Extensions;
 using NativeSharp.FrontEnd.Transformers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
-using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 
@@ -29,7 +28,7 @@ internal class InstructionTransformer
         for (var index = 0; index < instructions2.Length; index++)
         {
             var instruction = instructions2[index];
-            if (LocalVariablesStackAndState._targetBranches.Contains(instruction.Offset))
+            if (LocalVariablesStackAndState.TargetBranches.Contains(instruction.Offset))
             {
                 resultList.Add(new LabelOp(instruction.Offset));
             }
