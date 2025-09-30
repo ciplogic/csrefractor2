@@ -1,10 +1,12 @@
 ﻿using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
+using NativeSharp.Resolving;
 
-namespace NativeSharp.Optimizations.DeadCodeElimination;
+namespace NativeSharp.Optimizations;
 
-public static class CilMethodExtensions
+public static class CilNativeMethodExtensions
 {
+    
     public static void RemoveIndices(CilNativeMethod cilNativeMethod, int[] indicesToRemove)
     {
         if (indicesToRemove.Length == 0)
@@ -22,5 +24,20 @@ public static class CilMethodExtensions
         }
 
         cilNativeMethod.Instructions = newOps.ToArray();
+    }
+
+    public static CilNativeMethod[] CilMethodsFromCache()
+    {
+        var methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
+        List<CilNativeMethod> cilMethods = [];
+        foreach (var method in methodCacheValues)
+        {
+            if (method is CilNativeMethod cilNativeMethod)
+            {
+                cilMethods.Add(cilNativeMethod);
+            }
+        }
+
+        return cilMethods.ToArray();
     }
 }

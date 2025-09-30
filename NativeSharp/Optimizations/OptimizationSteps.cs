@@ -9,9 +9,9 @@ namespace NativeSharp.Optimizations;
 
 public class OptimizationSteps(bool isOptimizing)
 {
-    public OptimizationBase[] CilMethodOptimizations = BuildOptimizations(isOptimizing);
+    public List<OptimizationBase> CilMethodOptimizations = BuildOptimizations(isOptimizing);
 
-    private static OptimizationBase[] BuildOptimizations(bool isOptimizing)
+    private static List<OptimizationBase> BuildOptimizations(bool isOptimizing)
     {
         if (!isOptimizing)
         {
@@ -43,26 +43,6 @@ public class OptimizationSteps(bool isOptimizing)
         } while (canOptimize);
     }
 
-    private static CilNativeMethod[] CilMethodsFromCache(BaseNativeMethod[] methodCacheValues)
-    {
-        List<CilNativeMethod> cilMethods = [];
-        foreach (var method in methodCacheValues)
-        {
-            if (method is CilNativeMethod cilNativeMethod)
-            {
-                cilMethods.Add(cilNativeMethod);
-            }
-        }
-
-        return cilMethods.ToArray();
-    }
-
-    private static void InlineSets(CilNativeMethod[] methodCacheValues)
-    {
-        var inliner = new InlinerOptimization();
-        OptimizeMethodSet(methodCacheValues, [inliner]);
-    }
-
     private static bool OptimizeMethod(CilNativeMethod method, OptimizationBase[] cilMethodOptimizations)
     {
         var result = false;
@@ -74,10 +54,9 @@ public class OptimizationSteps(bool isOptimizing)
         return result;
     }
 
-    public static void OptimizeMethodSet(BaseNativeMethod[] methodsToOptimize,
-        OptimizationBase[] optimizerCilMethodOptimizations)
+    public static void OptimizeMethodSet(OptimizationBase[] optimizerCilMethodOptimizations)
     {
-        var cilMethods = CilMethodsFromCache(methodsToOptimize);
+        var cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
         OptimizeMethodSet(cilMethods, optimizerCilMethodOptimizations);
       
     }

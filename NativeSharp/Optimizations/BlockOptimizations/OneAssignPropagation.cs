@@ -1,7 +1,6 @@
 ﻿using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Optimizations.Common;
-using NativeSharp.Optimizations.DeadCodeElimination;
 
 namespace NativeSharp.Optimizations.BlockOptimizations;
 
@@ -34,7 +33,7 @@ public class OneAssignPropagation : OptimizationBase
                 continue;
             }
             leftOp.Left = assignOp.Left;
-            CilMethodExtensions.RemoveIndices(cilNativeMethod, [i]);
+            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, [i]);
             return true;
         }
 

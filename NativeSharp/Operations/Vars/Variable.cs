@@ -1,8 +1,11 @@
-﻿namespace NativeSharp.Operations.Vars;
+﻿using NativeSharp.EscapeAnalysis;
+
+namespace NativeSharp.Operations.Vars;
 
 public abstract class Variable : IValueExpression
 {
     public Type ExpressionType { get; set; }
+    public EscapeKind EscapeResult { get; set; } = EscapeKind.Unused;
 
     public string Code()
     {

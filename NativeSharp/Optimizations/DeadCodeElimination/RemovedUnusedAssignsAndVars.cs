@@ -33,7 +33,7 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
 
         var indicesToRemove = GetAssignmentIndicesToRemove(cilNativeMethod, candidatesForRemoval);
 
-        CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove); 
+        CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove); 
         
         return candidatesForRemoval.Count != 0;
     }

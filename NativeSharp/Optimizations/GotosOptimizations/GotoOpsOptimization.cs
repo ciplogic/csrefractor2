@@ -1,6 +1,5 @@
 ﻿using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Common;
-using NativeSharp.Optimizations.DeadCodeElimination;
 
 namespace NativeSharp.Optimizations.GotosOptimizations;
 
@@ -14,14 +13,14 @@ public class GotoOpsOptimization : OptimizationBase
 
         if (indicesToRemove.Length != 0)
         {
-            CilMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove.ToArray());
+            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove.ToArray());
             result = true;
         }
 
         var labelsToRemove = LabelsToRemove(cilNativeMethod);
         if (labelsToRemove.Length != 0)
         {
-            CilMethodExtensions.RemoveIndices(cilNativeMethod, labelsToRemove);
+            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, labelsToRemove);
             result = true;
         }
 

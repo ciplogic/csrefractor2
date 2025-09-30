@@ -5,7 +5,6 @@ using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations.Common;
-using NativeSharp.Optimizations.DeadCodeElimination;
 
 namespace NativeSharp.Optimizations.Inliner;
 
@@ -26,15 +25,13 @@ public class ComplexInlinerStep
             GetOpsToInline(target, fromToVariables);
         if (opsToInline.OpsCloned.Length == 0)
         {
-            CilMethodExtensions.RemoveIndices(cilNativeMethod, [row]);
+            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, [row]);
             return true;
         }
 
-        if (opsToInline.OpsCloned.Length > 45)
+        if (opsToInline.OpsCloned.Length > 25)
         {
-            ApplyInline(cilNativeMethod, row, opsToInline.OpsCloned, opsToInline.newVars,
-                opsToInline.returnValueExpression);
-            return true;
+            return false;
         }
 
         ApplyInline(cilNativeMethod, row, opsToInline.OpsCloned, opsToInline.newVars,
