@@ -11,7 +11,7 @@ namespace NativeSharp.Optimizations.Inliner;
 
 public class ComplexInlinerStep
 {
-    public bool InlineComplex(CilNativeMethod cilNativeMethod, int row)
+    public static bool InlineComplex(CilNativeMethod cilNativeMethod, int row)
     {
         var target = InlinerExtensions.GetTargetCall(cilNativeMethod.Instructions[row]);
         if (target is null)
@@ -19,7 +19,7 @@ public class ComplexInlinerStep
             return false;
         }
 
-        var startVregIndex = MaxIndexOfVariable(cilNativeMethod) + 1;
+        var startVregIndex = Math.Max(MaxIndexOfVariable(cilNativeMethod), MaxIndexOfVariable(target)) + 1;
 
         Dictionary<IValueExpression, IValueExpression> fromToVariables = CreateVariablesTable(target, startVregIndex);
         (BaseOp[] OpsCloned, IndexedVariable[] newVars, IValueExpression? returnValueExpression) opsToInline =
@@ -32,7 +32,9 @@ public class ComplexInlinerStep
 
         if (opsToInline.OpsCloned.Length > 45)
         {
-            return false;
+            ApplyInline(cilNativeMethod, row, opsToInline.OpsCloned, opsToInline.newVars,
+                opsToInline.returnValueExpression);
+            return true;
         }
 
         ApplyInline(cilNativeMethod, row, opsToInline.OpsCloned, opsToInline.newVars,
@@ -41,7 +43,11 @@ public class ComplexInlinerStep
         return true;
     }
 
-    private void ApplyInline(CilNativeMethod cilNativeMethod, int row, BaseOp[] OpsCloned, IndexedVariable[] newVars,
+    private static void ApplyInline(
+        CilNativeMethod cilNativeMethod, 
+        int row, 
+        BaseOp[] opsCloned,
+        IndexedVariable[] newVars,
         IValueExpression? returnValueExpression)
     {
         var newOps = new List<BaseOp>();
@@ -54,7 +60,8 @@ public class ComplexInlinerStep
             var leftSide = newVars[index];
             newOps.Add(new AssignOp(leftSide, argument));
         }
-        newOps.AddRange(OpsCloned);
+
+        newOps.AddRange(opsCloned);
         if (returnValueExpression is not null)
         {
             var callRetOp = (CallReturnOp)cilNativeMethod.Instructions[row];
@@ -122,6 +129,7 @@ public class ComplexInlinerStep
             VReg variableToMapTo = localVariablesStack.NewVirtVar(variable.ExpressionType);
             variablesTable[variable] = variableToMapTo;
         }
+
         return variablesTable;
     }
 
@@ -157,6 +165,7 @@ public class ComplexInlinerStep
         {
             return callOp.Args;
         }
+
         var callRetOp = (CallReturnOp)op;
         return callRetOp.Args;
     }

@@ -25,25 +25,20 @@ public class OptimizationSteps(bool isOptimizing)
             new GotoOpsOptimization(),
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
-            new RemoveUnusedVars()
+            new RemoveUnusedVars(),
+            new InlinerOptimization()
         ];
     }
 
-    public void OptimizeMethodSet(BaseNativeMethod[] methodCacheValues)
+    public static void OptimizeMethodSet(CilNativeMethod[] methodsToOptimize, OptimizationBase[] cilMethodOptimizations)
     {
-        var methodsToOptimize = CilMethodsFromCache(methodCacheValues);
         bool canOptimize;
         do
         {
             canOptimize = false;
             foreach (var cilNativeMethod in methodsToOptimize)
             {
-                canOptimize |= OptimizeMethod(cilNativeMethod, CilMethodOptimizations);
-            }
-
-            if (canOptimize)
-            {
-                InlineSets(methodsToOptimize);
+                canOptimize |= OptimizeMethod(cilNativeMethod, cilMethodOptimizations);
             }
         } while (canOptimize);
     }
@@ -65,10 +60,7 @@ public class OptimizationSteps(bool isOptimizing)
     private static void InlineSets(CilNativeMethod[] methodCacheValues)
     {
         var inliner = new InlinerOptimization();
-        foreach (var cilNativeMethod in methodCacheValues)
-        {
-            inliner.Optimize(cilNativeMethod);
-        }
+        OptimizeMethodSet(methodCacheValues, [inliner]);
     }
 
     private static bool OptimizeMethod(CilNativeMethod method, OptimizationBase[] cilMethodOptimizations)
@@ -80,5 +72,13 @@ public class OptimizationSteps(bool isOptimizing)
         }
 
         return result;
+    }
+
+    public static void OptimizeMethodSet(BaseNativeMethod[] methodsToOptimize,
+        OptimizationBase[] optimizerCilMethodOptimizations)
+    {
+        var cilMethods = CilMethodsFromCache(methodsToOptimize);
+        OptimizeMethodSet(cilMethods, optimizerCilMethodOptimizations);
+      
     }
 }

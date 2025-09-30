@@ -85,16 +85,16 @@ std::cout<<value<<'\n';
 
 System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
 {
-  System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65,vreg_90,vreg_91,vreg_92,vreg_93,vreg_94,vreg_95;
+  System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65,vreg_91,vreg_92,vreg_93,vreg_94,vreg_95,vreg_96;
   System_Int32 local_3,vreg_74,vreg_75;
   RefArr<Ref<Body>> vreg_3,vreg_30,vreg_35,vreg_43,vreg_48,vreg_56,vreg_61,vreg_72,vreg_78;
-  Ref<Body> vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_96,vreg_97,vreg_98,vreg_99,vreg_100;
+  Ref<Body> vreg_32,vreg_37,vreg_45,vreg_50,vreg_58,vreg_63,vreg_80,vreg_86,vreg_97,vreg_98,vreg_99,vreg_100;
   System_UInt32 vreg_73;
 
   vreg_3 = new_arr<Ref<Body>>(5);
-  vreg_96 = new_ref<Body>();
-  vreg_96->Mass = 39.47841760435743;
-  (*vreg_3)[0] = vreg_96;
+  vreg_86 = new_ref<Body>();
+  vreg_86->Mass = 39.47841760435743;
+  (*vreg_3)[0] = vreg_86;
   vreg_97 = new_ref<Body>();
   vreg_97->_X_k__BackingField = 4.841431442464721;
   vreg_97->_Y_k__BackingField = -1.1603200440274284;
@@ -171,15 +171,15 @@ System_Void NBodySystem_ctor(Ref<NBodySystem> _this)
   if (brtrue_s(vreg_75)) goto label_94;
   vreg_78 = _this->bodies;
   vreg_80 = (*vreg_78)[0];
-  vreg_90 = neg (local_0);
-  vreg_91 = div (vreg_90, 39.47841760435743);
-  vreg_80->Vx = vreg_91;
-  vreg_92 = neg (local_1);
-  vreg_93 = div (vreg_92, 39.47841760435743);
-  vreg_80->Vy = vreg_93;
-  vreg_94 = neg (local_2);
-  vreg_95 = div (vreg_94, 39.47841760435743);
-  vreg_80->Vz = vreg_95;
+  vreg_91 = neg (local_0);
+  vreg_92 = div (vreg_91, 39.47841760435743);
+  vreg_80->Vx = vreg_92;
+  vreg_93 = neg (local_1);
+  vreg_94 = div (vreg_93, 39.47841760435743);
+  vreg_80->Vy = vreg_94;
+  vreg_95 = neg (local_2);
+  vreg_96 = div (vreg_95, 39.47841760435743);
+  vreg_80->Vz = vreg_96;
 }
 
 Ref<Body> Body_sun()
@@ -295,9 +295,10 @@ System_Void NBodySystem_advance(Ref<NBodySystem> _this, System_Double dt)
 System_Void NBodySystem_AdvanceTwoLoops(Ref<NBodySystem> _this, System_Double dt)
 {
   System_Int32 local_0,local_2,vreg_19,vreg_20,vreg_29,vreg_30;
-  Ref<Body> local_1;
-  RefArr<Ref<Body>> vreg_2,vreg_17,vreg_27;
+  Ref<Body> local_1,vreg_144,vreg_147,vreg_150,vreg_163,vreg_170,vreg_177,vreg_183,vreg_190,vreg_197;
+  RefArr<Ref<Body>> vreg_2,vreg_17,vreg_27,vreg_143,vreg_146,vreg_149,vreg_162,vreg_169,vreg_176,vreg_182,vreg_189,vreg_196;
   System_UInt32 vreg_18,vreg_28;
+  System_Double vreg_145,vreg_148,vreg_152,vreg_153,vreg_154,vreg_155,vreg_156,vreg_157,vreg_158,vreg_159,vreg_160,vreg_161,vreg_164,vreg_165,vreg_166,vreg_167,vreg_168,vreg_171,vreg_172,vreg_173,vreg_174,vreg_175,vreg_178,vreg_179,vreg_180,vreg_181,vreg_184,vreg_185,vreg_186,vreg_187,vreg_188,vreg_191,vreg_192,vreg_193,vreg_194,vreg_195,vreg_198,vreg_199,vreg_200,vreg_201,vreg_202,vreg_203,vreg_204,vreg_205,vreg_206,vreg_207,vreg_209;
 
   local_0 = 0;
   goto label_57;
@@ -307,7 +308,77 @@ System_Void NBodySystem_AdvanceTwoLoops(Ref<NBodySystem> _this, System_Double dt
   local_2 = add (local_0, 1);
   goto label_37;
   label_21:
-  NBodySystem_advanceInnerLoop(_this, dt, local_1, local_2);
+  vreg_203 = local_1->_X_k__BackingField;
+  vreg_143 = _this->bodies;
+  vreg_144 = (*vreg_143)[local_2];
+  vreg_204 = vreg_144->_X_k__BackingField;
+  vreg_145 = sub (vreg_203, vreg_204);
+  vreg_205 = local_1->_Y_k__BackingField;
+  vreg_146 = _this->bodies;
+  vreg_147 = (*vreg_146)[local_2];
+  vreg_206 = vreg_147->_Y_k__BackingField;
+  vreg_148 = sub (vreg_205, vreg_206);
+  vreg_207 = local_1->_Z_k__BackingField;
+  vreg_149 = _this->bodies;
+  vreg_150 = (*vreg_149)[local_2];
+  vreg_209 = vreg_150->_Z_k__BackingField;
+  vreg_152 = sub (vreg_207, vreg_209);
+  vreg_153 = mul (vreg_145, vreg_145);
+  vreg_154 = mul (vreg_148, vreg_148);
+  vreg_155 = add (vreg_153, vreg_154);
+  vreg_156 = mul (vreg_152, vreg_152);
+  vreg_157 = add (vreg_155, vreg_156);
+  vreg_158 = System_Math_Sqrt(vreg_157);
+  vreg_159 = mul (vreg_157, vreg_158);
+  vreg_160 = div (dt, vreg_159);
+  vreg_161 = local_1->Vx;
+  vreg_162 = _this->bodies;
+  vreg_163 = (*vreg_162)[local_2];
+  vreg_164 = vreg_163->Mass;
+  vreg_165 = mul (vreg_145, vreg_164);
+  vreg_166 = mul (vreg_165, vreg_160);
+  vreg_167 = sub (vreg_161, vreg_166);
+  local_1->Vx = vreg_167;
+  vreg_168 = local_1->Vy;
+  vreg_169 = _this->bodies;
+  vreg_170 = (*vreg_169)[local_2];
+  vreg_171 = vreg_170->Mass;
+  vreg_172 = mul (vreg_148, vreg_171);
+  vreg_173 = mul (vreg_172, vreg_160);
+  vreg_174 = sub (vreg_168, vreg_173);
+  local_1->Vy = vreg_174;
+  vreg_175 = local_1->Vz;
+  vreg_176 = _this->bodies;
+  vreg_177 = (*vreg_176)[local_2];
+  vreg_178 = vreg_177->Mass;
+  vreg_179 = mul (vreg_152, vreg_178);
+  vreg_180 = mul (vreg_179, vreg_160);
+  vreg_181 = sub (vreg_175, vreg_180);
+  local_1->Vz = vreg_181;
+  vreg_182 = _this->bodies;
+  vreg_183 = (*vreg_182)[local_2];
+  vreg_184 = vreg_183->Vx;
+  vreg_185 = local_1->Mass;
+  vreg_186 = mul (vreg_145, vreg_185);
+  vreg_187 = mul (vreg_186, vreg_160);
+  vreg_188 = add (vreg_184, vreg_187);
+  vreg_183->Vx = vreg_188;
+  vreg_189 = _this->bodies;
+  vreg_190 = (*vreg_189)[local_2];
+  vreg_191 = vreg_190->Vy;
+  vreg_192 = local_1->Mass;
+  vreg_193 = mul (vreg_148, vreg_192);
+  vreg_194 = mul (vreg_193, vreg_160);
+  vreg_195 = add (vreg_191, vreg_194);
+  vreg_190->Vy = vreg_195;
+  vreg_196 = _this->bodies;
+  vreg_197 = (*vreg_196)[local_2];
+  vreg_198 = vreg_197->Vz;
+  vreg_199 = local_1->Mass;
+  vreg_200 = mul (vreg_152, vreg_199);
+  vreg_201 = mul (vreg_200, vreg_160);
+  vreg_202 = add (vreg_198, vreg_201);
+  vreg_197->Vz = vreg_202;
   local_2 = add (local_2, 1);
   label_37:
   vreg_17 = _this->bodies;
@@ -328,23 +399,23 @@ System_Void NBodySystem_advanceInnerLoop(Ref<NBodySystem> _this, System_Double d
 {
   RefArr<Ref<Body>> vreg_3,vreg_11,vreg_19,vreg_48,vreg_62,vreg_76,vreg_85,vreg_99,vreg_113;
   Ref<Body> vreg_5,vreg_13,vreg_21,vreg_50,vreg_64,vreg_78,vreg_87,vreg_101,vreg_115;
-  System_Double vreg_7,vreg_15,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125,vreg_127,vreg_129,vreg_131,vreg_133,vreg_135,vreg_137;
+  System_Double vreg_7,vreg_15,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125,vreg_128,vreg_130,vreg_132,vreg_134,vreg_136,vreg_138;
 
-  vreg_127 = iBody->_X_k__BackingField;
+  vreg_128 = iBody->_X_k__BackingField;
   vreg_3 = _this->bodies;
   vreg_5 = (*vreg_3)[j];
-  vreg_129 = vreg_5->_X_k__BackingField;
-  vreg_7 = sub (vreg_127, vreg_129);
-  vreg_131 = iBody->_Y_k__BackingField;
+  vreg_130 = vreg_5->_X_k__BackingField;
+  vreg_7 = sub (vreg_128, vreg_130);
+  vreg_132 = iBody->_Y_k__BackingField;
   vreg_11 = _this->bodies;
   vreg_13 = (*vreg_11)[j];
-  vreg_133 = vreg_13->_Y_k__BackingField;
-  vreg_15 = sub (vreg_131, vreg_133);
-  vreg_135 = iBody->_Z_k__BackingField;
+  vreg_134 = vreg_13->_Y_k__BackingField;
+  vreg_15 = sub (vreg_132, vreg_134);
+  vreg_136 = iBody->_Z_k__BackingField;
   vreg_19 = _this->bodies;
   vreg_21 = (*vreg_19)[j];
-  vreg_137 = vreg_21->_Z_k__BackingField;
-  vreg_23 = sub (vreg_135, vreg_137);
+  vreg_138 = vreg_21->_Z_k__BackingField;
+  vreg_23 = sub (vreg_136, vreg_138);
   vreg_26 = mul (vreg_7, vreg_7);
   vreg_29 = mul (vreg_15, vreg_15);
   vreg_30 = add (vreg_26, vreg_29);

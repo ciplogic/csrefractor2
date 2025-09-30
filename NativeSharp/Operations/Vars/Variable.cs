@@ -10,4 +10,17 @@ public abstract class Variable : IValueExpression
     }
 
     public abstract string GenCodeImpl();
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Variable var)
+        {
+            return Code() == var.Code();
+        }
+
+        return false;
+    }
+
+    public override int GetHashCode()
+        => Code().GetHashCode();
 }

@@ -105,12 +105,14 @@ static class InstructionUsages
         Dictionary<IValueExpression, IValueExpression> updates)
     {
         UpdateKnownOpUsages(instruction, updates);
-        if (instruction is LeftOp leftOp)
+        if (instruction is not LeftOp leftOp)
         {
-            if (updates.TryGetValue(leftOp.Left, out var update))
-            {
-                leftOp.Left = (IndexedVariable)update;
-            }
+            return;
+        }
+
+        if (updates.TryGetValue(leftOp.Left, out var update))
+        {
+            leftOp.Left = (IndexedVariable)update;
         }
     }
 
@@ -152,38 +154,48 @@ static class InstructionUsages
             fromTo);
 
     private static bool MapStoreField(StoreFieldOp op, FromTo fromTo)
-        => UpdateExpression(op,
-               x => x.ThisPtr,
-               (x, field) => x.ThisPtr = (IndexedVariable)field,
-               fromTo) ||
-           UpdateExpression(op,
-               x => x.ValueToSet,
-               (x, v) => x.ValueToSet = v,
-               fromTo);
+    {
+        var expr1 = UpdateExpression(op,
+            x => x.ThisPtr,
+            (x, field) => x.ThisPtr = (IndexedVariable)field,
+            fromTo);
+        var expr2 = UpdateExpression(op,
+            x => x.ValueToSet,
+            (x, v) => x.ValueToSet = v,
+            fromTo);
+        return expr1 || expr2;
+    }
 
 
     private static bool MatchStoreElem(StoreElementOp op, FromTo fromTo)
-        => UpdateExpression(op,
-               x => x.ArrPtr,
-               (x, v) => x.ArrPtr = (IndexedVariable)v,
-               fromTo) ||
-           UpdateExpression(op,
-               x => x.Index,
-               (x, v) => x.Index = v,
-               fromTo) ||
-           UpdateExpression(op,
-               x => x.ValueToSet,
-               (x, v) => x.ValueToSet = v,
-               fromTo);
+    {
+        var expr1 = UpdateExpression(op,
+            x => x.ArrPtr,
+            (x, v) => x.ArrPtr = (IndexedVariable)v,
+            fromTo);
+        var expr2 = UpdateExpression(op,
+            x => x.Index,
+            (x, v) => x.Index = v,
+            fromTo);
+        var expr3 = UpdateExpression(op,
+            x => x.ValueToSet,
+            (x, v) => x.ValueToSet = v,
+            fromTo);
+        return expr1 || expr2 || expr3;
+    }
 
     private static bool MatchLoadElem(LoadElementOp op, FromTo fromTo)
     {
-        var target = UpdateTargetExpression(op.Array, fromTo);
-        op.Array = (IndexedVariable)target.Mapped;
-
-        var targetIndex = UpdateTargetExpression(op.Index, fromTo);
-        op.Index = targetIndex.Mapped;
-        return target.Changed || targetIndex.Changed;
+        var arrayUpdate = UpdateExpression(op,
+            x => x.Array,
+            (x, v) => x.Array = (IndexedVariable)v,
+            fromTo);
+        var indexUpdate = UpdateExpression(op,
+            x => x.Index,
+            (x, v) => x.Index = v,
+            fromTo
+        );
+        return arrayUpdate || indexUpdate;
     }
 
     private static bool MatchNewArrayOp(NewArrayOp op, FromTo fromTo) =>
@@ -193,14 +205,17 @@ static class InstructionUsages
             fromTo);
 
     private static bool MatchBinaryOp(BinaryOp op, FromTo fromTo)
-        => UpdateExpression(op,
-               x => x.LeftExpression,
-               (x, v) => x.LeftExpression = v,
-               fromTo) ||
-           UpdateExpression(op,
-               x => x.RightExpression,
-               (x, v) => x.RightExpression = v,
-               fromTo);
+    {
+        var leftUpdate = UpdateExpression(op,
+            x => x.LeftExpression,
+            (x, v) => x.LeftExpression = v,
+            fromTo);
+        var rightUpdate = UpdateExpression(op,
+            x => x.RightExpression,
+            (x, v) => x.RightExpression = v,
+            fromTo);
+        return leftUpdate || rightUpdate;
+    }
 
     private static bool MatchBranchOp(BranchOp op, FromTo fromTo)
         => UpdateExpression(op,

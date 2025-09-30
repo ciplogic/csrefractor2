@@ -32,7 +32,7 @@ public class InlinerOptimization : OptimizationBase
     private bool TryInline(CilNativeMethod cilNativeMethod, int row)
     {
         var complexInliner = new ComplexInlinerStep();
-        return complexInliner.InlineComplex(cilNativeMethod, row);
+        return ComplexInlinerStep.InlineComplex(cilNativeMethod, row);
     }
 
     private bool TryInlineCallOp(CilNativeMethod cilNativeMethod, int row, CallOp callOp)

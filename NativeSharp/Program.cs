@@ -36,7 +36,7 @@ internal class Program
         //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
         var optimizer = new OptimizationSteps(options.Optimize);
-        optimizer.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray());
+        OptimizationSteps.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray(), optimizer.CilMethodOptimizations);
         
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName());
