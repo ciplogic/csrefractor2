@@ -46,21 +46,29 @@ internal static class MethodResolver
 
     public static BaseNativeMethod? Resolve(MethodBase clrMethod)
     {
-        Type declaringType = clrMethod.DeclaringType!;
-        string signature = clrMethod.MangleMethodName();
-        if (signature.StartsWith("System"))
+        try
         {
-            BaseNativeMethod? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod);
-            if (systemClrMethod != null)
+            Type declaringType = clrMethod.DeclaringType!;
+            string signature = clrMethod.MangleMethodName();
+            if (signature.StartsWith("System"))
             {
-                systemClrMethod.Target = clrMethod;
-                TransformCilMethod(clrMethod, clrMethod);
+                BaseNativeMethod? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod);
+                if (systemClrMethod != null)
+                {
+                    systemClrMethod.Target = clrMethod;
+                    TransformCilMethod(clrMethod, clrMethod);
+                }
+
+                return systemClrMethod;
             }
 
-            return systemClrMethod;
+            ResolveType(clrMethod.DeclaringType);
+            return TransformCilMethod(clrMethod, clrMethod);
         }
-        ResolveType(clrMethod.DeclaringType);
-        return TransformCilMethod(clrMethod, clrMethod);
+        catch
+        {
+            return null!;
+        }
     }
 
     public static BaseNativeMethod? TransformCilMethod(MethodBase clrMethod, MethodBase? remappedClrMethod = null)

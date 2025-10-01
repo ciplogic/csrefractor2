@@ -1,10 +1,14 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
+using NativeSharp.Common;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations;
 using NativeSharp.Optimizations.Common;
+using NativeSharp.Optimizations.Inliner;
+using NativeSharp.Resolving;
 
 namespace NativeSharp.EscapeAnalysis;
 
@@ -37,25 +41,57 @@ public class EscapeAnalysisStep
 
     private static void AddEscapingInstruction(BaseOp instruction, Dictionary<string, Variable> variables)
     {
-        if (instruction is RetOp retOp)
+        switch (instruction)
         {
-            var valueExpressionText = retOp.ValueExpression?.Code() ?? string.Empty;
-            UpdateVarUsage(valueExpressionText, variables, EscapeKind.Escapes);
-            return;
+            case RetOp retOp:
+            {
+                var valueExpressionText = retOp.ValueExpression?.Code() ?? string.Empty;
+                UpdateVarUsage(valueExpressionText, variables, EscapeKind.Escapes);
+                return;
+            }
+            case StoreFieldOp storeFieldOp:
+            {
+                var storeElement = storeFieldOp.ValueToSet.Code();
+                UpdateVarUsage(storeElement, variables, EscapeKind.Escapes);
+                return;
+            }
+            case StoreElementOp storeElementOp:
+            {
+                var storeElement = storeElementOp.ValueToSet.Code();
+                UpdateVarUsage(storeElement, variables, EscapeKind.Escapes);
+                return;
+            }
+            case CallOp callOp:
+                UpdateArgsVariableUsage(callOp.Args, callOp.TargetMethod, variables);
+                return;
+            case CallReturnOp callReturnOp:
+                UpdateArgsVariableUsage(callReturnOp.Args, callReturnOp.TargetMethod, variables);
+                return;
         }
+    }
 
-        if (instruction is StoreFieldOp storeFieldOp)
+    private static void UpdateArgsVariableUsage(
+        IValueExpression[] callOpArgs,
+        MethodBase targetMethod,
+        Dictionary<string, Variable> variables)
+    {
+        var cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
+        if (cilMethod is not null)
         {
-            var storeElement = storeFieldOp.ValueToSet.Code();
-            UpdateVarUsage(storeElement, variables, EscapeKind.Escapes);
-            return;
+            for (var index = 0; index < callOpArgs.Length; index++)
+            {
+                var arg = callOpArgs[index];
+                var methodArg = cilMethod.Args[index];
+                UpdateVarUsage(arg.Code(), variables, methodArg.EscapeResult);
+            }
         }
-
-        if (instruction is StoreElementOp storeElementOp)
+        else
         {
-            var storeElement = storeElementOp.ValueToSet.Code();
-            UpdateVarUsage(storeElement, variables, EscapeKind.Escapes);
-            return;
+            var args = callOpArgs.SelectToArray(x => x.Code());
+            foreach (var arg in args)
+            {
+                UpdateVarUsage(arg, variables, EscapeKind.Escapes);
+            }
         }
     }
 
