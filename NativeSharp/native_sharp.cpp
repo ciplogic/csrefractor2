@@ -2,11 +2,12 @@
 #include <functional>
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 #include "native_rc.hpp"
 
 namespace {
-    std::vector<uint8_t> marshallStringCharStar(System_String *text) {
+    std::vector<uint8_t> marshallStringCharStar(System_String* text) {
         std::vector<uint8_t> result;
         uint8_t *dataPtr = text->Data->data();
         int textLen = text->Data->size();
@@ -48,9 +49,9 @@ namespace {
         std::cout << "Time to run: " << duration.count() << " nanoseconds\n";
     }
 
-    Ref<System_String> marshallStringCharStar(System_String *text)
+    Ref<System_String> marshallStringCharStar(char *text)
     {
-        int len = strlen(text);
+        int len = std::strlen(text);
         auto vreg_1 = new_arr<System_Byte>(len);
         memcpy(vreg_1->data(), text, len);
         Ref<System_String> item = new_ref<System_String>();
