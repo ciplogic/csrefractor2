@@ -1,4 +1,5 @@
 ﻿using NativeSharp.CodeGen;
+using NativeSharp.EscapeAnalysis;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
@@ -9,6 +10,15 @@ internal class NewObjOp(IndexedVariable left) : LeftOp(left)
     public override string GenCode()
     {
         var expressionTypeName = Left.ExpressionType.Mangle(RefKind.Value);
+        if (Left.EscapeResult == EscapeKind.Local)
+        {
+            var leftCode = Left.Code();
+            return
+                $"""
+                  {expressionTypeName} {leftCode}_instance;
+                    {leftCode} = &{leftCode}_instance;  
+                 """;
+        }
         return $"{Left.Code()} = new_ref<{expressionTypeName}>();";
     }
 

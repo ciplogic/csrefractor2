@@ -4,6 +4,7 @@ using NativeSharp.Common;
 using NativeSharp.FrontEnd;
 using NativeSharp.Lib.Resolvers;
 using NativeSharp.Operations;
+using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Resolving;

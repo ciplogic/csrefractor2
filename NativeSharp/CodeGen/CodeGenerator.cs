@@ -145,7 +145,7 @@ public class CodeGenerator
                 $"    RefArr<uint8_t> _joinedTexts = makeArr<uint8_t> ({{{string.Join(',', joinedTexts)}}});")
             .AddLine("""
                          Ref<System_String> _str(int index) {
-                            return Texts_FromIndex(index, _coders, _startPos, _lengths, _joinedTexts);
+                            return Texts_FromIndex(index, _coders.get(), _startPos.get(), _lengths.get(), _joinedTexts.get());
                          }
                      }
                      """);

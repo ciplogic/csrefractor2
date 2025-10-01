@@ -62,8 +62,8 @@ System_Void nbody_Main(RefArr<Ref<System_String>> args)
   System_Double vreg_3,vreg_15;
 
   local_0 = 10000000;
-  NBodySystem vreg_1_inst;
-  vreg_1 = &vreg_1_inst;
+   NBodySystem vreg_1_instance;
+   vreg_1 = &vreg_1_instance;  
   NBodySystem_ctor(vreg_1);
   local_1 = vreg_1;
   vreg_3 = NBodySystem_energy(vreg_1);

@@ -1,14 +1,13 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using NativeSharp.Common;
 using NativeSharp.Operations;
+using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations;
 using NativeSharp.Optimizations.Common;
 using NativeSharp.Optimizations.Inliner;
-using NativeSharp.Resolving;
 
 namespace NativeSharp.EscapeAnalysis;
 

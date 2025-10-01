@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
+using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 using NativeSharp.Resolving;
 

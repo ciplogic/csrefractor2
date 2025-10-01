@@ -1,5 +1,6 @@
 ﻿using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
+using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;

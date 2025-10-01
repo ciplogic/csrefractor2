@@ -2,6 +2,7 @@
 using NativeSharp.FrontEnd.Transformers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
+using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations.Common;

@@ -6,17 +6,17 @@ namespace NativeSharp.CodeGen.Methods;
 
 public class VariablesBulkWriter
 {
-    private readonly Dictionary<string, List<string>> _variables = [];
+    private readonly Dictionary<string, List<string>> variables = [];
 
-    public void Populate(IEnumerable<IndexedVariable> variables)
+    public void Populate(IEnumerable<IndexedVariable> enumerateVariables)
     {
-        foreach (var variable in variables)
+        foreach (var variable in enumerateVariables)
         {
             var variableType = variable.ExpressionType.Mangle(variable.EscapeResult);
-            if (!_variables.TryGetValue(variableType, out List<string>? variableList))
+            if (!this.variables.TryGetValue(variableType, out List<string>? variableList))
             {
                 variableList = [];
-                _variables[variableType] = variableList;
+                this.variables[variableType] = variableList;
             }
 
             var prefix = variable.EscapeResult == EscapeKind.Local && !variable.ExpressionType.IsValueType
@@ -33,12 +33,12 @@ public class VariablesBulkWriter
         }
     }
 
-    public void Clear() => _variables.Clear();
+    public void Clear() => variables.Clear();
 
     public string Write()
     {
         StringBuilder builder = new(200);
-        foreach (var variable in _variables)
+        foreach (var variable in variables)
         {
             builder
                 .Append("  ")

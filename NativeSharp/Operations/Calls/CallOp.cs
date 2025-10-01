@@ -2,7 +2,7 @@
 using NativeSharp.CodeGen;
 using NativeSharp.Operations.Vars;
 
-namespace NativeSharp.Operations;
+namespace NativeSharp.Operations.Calls;
 
 public class CallOp : BaseOp
 {
@@ -25,17 +25,10 @@ public class CallOp : BaseOp
 
     public override string GenCode()
     {
-        string args = string.Join(", ", Args.Select(x => x.Code()));
+        string args = string.Join(", ", ArgsCallBuilder.WriteArgsCall(Args, TargetMethod));
         string result = $"{TargetMethod.MangleMethodName()}({args});";
     
         return result;
     }
-}
 
-public enum CallType
-{
-    Virtual,
-    Static,
-    Native,
-    Dynamic,
 }
