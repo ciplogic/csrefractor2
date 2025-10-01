@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using NativeSharp.EscapeAnalysis;
 using NativeSharp.Operations.Common;
 using NativeSharp.Resolving;
 
@@ -17,6 +18,7 @@ internal static class CppNameMangler
         {
             return $"RefArr<{clrType.GetElementType()!.Mangle()}>";
         }
+
         string fullName = clrType.FullName!;
         refKind = refKind == RefKind.Default ? clrType.IsValueType ? RefKind.Value : RefKind.Ref : refKind;
         string resultMangle = Mangle(fullName);
@@ -24,6 +26,38 @@ internal static class CppNameMangler
         {
             RefKind.Ref => $"Ref<{resultMangle}>",
             RefKind.Ptr => $"{resultMangle}*",
+            _ => resultMangle
+        };
+    }
+    
+    public static string Mangle(this Type? clrType, EscapeKind escapeKind)
+    {
+        if (MethodResolver.MappedType.TryGetValue(clrType, out Type? mappedClrType))
+        {
+            clrType = mappedClrType;
+        }
+
+        if (clrType.IsValueType)
+        {
+            return Mangle(clrType.FullName!);
+        }
+
+        if (clrType.IsArray)
+        {
+            if (escapeKind == EscapeKind.Local)
+            {
+                return $"Arr<{clrType.GetElementType()!.Mangle()}>*";
+            }
+
+            return $"RefArr<{clrType.GetElementType()!.Mangle()}>";
+        }
+
+        string fullName = clrType.FullName!;
+        string resultMangle = Mangle(fullName);
+        return escapeKind switch
+        {
+            EscapeKind.Escapes => $"Ref<{resultMangle}>",
+            EscapeKind.Local => $"{resultMangle}*",
             _ => resultMangle
         };
     }
@@ -45,7 +79,7 @@ internal static class CppNameMangler
     public static string MangledMethodHeader(this BaseNativeMethod cilNativeMethod)
     {
         string args = string.Join(", ",
-            cilNativeMethod.Args.Select(x => $"{x.ExpressionType.Mangle()} {x.GenCodeImpl()}"));
+            cilNativeMethod.Args.Select(x => $"{x.ExpressionType.Mangle(x.EscapeResult)} {x.GenCodeImpl()}"));
         string methodHeader =
             $"{cilNativeMethod.Target.MangleMethodReturnType()} {cilNativeMethod.Target.MangleMethodName()}({args})";
         return methodHeader;

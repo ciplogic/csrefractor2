@@ -1,33 +1,44 @@
 ﻿using System.Text;
+using NativeSharp.EscapeAnalysis;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.CodeGen.Methods;
 
 public class VariablesBulkWriter
 {
-    private readonly Dictionary<string, List<string>> _variables = [];
+    private readonly Dictionary<string, List<string>> variables = [];
 
-    public void Populate(IEnumerable<IndexedVariable> lines)
+    public void Populate(IEnumerable<IndexedVariable> enumerateVariables)
     {
-        foreach (var line in lines)
+        foreach (var variable in enumerateVariables)
         {
-            var variableType = line.ExpressionType.Mangle();
-            if (!_variables.TryGetValue(variableType, out List<string>? variableList))
+            var variableType = variable.ExpressionType.Mangle(variable.EscapeResult);
+            if (!this.variables.TryGetValue(variableType, out List<string>? variableList))
             {
                 variableList = [];
-                _variables[variableType] = variableList;
+                this.variables[variableType] = variableList;
             }
 
-            variableList.Add(line.GenCodeImpl());
+            var prefix = variable.EscapeResult == EscapeKind.Local && !variable.ExpressionType.IsValueType
+                ? "*"
+                : "";
+            if (variableList.Count > 0)
+            {
+                variableList.Add(prefix + variable.GenCodeImpl());
+            }
+            else
+            {
+                variableList.Add(variable.GenCodeImpl());
+            }
         }
     }
 
-    public void Clear() => _variables.Clear();
+    public void Clear() => variables.Clear();
 
     public string Write()
     {
         StringBuilder builder = new(200);
-        foreach (var variable in _variables)
+        foreach (var variable in variables)
         {
             builder
                 .Append("  ")

@@ -46,7 +46,6 @@ static class LoadOperationsTransformer
             return ExtractField(instruction, variablesStackAndState);
         }
 
-
         if (opName.StartsWith("ldelem"))
         {
             return ExtractLoadElement(instruction, variablesStackAndState);

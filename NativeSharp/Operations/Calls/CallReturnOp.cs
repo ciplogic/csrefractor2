@@ -3,7 +3,7 @@ using NativeSharp.CodeGen;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
-namespace NativeSharp.Operations;
+namespace NativeSharp.Operations.Calls;
 
 public class CallReturnOp(IndexedVariable left, CallType callType) 
     : LeftOp(left)
@@ -26,7 +26,7 @@ public class CallReturnOp(IndexedVariable left, CallType callType)
 
     public override string GenCode()
     {
-        string args = string.Join(", ", Args.Select(x => x.Code()));
+        string args = string.Join(", ", ArgsCallBuilder.WriteArgsCall(Args, TargetMethod));
         string result = $"{TargetMethod.MangleMethodName()}({args});";
         result = $"{Left.Code()} = {result}";
 

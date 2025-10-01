@@ -9,8 +9,8 @@
 
 template <typename T> struct RcData {
     int _count = 1;
-    int _typeId;
-    T _data;
+    int _typeId{};
+    T _data{};
 };
 
 template <typename T> class Rc {

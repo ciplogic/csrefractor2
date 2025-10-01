@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using NativeSharp.CodeGen;
+using NativeSharp.EscapeAnalysis;
 using NativeSharp.Optimizations;
 using NativeSharp.Resolving;
 
@@ -23,6 +24,7 @@ internal class Program
             var json = File.ReadAllText("compiler_options.json");
             options = JsonSerializer.Deserialize<CompilerOptions>(json) ?? new CompilerOptions();
         }
+
         Assembly asm = Assembly.LoadFrom("TargetApp.dll");
         MethodInfo entryPoint = asm.EntryPoint!;
         AssemblyScanner.DefaultMappings();
@@ -36,8 +38,10 @@ internal class Program
         //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
         var optimizer = new OptimizationSteps(options.Optimize);
-        OptimizationSteps.OptimizeMethodSet(MethodResolver.MethodCache.Values.ToArray(), optimizer.CilMethodOptimizations);
-        
+        OptimizationSteps.OptimizeMethodSet(optimizer.CilMethodOptimizations.ToArray());
+
+        EscapeAnalysisStep.ApplyStaticAnalysis();
+
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName());
         CodeGeneratorBaseTypes.GenerateNativeMappings();
