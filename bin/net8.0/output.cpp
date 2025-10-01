@@ -175,13 +175,13 @@ System_Void NBodySystem_ctor(NBodySystem* _this)
   vreg_78 = _this->bodies.get();
   vreg_80 = ((*vreg_78)[0]).get();
   vreg_91 = neg (local_0);
-  vreg_92 = div (vreg_91, 39.47841760435743);
+  vreg_92 = mul (vreg_91, 0.025330295910584444);
   vreg_80->Vx = vreg_92;
   vreg_93 = neg (local_1);
-  vreg_94 = div (vreg_93, 39.47841760435743);
+  vreg_94 = mul (vreg_93, 0.025330295910584444);
   vreg_80->Vy = vreg_94;
   vreg_95 = neg (local_2);
-  vreg_96 = div (vreg_95, 39.47841760435743);
+  vreg_96 = mul (vreg_95, 0.025330295910584444);
   vreg_80->Vz = vreg_96;
 }
 
@@ -278,13 +278,13 @@ Ref<Body> Body_offsetMomentum(Ref<Body> _this, System_Double px, System_Double p
   System_Double vreg_2,vreg_4,vreg_7,vreg_9,vreg_12,vreg_14;
 
   vreg_2 = neg (px);
-  vreg_4 = div (vreg_2, 39.47841760435743);
+  vreg_4 = mul (vreg_2, 0.025330295910584444);
   _this->Vx = vreg_4;
   vreg_7 = neg (py);
-  vreg_9 = div (vreg_7, 39.47841760435743);
+  vreg_9 = mul (vreg_7, 0.025330295910584444);
   _this->Vy = vreg_9;
   vreg_12 = neg (pz);
-  vreg_14 = div (vreg_12, 39.47841760435743);
+  vreg_14 = mul (vreg_12, 0.025330295910584444);
   _this->Vz = vreg_14;
   return _this;
 }

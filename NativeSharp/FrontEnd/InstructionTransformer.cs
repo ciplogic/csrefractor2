@@ -210,7 +210,7 @@ internal class InstructionTransformer
         {
             LeftExpression = leftOp,
             RightExpression = right,
-            Operator = opName.CleanupFieldName()
+            Name = opName.CleanupFieldName()
         };
         var operand = (Instruction)instruction.Operand;
         BranchOp branchOp = new(operand.Offset, "brtrue", left);
@@ -228,7 +228,7 @@ internal class InstructionTransformer
         {
             LeftExpression = leftOp,
             RightExpression = rightOp,
-            Operator = $"{instruction.OpCode.Name!}"
+            Name = $"{instruction.OpCode.Name!}"
         };
     }
 
@@ -253,7 +253,7 @@ internal class InstructionTransformer
         {
             LeftExpression = leftOp,
             RightExpression = rightOp,
-            Operator = instruction.OpCode.Name!
+            Name = instruction.OpCode.Name!
         };
     }
 

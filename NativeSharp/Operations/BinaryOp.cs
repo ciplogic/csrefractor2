@@ -9,18 +9,18 @@ class BinaryOp : LeftOp
     {
     }
 
-    public string Operator { get; set; } = null!;
+    public string Name { get; set; } = null!;
     public IValueExpression LeftExpression { get; set; }
     public IValueExpression RightExpression { get; set; }
 
     public override string GenCode()
-        => $"{Left.Code()} = {Operator} ({LeftExpression.Code()}, {RightExpression.Code()});";
+        => $"{Left.Code()} = {Name} ({LeftExpression.Code()}, {RightExpression.Code()});";
 
     public override BaseOp Clone()
     {
         return new BinaryOp(Left)
         {
-            Operator = Operator,
+            Name = Name,
             LeftExpression = LeftExpression,
             RightExpression = RightExpression
         };

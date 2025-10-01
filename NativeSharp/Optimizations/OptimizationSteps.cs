@@ -4,6 +4,7 @@ using NativeSharp.Optimizations.ConstExprOptimization;
 using NativeSharp.Optimizations.DeadCodeElimination;
 using NativeSharp.Optimizations.GotosOptimizations;
 using NativeSharp.Optimizations.Inliner;
+using NativeSharp.Optimizations.PeepholeOptimizations;
 
 namespace NativeSharp.Optimizations;
 
@@ -25,6 +26,7 @@ public class OptimizationSteps(bool isOptimizing)
             new GotoOpsOptimization(),
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
+            new MathSimplifications(),
             new RemoveUnusedVars(),
             new InlinerOptimization()
         ];
