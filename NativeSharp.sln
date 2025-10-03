@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeSharp.Common", "Nativ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{981AAF94-ED66-4AA8-BD62-EBF84588C180}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDirectoriesRunner", "TestDirectoriesRunner\TestDirectoriesRunner.csproj", "{22437881-F90A-4662-8170-B049516D475D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,5 +40,12 @@ Global
 		{A5959A4A-052F-45F9-9DA2-F5547515D6B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5959A4A-052F-45F9-9DA2-F5547515D6B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5959A4A-052F-45F9-9DA2-F5547515D6B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22437881-F90A-4662-8170-B049516D475D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22437881-F90A-4662-8170-B049516D475D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22437881-F90A-4662-8170-B049516D475D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22437881-F90A-4662-8170-B049516D475D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22437881-F90A-4662-8170-B049516D475D} = {981AAF94-ED66-4AA8-BD62-EBF84588C180}
 	EndGlobalSection
 EndGlobal

@@ -206,11 +206,10 @@ internal class InstructionTransformer
         IValueExpression leftOp = localVariablesStackAndState.Pop();
         IValueExpression right = localVariablesStackAndState.Pop();
         var left = localVariablesStackAndState.NewVirtVar<bool>();
-        var binaryOp = new BinaryOp(left)
+        var binaryOp = new BinaryOp(left, opName)
         {
             LeftExpression = leftOp,
-            RightExpression = right,
-            Name = opName.CleanupFieldName()
+            RightExpression = right
         };
         var operand = (Instruction)instruction.Operand;
         BranchOp branchOp = new(operand.Offset, "brtrue", left);
@@ -224,11 +223,10 @@ internal class InstructionTransformer
         IValueExpression rightOp = LocalVariablesStackAndState.Pop();
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
         var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
-        return new BinaryOp(left)
+        return new BinaryOp(left, instruction.OpCode.Name!)
         {
             LeftExpression = leftOp,
             RightExpression = rightOp,
-            Name = $"{instruction.OpCode.Name!}"
         };
     }
 
@@ -249,11 +247,10 @@ internal class InstructionTransformer
         IValueExpression rightOp = LocalVariablesStackAndState.Pop();
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
         var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
-        return new BinaryOp(left)
+        return new BinaryOp(left, instruction.OpCode.Name!)
         {
             LeftExpression = leftOp,
-            RightExpression = rightOp,
-            Name = instruction.OpCode.Name!
+            RightExpression = rightOp
         };
     }
 

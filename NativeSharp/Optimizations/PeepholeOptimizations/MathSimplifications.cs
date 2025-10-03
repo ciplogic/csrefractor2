@@ -18,7 +18,7 @@ public class MathSimplifications : OptimizationBase
         return result;
     }
 
-    private bool OptimizeOp(BaseOp[] baseOps, int index)
+    private static bool OptimizeOp(BaseOp[] baseOps, int index)
     {
         var op = baseOps[index];
         if (op is BinaryOp binaryOp)
@@ -28,7 +28,7 @@ public class MathSimplifications : OptimizationBase
         return false;
     }
 
-    private bool OptimizeBinaryOp(BaseOp[] baseOps, int index, BinaryOp binaryOp)
+    private static bool OptimizeBinaryOp(BaseOp[] baseOps, int index, BinaryOp binaryOp)
     {
         if (binaryOp.Name == "div")
         {
@@ -46,9 +46,8 @@ public class MathSimplifications : OptimizationBase
             if (constantValueExpression.ExpressionType == typeof(double))
             {
                 var doubleValue = (double)constantValueExpression.Value;
-                baseOps[index] = new BinaryOp(binaryOp.Left)
+                baseOps[index] = new BinaryOp(binaryOp.Left, "mul")
                 {
-                    Name = "mul",
                     LeftExpression = binaryOp.LeftExpression,
                     RightExpression = new ConstantValueExpression(1.0 / doubleValue),
                 };
@@ -57,9 +56,8 @@ public class MathSimplifications : OptimizationBase
             if (constantValueExpression.ExpressionType == typeof(float))
             {
                 var doubleValue = (float)constantValueExpression.Value;
-                baseOps[index] = new BinaryOp(binaryOp.Left)
+                baseOps[index] = new BinaryOp(binaryOp.Left, "mul")
                 {
-                    Name = "mul",
                     LeftExpression = binaryOp.LeftExpression,
                     RightExpression = new ConstantValueExpression(1.0f / doubleValue),
                 };

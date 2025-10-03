@@ -1,15 +1,17 @@
-﻿using NativeSharp.Operations.Common;
+﻿using NativeSharp.CodeGen;
+using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
 class BinaryOp : LeftOp
 {
-    public BinaryOp(IndexedVariable left) : base(left)
+    public BinaryOp(IndexedVariable left, string name) : base(left)
     {
+        Name = name.CleanupFieldName();
     }
 
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
     public IValueExpression LeftExpression { get; set; }
     public IValueExpression RightExpression { get; set; }
 
@@ -18,9 +20,8 @@ class BinaryOp : LeftOp
 
     public override BaseOp Clone()
     {
-        return new BinaryOp(Left)
+        return new BinaryOp(Left, Name)
         {
-            Name = Name,
             LeftExpression = LeftExpression,
             RightExpression = RightExpression
         };
