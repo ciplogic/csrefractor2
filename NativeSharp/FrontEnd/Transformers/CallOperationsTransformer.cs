@@ -13,7 +13,9 @@ internal static class CallOperationsTransformer
 
     public static BaseOp TransformCallOp(LocalVariablesStackAndState locals, Instruction instruction)
     {
+        var opName = instruction.OpCode.Name!;
         MethodBase operand = (MethodBase)instruction.Operand;
+        bool isCallVirtual = opName == "callvirt";
         if (EmptyConstructorTypes.Contains(operand.DeclaringType))
         {
             locals.Pop();
@@ -24,19 +26,7 @@ internal static class CallOperationsTransformer
 
         int paramCount = operandAsMethodInfo?.GetParameters().Length ?? 0;
 
-        List<IValueExpression> args = new List<IValueExpression>();
-        for (int i = 0; i < paramCount; i++)
-        {
-            args.Add(locals.Pop());
-        }
-
-        if (operandAsMethodInfo != null && !operandAsMethodInfo.IsStatic)
-        {
-            //makes sure that this pointer is also pushed for non static methods.
-            args.Add(locals.Pop());
-        }
-
-        args.Reverse();
+        var argumentArray = BuildArgumentArray(locals, paramCount, operandAsMethodInfo);
 
         Type returnType = operandAsMethodInfo?.ReturnType ?? typeof(void);
         VReg? returnValue = null;
@@ -45,20 +35,51 @@ internal static class CallOperationsTransformer
         if (returnType != typeof(void))
         {
             returnValue = locals.NewVirtVar(returnType);
-            return new CallReturnOp(returnValue, CallType.Static)
-            {
-                TargetMethod = operand,
-                Args = args.ToArray()
-            };
+
+            return isCallVirtual
+                ? new CallVirtualReturnOp(returnValue)
+                {
+                    TargetMethod = operand,
+                    Args = argumentArray
+                }
+                : new CallReturnOp(returnValue)
+                {
+                    TargetMethod = operand,
+                    Args = argumentArray
+                };
         }
 
+        return isCallVirtual
+            ? new CallVirtualOp()
+            {
+                TargetMethod = operand,
+                Args = argumentArray
+            }
+            : new CallOp()
+            {
+                TargetMethod = operand,
+                Args = argumentArray
+            };
+    }
 
-        CallOp result = new CallOp()
+    private static IValueExpression[] BuildArgumentArray(LocalVariablesStackAndState locals, int paramCount,
+        MethodInfo? operandAsMethodInfo)
+    {
+        List<IValueExpression> argumentList = new List<IValueExpression>();
+        for (int i = 0; i < paramCount; i++)
         {
-            CallType = CallType.Static,
-            TargetMethod = operand,
-            Args = args.ToArray()
-        };
-        return result;
+            argumentList.Add(locals.Pop());
+        }
+
+        if (operandAsMethodInfo != null && !operandAsMethodInfo.IsStatic)
+        {
+            //makes sure that this pointer is also pushed for non static methods.
+            argumentList.Add(locals.Pop());
+        }
+
+        argumentList.Reverse();
+        
+        IValueExpression[] argumentArray = argumentList.ToArray();
+        return argumentArray;
     }
 }

@@ -6,7 +6,6 @@ namespace NativeSharp.Operations.Calls;
 
 public class CallOp : BaseOp
 {
-    public CallType CallType { get; set; }
     public IValueExpression[] Args { get; set; } = [];
     
     public MethodBase TargetMethod { get; set; } = null!;
@@ -16,7 +15,6 @@ public class CallOp : BaseOp
         return new CallOp()
         {
             TargetMethod = TargetMethod,
-            CallType = CallType,
             Args = Args.ToArray()
         };
     }

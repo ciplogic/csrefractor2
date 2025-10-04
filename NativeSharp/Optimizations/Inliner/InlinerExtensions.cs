@@ -18,22 +18,16 @@ internal static class InlinerExtensions
             switch (op)
             {
                 case CallOp callOp:
-                    if (callOp.CallType == CallType.Static)
+                    if (IsInlinable(callOp.TargetMethod))
                     {
-                        if (IsInlinable(callOp.TargetMethod))
-                        {
-                            indicesCalls.Add(index);
-                        }
+                        indicesCalls.Add(index);
                     }
 
                     break;
                 case CallReturnOp callReturnOp:
-                    if (callReturnOp.CallType == CallType.Static)
+                    if (IsInlinable(callReturnOp.TargetMethod))
                     {
-                        if (IsInlinable(callReturnOp.TargetMethod))
-                        {
-                            indicesCalls.Add(index);
-                        }
+                        indicesCalls.Add(index);
                     }
 
                     break;
@@ -56,7 +50,11 @@ internal static class InlinerExtensions
             return null;
         }
 
-        var mappedCilMethod = MethodResolver.MethodCache[targetMethod];
+        if (!MethodResolver.MethodCache.TryGetValue(targetMethod, out var mappedCilMethod))
+        {
+            return null;
+        }
+
         return mappedCilMethod as CilNativeMethod;
     }
 

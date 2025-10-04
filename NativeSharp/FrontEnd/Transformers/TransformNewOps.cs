@@ -52,8 +52,7 @@ static class TransformNewOps
         CallOp callOp = new()
         {
             Args = argsCombined.ToArray(),
-            TargetMethod = constructorInfo,
-            CallType = CallType.Static
+            TargetMethod = constructorInfo
         };
 
         var combinedOps = new CompositeOp([newObjOp, callOp]);

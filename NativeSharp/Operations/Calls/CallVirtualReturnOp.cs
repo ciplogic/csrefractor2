@@ -5,7 +5,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations.Calls;
 
-public class CallReturnOp(IndexedVariable left) 
+public class CallVirtualReturnOp(IndexedVariable left) 
     : LeftOp(left)
 {
     public IValueExpression[] Args { get; set; } = [];
@@ -13,7 +13,7 @@ public class CallReturnOp(IndexedVariable left)
     public MethodBase TargetMethod { get; set; } = null!;
 
     public override BaseOp Clone() =>
-        new CallReturnOp(Left)
+        new CallVirtualReturnOp(Left)
         {
             Args = Args.ToArray(),
             TargetMethod = TargetMethod
