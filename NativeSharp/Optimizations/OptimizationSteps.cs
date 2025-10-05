@@ -28,12 +28,12 @@ public class OptimizationSteps(bool isOptimizing)
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
             new MathSimplifications(),
-            new RemoveUnusedVars(),
-            new InlinerOptimization()
+            //new RemoveUnusedVars(),
+            //new InlinerOptimization()
         ];
     }
 
-    public static void OptimizeMethodSet(CilNativeMethod[] methodsToOptimize, OptimizationBase[] cilMethodOptimizations)
+    public static void OptimizeMethodSet(CilOperationsMethod[] methodsToOptimize, OptimizationBase[] cilMethodOptimizations)
     {
         bool canOptimize;
         do
@@ -46,7 +46,7 @@ public class OptimizationSteps(bool isOptimizing)
         } while (canOptimize);
     }
 
-    private static bool OptimizeMethod(CilNativeMethod method, OptimizationBase[] cilMethodOptimizations)
+    private static bool OptimizeMethod(CilOperationsMethod method, OptimizationBase[] cilMethodOptimizations)
     {
         var result = false;
         foreach (var opt in cilMethodOptimizations)

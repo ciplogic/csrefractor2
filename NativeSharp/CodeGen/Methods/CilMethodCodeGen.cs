@@ -8,14 +8,14 @@ class CilMethodCodeGen(CodeGenToFile Code)
 {
     private readonly VariablesBulkWriter _writer = new();
 
-    public void WriteCilMethod(CilNativeMethod cilNativeMethod)
+    public void WriteCilMethod(CilOperationsMethod cilOperationsMethod)
     {
-        string methodHeader = cilNativeMethod.MangledMethodHeader();
+        string methodHeader = cilOperationsMethod.MangledMethodHeader();
         Code.AddLine(methodHeader);
 
         Code.AddLine("{");
-        WriteLocals(cilNativeMethod.Locals);
-        WriteInstructions(cilNativeMethod.Instructions);
+        WriteLocals(cilOperationsMethod.Locals);
+        WriteInstructions(cilOperationsMethod.Operations);
         Code.AddLine("}");
     }
 

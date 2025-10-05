@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.Json;
+using NativeSharp.Cha;
 using NativeSharp.Cha.Resolving;
 using NativeSharp.CodeGen;
 using NativeSharp.Common;
@@ -36,6 +37,8 @@ internal class Program
         MethodResolver.ResolveCilMethod(MethodResolver.Resolve(entryPoint));
 
         MethodResolver.ResolveAllTree(typeof(Texts).GetMethod("FromIndex")!);
+        
+        ClassHierarchyAnalysis.DevirtualizeCalls();
         //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
         var optimizer = new OptimizationSteps(options.Optimize);

@@ -6,32 +6,32 @@ namespace NativeSharp.Optimizations.GotosOptimizations;
 
 public class GotoOpsOptimization : OptimizationBase
 {
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var indicesToRemove = GotosIndicesToNextLine(cilNativeMethod);
+        var indicesToRemove = GotosIndicesToNextLine(cilOperationsMethod);
 
         bool result = false;
 
         if (indicesToRemove.Length != 0)
         {
-            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, indicesToRemove.ToArray());
+            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, indicesToRemove.ToArray());
             result = true;
         }
 
-        var labelsToRemove = LabelsToRemove(cilNativeMethod);
+        var labelsToRemove = LabelsToRemove(cilOperationsMethod);
         if (labelsToRemove.Length != 0)
         {
-            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, labelsToRemove);
+            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, labelsToRemove);
             result = true;
         }
 
         return result;
     }
 
-    static int[] LabelsToRemove(CilNativeMethod cilNativeMethod)
+    static int[] LabelsToRemove(CilOperationsMethod cilOperationsMethod)
     {
-        var labels = LabelsAtRows(cilNativeMethod);
-        var referencedLabels = ReferencedJumps(cilNativeMethod);
+        var labels = LabelsAtRows(cilOperationsMethod);
+        var referencedLabels = ReferencedJumps(cilOperationsMethod);
         foreach (int referencedLabel in referencedLabels)
         {
             labels.Remove(referencedLabel);
@@ -40,10 +40,10 @@ public class GotoOpsOptimization : OptimizationBase
         return labels.Values.ToArray();
     }
 
-    static Dictionary<int, int> LabelsAtRows(CilNativeMethod cilNativeMethod)
+    static Dictionary<int, int> LabelsAtRows(CilOperationsMethod cilOperationsMethod)
     {
         Dictionary<int, int> result = [];
-        var ops = cilNativeMethod.Instructions;
+        var ops = cilOperationsMethod.Operations;
         for (var index = 0; index < ops.Length; index++)
         {
             var op = ops[index];
@@ -56,10 +56,10 @@ public class GotoOpsOptimization : OptimizationBase
         return result;
     }
 
-    private static HashSet<int> ReferencedJumps(CilNativeMethod cilNativeMethod)
+    private static HashSet<int> ReferencedJumps(CilOperationsMethod cilOperationsMethod)
     {
         HashSet<int> result = [];
-        var ops = cilNativeMethod.Instructions;
+        var ops = cilOperationsMethod.Operations;
         foreach (var op in ops)
         {
             if (op is JumpToOffset jumpToOp)
@@ -71,10 +71,10 @@ public class GotoOpsOptimization : OptimizationBase
         return result;
     }
 
-    private static int[] GotosIndicesToNextLine(CilNativeMethod cilNativeMethod)
+    private static int[] GotosIndicesToNextLine(CilOperationsMethod cilOperationsMethod)
     {
         List<int> indicesToRemove = [];
-        var ops = cilNativeMethod.Instructions;
+        var ops = cilOperationsMethod.Operations;
         for (var index = 0; index < ops.Length - 1; index++)
         {
             var op = ops[index];

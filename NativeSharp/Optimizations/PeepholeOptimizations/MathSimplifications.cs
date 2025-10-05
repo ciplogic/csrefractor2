@@ -6,10 +6,10 @@ namespace NativeSharp.Optimizations.PeepholeOptimizations;
 
 public class MathSimplifications : OptimizationBase
 {
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
         var result = false;
-        BaseOp[] baseOps = cilNativeMethod.Instructions;
+        BaseOp[] baseOps = cilOperationsMethod.Operations;
         for (var index = 0; index < baseOps.Length; index++)
         {
             result = result || OptimizeOp(baseOps, index);

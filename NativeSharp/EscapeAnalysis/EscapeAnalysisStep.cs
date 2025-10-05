@@ -23,10 +23,10 @@ public class EscapeAnalysisStep
         }
     }
 
-    private static void Analyze(CilNativeMethod cilMethod)
+    private static void Analyze(CilOperationsMethod cilMethod)
     {
         Dictionary<string, Variable> variables = PopulateVariables(cilMethod);
-        var instructions = cilMethod.Instructions;
+        var instructions = cilMethod.Operations;
         foreach (var instruction in instructions)
         {
             var usages = InstructionUsages.GetUsagesOf(instruction);
@@ -109,7 +109,7 @@ public class EscapeAnalysisStep
         }
     }
 
-    private static Dictionary<string, Variable> PopulateVariables(CilNativeMethod cilMethod)
+    private static Dictionary<string, Variable> PopulateVariables(CilOperationsMethod cilMethod)
     {
         var result = new Dictionary<string, Variable>();
         foreach (ArgumentVariable argumentVariable in cilMethod.Args)

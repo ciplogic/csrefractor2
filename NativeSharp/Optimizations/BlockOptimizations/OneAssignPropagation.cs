@@ -7,9 +7,9 @@ namespace NativeSharp.Optimizations.BlockOptimizations;
 
 public class OneAssignPropagation : OptimizationBase
 {
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var ops = cilNativeMethod.Instructions;
+        var ops = cilOperationsMethod.Operations;
         for (var i = 1; i < ops.Length; i++)
         {
             var prev = ops[i - 1];
@@ -34,7 +34,7 @@ public class OneAssignPropagation : OptimizationBase
                 continue;
             }
             leftOp.Left = assignOp.Left;
-            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, [i]);
+            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, [i]);
             return true;
         }
 

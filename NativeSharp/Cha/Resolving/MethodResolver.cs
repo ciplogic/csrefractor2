@@ -48,7 +48,7 @@ internal static class MethodResolver
     {
         remappedClrMethod ??= clrMethod;
         InstructionTransformer transformer = new InstructionTransformer();
-        CilNativeMethod transformCilMethod = new CilNativeMethod()
+        CilOperationsMethod transformCilMethod = new ()
         {
             Target = clrMethod,
         };
@@ -56,7 +56,7 @@ internal static class MethodResolver
         BaseOp[] operations = transformer.Transform(remappedClrMethod);
         transformCilMethod.Locals = transformer.LocalVariablesStackAndState.LocalVariables.ToArray();
         transformCilMethod.Args = transformer.Params.ToArray();
-        transformCilMethod.Instructions = operations;
+        transformCilMethod.Operations = operations;
 
         return transformCilMethod;
     }
@@ -73,14 +73,14 @@ internal static class MethodResolver
 
     public static void ResolveCilMethod(BaseNativeMethod? method)
     {
-        if (method is not CilNativeMethod cilMethod)
+        if (method is not CilOperationsMethod cilMethod)
         {
             return;
         }
 
         MethodCache.TryAdd(cilMethod.Target, cilMethod);
 
-        MethodBase[] callTargets = cilMethod.Instructions.OfType<CallOp>().Select(x => x.TargetMethod).ToArray();
+        MethodBase[] callTargets = cilMethod.Operations.OfType<CallOp>().Select(x => x.TargetMethod).ToArray();
         foreach (MethodBase target in callTargets)
         {
             BaseNativeMethod? resolved = Resolve(target);
@@ -99,12 +99,12 @@ internal static class MethodResolver
         }
         
         var resolvedMethod = Resolve(entryPoint);
-        if (resolvedMethod is not CilNativeMethod cilMethod)
+        if (resolvedMethod is not CilOperationsMethod cilMethod)
         {
             return;
         }
-        var methodsVoid = cilMethod.Instructions.OfType<CallOp>().Select(x=>x.TargetMethod).ToArray();
-        var methodsReturn = cilMethod.Instructions.OfType<CallReturnOp>().Select(x => x.TargetMethod).ToArray();
+        var methodsVoid = cilMethod.Operations.OfType<CallOp>().Select(x=>x.TargetMethod).ToArray();
+        var methodsReturn = cilMethod.Operations.OfType<CallReturnOp>().Select(x => x.TargetMethod).ToArray();
         var joinedMethodsToResolve = methodsVoid.Concat(methodsReturn).ToArray();
         if (joinedMethodsToResolve.Length == 0)
         {

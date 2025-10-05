@@ -7,32 +7,32 @@ namespace NativeSharp.Extensions;
 public static class CilNativeMethodExtensions
 {
     
-    public static void RemoveIndices(CilNativeMethod cilNativeMethod, int[] indicesToRemove)
+    public static void RemoveIndices(CilOperationsMethod cilOperationsMethod, int[] indicesToRemove)
     {
         if (indicesToRemove.Length == 0)
         {
             return;
         }
 
-        var newOps = new List<BaseOp>(cilNativeMethod.Instructions.Length - indicesToRemove.Length);
-        for (var index = 0; index < cilNativeMethod.Instructions.Length; index++)
+        var newOps = new List<BaseOp>(cilOperationsMethod.Operations.Length - indicesToRemove.Length);
+        for (var index = 0; index < cilOperationsMethod.Operations.Length; index++)
         {
             if (!indicesToRemove.Contains(index))
             {
-                newOps.Add(cilNativeMethod.Instructions[index]);
+                newOps.Add(cilOperationsMethod.Operations[index]);
             }
         }
 
-        cilNativeMethod.Instructions = newOps.ToArray();
+        cilOperationsMethod.Operations = newOps.ToArray();
     }
 
-    public static CilNativeMethod[] CilMethodsFromCache()
+    public static CilOperationsMethod[] CilMethodsFromCache()
     {
         var methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
-        List<CilNativeMethod> cilMethods = [];
+        List<CilOperationsMethod> cilMethods = [];
         foreach (var method in methodCacheValues)
         {
-            if (method is CilNativeMethod cilNativeMethod)
+            if (method is CilOperationsMethod cilNativeMethod)
             {
                 cilMethods.Add(cilNativeMethod);
             }

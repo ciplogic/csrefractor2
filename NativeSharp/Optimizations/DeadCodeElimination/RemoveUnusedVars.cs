@@ -5,8 +5,8 @@ namespace NativeSharp.Optimizations.DeadCodeElimination;
 
 public class RemoveUnusedVars : OptimizationBase
 {
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        return cilNativeMethod.RefreshLocalVariables();
+        return cilOperationsMethod.RefreshLocalVariables();
     }
 }

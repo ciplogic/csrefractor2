@@ -37,7 +37,7 @@ public class CodeGenerator
         {
             switch (method)
             {
-                case CilNativeMethod cilMethod:
+                case CilOperationsMethod cilMethod:
                     cilMethodCodeGen.WriteCilMethod(cilMethod);
                     break;
                 case CppNativeMethod cppMethod:

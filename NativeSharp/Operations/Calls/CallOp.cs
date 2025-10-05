@@ -4,7 +4,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations.Calls;
 
-public class CallOp : BaseOp
+public class CallOp : BaseOp, ICallOp
 {
     public IValueExpression[] Args { get; set; } = [];
     
@@ -29,4 +29,9 @@ public class CallOp : BaseOp
         return result;
     }
 
+}
+
+public interface IVirtualCall
+{
+    BaseOp ToStatic();
 }

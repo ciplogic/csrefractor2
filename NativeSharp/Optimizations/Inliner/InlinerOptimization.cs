@@ -4,9 +4,9 @@ namespace NativeSharp.Optimizations.Inliner;
 
 public class InlinerOptimization : OptimizationBase
 {
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var ops = cilNativeMethod.Instructions;
+        var ops = cilOperationsMethod.Operations;
         var rowsWithCalls = InlinerExtensions.CalculateIsCandidate(ops);
 
         if (rowsWithCalls.Length == 0)
@@ -17,7 +17,7 @@ public class InlinerOptimization : OptimizationBase
         var result = false;
         foreach (var row in rowsWithCalls)
         {
-            if (ComplexInlinerStep.InlineComplex(cilNativeMethod, row))
+            if (ComplexInlinerStep.InlineComplex(cilOperationsMethod, row))
             {
                 result = true;
             }

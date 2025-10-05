@@ -8,9 +8,9 @@ public abstract class BlockBasedOptimizationBase : OptimizationBase
 {
     public abstract bool OptimizeSegment(ArraySegment<BaseOp> segment);
 
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var basicBlocks = BasicBlocksExtraction(cilNativeMethod.Instructions);
+        var basicBlocks = BasicBlocksExtraction(cilOperationsMethod.Operations);
         var optimized = false;
         foreach (var basicBlock in basicBlocks)
         {

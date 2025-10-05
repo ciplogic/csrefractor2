@@ -39,11 +39,11 @@ internal static class InlinerExtensions
 
     private static bool IsInlinable(MethodBase callOpTargetMethod)
     {
-        CilNativeMethod? mappedCilMethod = ResolvedMethod(callOpTargetMethod);
+        CilOperationsMethod? mappedCilMethod = ResolvedMethod(callOpTargetMethod);
         return mappedCilMethod is not null && IsSimpleMethod(mappedCilMethod);
     }
 
-    internal static CilNativeMethod? ResolvedMethod(MethodBase? targetMethod)
+    internal static CilOperationsMethod? ResolvedMethod(MethodBase? targetMethod)
     {
         if (targetMethod is null)
         {
@@ -55,12 +55,12 @@ internal static class InlinerExtensions
             return null;
         }
 
-        return mappedCilMethod as CilNativeMethod;
+        return mappedCilMethod as CilOperationsMethod;
     }
 
-    private static bool IsSimpleMethod(CilNativeMethod cilNativeMethod)
+    private static bool IsSimpleMethod(CilOperationsMethod cilOperationsMethod)
     {
-        BaseOp[] ops = cilNativeMethod.Instructions;
+        BaseOp[] ops = cilOperationsMethod.Operations;
         foreach (var op in ops)
         {
             if (op is LabelOp || op is BranchOp)
@@ -78,7 +78,7 @@ internal static class InlinerExtensions
         return true;
     }
 
-    internal static CilNativeMethod? GetTargetCall(BaseOp targetOp)
+    internal static CilOperationsMethod? GetTargetCall(BaseOp targetOp)
     {
         MethodBase? targetMethod = null;
         if (targetOp is CallOp callOp)

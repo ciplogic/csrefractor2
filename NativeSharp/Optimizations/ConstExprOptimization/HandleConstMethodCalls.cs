@@ -9,12 +9,12 @@ namespace NativeSharp.Optimizations.ConstExprOptimization;
 
 public class HandleConstMethodCalls : OptimizationBase
 {
-    public override bool Optimize(CilNativeMethod cilNativeMethod)
+    public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
         var result = false;
-        for (var index = 0; index < cilNativeMethod.Instructions.Length; index++)
+        for (var index = 0; index < cilOperationsMethod.Operations.Length; index++)
         {
-            BaseOp[] ops = cilNativeMethod.Instructions;
+            BaseOp[] ops = cilOperationsMethod.Operations;
             var instruction = ops[index];
             if (instruction is not CallReturnOp callReturnOp)
             {

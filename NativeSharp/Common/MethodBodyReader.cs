@@ -216,7 +216,7 @@ public class MethodBodyReader
             }
     }
 
-    private static Instruction GetInstruction(List<Instruction> instructions, int offset)
+    private static Instruction? GetInstruction(List<Instruction> instructions, int offset)
     {
         int size = instructions.Count;
         if (offset < 0 || offset > instructions[size - 1].Offset)

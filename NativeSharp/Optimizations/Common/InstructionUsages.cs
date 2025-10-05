@@ -47,14 +47,14 @@ static class InstructionUsages
             .Where(s => !string.IsNullOrEmpty(s))
             .ToArray();
 
-    public static bool RefreshLocalVariables(this CilNativeMethod cilNativeMethod)
+    public static bool RefreshLocalVariables(this CilOperationsMethod cilOperationsMethod)
     {
-        var usages = cilNativeMethod.Instructions.GetUsagesAndDeclarationsOfOps();
-        var oldLocalCount = cilNativeMethod.Locals.Length;
-        var vars = cilNativeMethod.Locals
+        var usages = cilOperationsMethod.Operations.GetUsagesAndDeclarationsOfOps();
+        var oldLocalCount = cilOperationsMethod.Locals.Length;
+        var vars = cilOperationsMethod.Locals
             .Where(localVar => usages.Contains(localVar.Code()))
             .ToArray();
-        cilNativeMethod.Locals = vars;
+        cilOperationsMethod.Locals = vars;
         return vars.Length != oldLocalCount;
     }
 

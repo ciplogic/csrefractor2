@@ -37,7 +37,7 @@ internal static class CallOperationsTransformer
             returnValue = locals.NewVirtVar(returnType);
 
             return isCallVirtual
-                ? new CallVirtualReturnOp(returnValue)
+                ? new VirtualCallReturnOp(returnValue)
                 {
                     TargetMethod = operand,
                     Args = argumentArray
@@ -50,7 +50,7 @@ internal static class CallOperationsTransformer
         }
 
         return isCallVirtual
-            ? new CallVirtualOp()
+            ? new VirtualCallOp()
             {
                 TargetMethod = operand,
                 Args = argumentArray

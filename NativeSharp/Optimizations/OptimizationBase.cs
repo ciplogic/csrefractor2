@@ -4,5 +4,5 @@ namespace NativeSharp.Optimizations;
 
 public abstract class OptimizationBase
 {
-    public abstract bool Optimize(CilNativeMethod cilNativeMethod);
+    public abstract bool Optimize(CilOperationsMethod cilOperationsMethod);
 }

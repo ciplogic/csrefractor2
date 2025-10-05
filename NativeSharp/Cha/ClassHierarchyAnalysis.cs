@@ -1,9 +1,13 @@
 ﻿using System.Reflection;
+using NativeSharp.Cha.Resolving;
 using NativeSharp.Common;
+using NativeSharp.Extensions;
+using NativeSharp.Operations.Calls;
+using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Cha;
 
-public class ClassHierarchyAnalysis
+public static class ClassHierarchyAnalysis
 {
     public static List<Type> RegisteredTypes { get; } = [];
     public static TwoWayDictionary<Type> MappedType { get; } = new();
@@ -60,5 +64,62 @@ public class ClassHierarchyAnalysis
         }
 
         return -1;
+    }
+
+    public static void DevirtualizeCalls()
+    {
+        var cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
+        foreach (var cilMethod in cilMethods)
+        {
+            DevirtualizeCallsInMethod(cilMethod);
+        }
+    }
+
+    private static void DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
+    {
+        var virtCallsIndices = IndexOfVirtualCalls(cilMethod).ToArray();
+        foreach (var virtCallIndex in virtCallsIndices)
+        {
+            var op = cilMethod.Operations[virtCallIndex];
+            var callOp = (ICallOp)op;
+            var declaringType = callOp.TargetMethod.DeclaringType!;
+            if (IsEffectivelySealed(declaringType))
+            {
+                MakeCallStatic(cilMethod, virtCallIndex);
+                continue;
+            }
+        }
+    }
+
+    private static bool IsEffectivelySealed(Type declaringType)
+    {
+        if (declaringType.IsSealed)
+        {
+            return true;
+        }
+
+        return RegisteredTypes.Where(knownType => knownType != declaringType).All(knownType => !declaringType.IsAssignableFrom(knownType));
+    }
+
+    private static void MakeCallStatic(CilOperationsMethod cilMethod, int virtCallIndex)
+    {
+        var op = cilMethod.Operations[virtCallIndex];
+        var virtualCall= (IVirtualCall)op;
+        var staticOp = virtualCall.ToStatic();
+        cilMethod.Operations[virtCallIndex] = staticOp;
+        var callOp = (ICallOp)staticOp;
+        MethodResolver.ResolveAllTree(callOp.TargetMethod);
+    }
+
+    static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)
+    {
+        for (var index = 0; index < cilMethod.Operations.Length; index++)
+        {
+            var op = cilMethod.Operations[index];
+            if ((op is VirtualCallOp ) ||(op is VirtualCallReturnOp))
+            {
+                yield return index;
+            }
+        }
     }
 }

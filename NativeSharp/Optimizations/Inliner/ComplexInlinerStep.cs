@@ -12,22 +12,22 @@ namespace NativeSharp.Optimizations.Inliner;
 
 public class ComplexInlinerStep
 {
-    public static bool InlineComplex(CilNativeMethod cilNativeMethod, int row)
+    public static bool InlineComplex(CilOperationsMethod cilOperationsMethod, int row)
     {
-        var target = InlinerExtensions.GetTargetCall(cilNativeMethod.Instructions[row]);
+        var target = InlinerExtensions.GetTargetCall(cilOperationsMethod.Operations[row]);
         if (target is null)
         {
             return false;
         }
 
-        var startVregIndex = Math.Max(MaxIndexOfVariable(cilNativeMethod), MaxIndexOfVariable(target)) + 1;
+        var startVregIndex = Math.Max(MaxIndexOfVariable(cilOperationsMethod), MaxIndexOfVariable(target)) + 1;
 
         Dictionary<IValueExpression, IValueExpression> fromToVariables = CreateVariablesTable(target, startVregIndex);
         (BaseOp[] OpsCloned, IndexedVariable[] newVars, IValueExpression? returnValueExpression) opsToInline =
             GetOpsToInline(target, fromToVariables);
         if (opsToInline.OpsCloned.Length == 0)
         {
-            CilNativeMethodExtensions.RemoveIndices(cilNativeMethod, [row]);
+            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, [row]);
             return true;
         }
 
@@ -36,14 +36,14 @@ public class ComplexInlinerStep
             return false;
         }
 
-        ApplyInline(cilNativeMethod, row, opsToInline.OpsCloned, opsToInline.newVars,
+        ApplyInline(cilOperationsMethod, row, opsToInline.OpsCloned, opsToInline.newVars,
             opsToInline.returnValueExpression);
 
         return true;
     }
 
     private static void ApplyInline(
-        CilNativeMethod cilNativeMethod, 
+        CilOperationsMethod cilOperationsMethod, 
         int row, 
         BaseOp[] opsCloned,
         IndexedVariable[] newVars,
@@ -51,8 +51,8 @@ public class ComplexInlinerStep
     {
         var newOps = new List<BaseOp>();
 
-        newOps.AddRange(cilNativeMethod.Instructions.Take(row));
-        var argumentsOps = GetCallArguments(cilNativeMethod.Instructions[row]);
+        newOps.AddRange(cilOperationsMethod.Operations.Take(row));
+        var argumentsOps = GetCallArguments(cilOperationsMethod.Operations[row]);
         for (var index = 0; index < argumentsOps.Length; index++)
         {
             var argument = argumentsOps[index];
@@ -63,18 +63,18 @@ public class ComplexInlinerStep
         newOps.AddRange(opsCloned);
         if (returnValueExpression is not null)
         {
-            var callRetOp = (CallReturnOp)cilNativeMethod.Instructions[row];
+            var callRetOp = (CallReturnOp)cilOperationsMethod.Operations[row];
             newOps.Add(new AssignOp(callRetOp.Left, returnValueExpression));
         }
 
-        newOps.AddRange(cilNativeMethod.Instructions.Skip(row + 1));
+        newOps.AddRange(cilOperationsMethod.Operations.Skip(row + 1));
 
-        cilNativeMethod.Locals = cilNativeMethod.Locals.Concat(newVars).ToArray();
-        cilNativeMethod.Instructions = newOps.ToArray();
+        cilOperationsMethod.Locals = cilOperationsMethod.Locals.Concat(newVars).ToArray();
+        cilOperationsMethod.Operations = newOps.ToArray();
     }
 
     private static (BaseOp[] OpsCloned, IndexedVariable[], IValueExpression? returnValueExpression) GetOpsToInline(
-        CilNativeMethod target, Dictionary<IValueExpression, IValueExpression> fromToVariables)
+        CilOperationsMethod target, Dictionary<IValueExpression, IValueExpression> fromToVariables)
     {
         var labelsTable = CreateLabelsTable(target);
         var opsToInline = BuildOpsToInline(target, fromToVariables, labelsTable);
@@ -90,10 +90,10 @@ public class ComplexInlinerStep
         return (opsToInline, fromToVariables.Values.Select(it => (IndexedVariable)it).ToArray(), retOp.ValueExpression);
     }
 
-    private static BaseOp[] BuildOpsToInline(CilNativeMethod target,
+    private static BaseOp[] BuildOpsToInline(CilOperationsMethod target,
         Dictionary<IValueExpression, IValueExpression> fromToVariables, Dictionary<int, int> labelsTable)
     {
-        BaseOp[] opsToInline = target.Instructions.SelectToArray(op => op.Clone());
+        BaseOp[] opsToInline = target.Operations.SelectToArray(op => op.Clone());
         foreach (var op in opsToInline)
         {
             InstructionUsages.UpdateUsagesAndDefinitions(op, fromToVariables);
@@ -110,7 +110,7 @@ public class ComplexInlinerStep
         return opsToInline;
     }
 
-    private static Dictionary<IValueExpression, IValueExpression> CreateVariablesTable(CilNativeMethod targets,
+    private static Dictionary<IValueExpression, IValueExpression> CreateVariablesTable(CilOperationsMethod targets,
         int startIndex)
     {
         Dictionary<IValueExpression, IValueExpression> variablesTable =
@@ -133,10 +133,10 @@ public class ComplexInlinerStep
     }
 
 
-    static int MaxIndexOfVariable(CilNativeMethod cilNativeMethod)
+    static int MaxIndexOfVariable(CilOperationsMethod cilOperationsMethod)
     {
         int result = 0;
-        foreach (var indexVariable in cilNativeMethod.Locals)
+        foreach (var indexVariable in cilOperationsMethod.Locals)
         {
             result = Math.Max(result, indexVariable.Index);
         }
@@ -144,10 +144,10 @@ public class ComplexInlinerStep
         return result;
     }
 
-    private static int MaxLabelIndex(CilNativeMethod cilNativeMethod)
+    private static int MaxLabelIndex(CilOperationsMethod cilOperationsMethod)
     {
         int result = 0;
-        foreach (var op in cilNativeMethod.Instructions)
+        foreach (var op in cilOperationsMethod.Operations)
         {
             if (op is LabelOp labelOp)
             {
@@ -169,12 +169,12 @@ public class ComplexInlinerStep
         return callRetOp.Args;
     }
 
-    private static Dictionary<int, int> CreateLabelsTable(CilNativeMethod cilNativeMethod)
+    private static Dictionary<int, int> CreateLabelsTable(CilOperationsMethod cilOperationsMethod)
     {
         Dictionary<int, int> result = [];
-        int startIndex = MaxLabelIndex(cilNativeMethod) + 1;
+        int startIndex = MaxLabelIndex(cilOperationsMethod) + 1;
 
-        foreach (var op in cilNativeMethod.Instructions)
+        foreach (var op in cilOperationsMethod.Operations)
         {
             if (op is LabelOp labelOp)
             {

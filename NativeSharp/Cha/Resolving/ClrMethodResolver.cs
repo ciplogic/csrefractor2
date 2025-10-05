@@ -23,7 +23,7 @@ internal static class ClrMethodResolver
 
         if (clrMethod.IsConstructor)
         {
-            return new CilNativeMethod()
+            return new CilOperationsMethod()
             {
                 Args = clrMethod.GetMethodArguments(),
             };
