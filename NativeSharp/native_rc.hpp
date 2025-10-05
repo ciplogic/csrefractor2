@@ -22,19 +22,19 @@ struct RcData {
 };
 
 template<typename T>
-class Rc {
+class Ref {
     RcData<T> *_data;
 
 public:
     // Constructor
-    Rc(RcData<T> *p = nullptr) : _data(p) {
+    Ref(RcData<T> *p = nullptr) : _data(p) {
     }
 
     // Copy constructor
-    Rc(const Rc &other) : _data(other._data) { ++_data->_count; }
+    Ref(const Ref &other) : _data(other._data) { ++_data->_count; }
 
     // Assignment operator
-    Rc &operator=(const Rc &other) {
+    Ref &operator=(const Ref &other) {
         if (this != &other) {
             release();
             _data = other._data;
@@ -46,13 +46,13 @@ public:
     }
 
     // Destructor
-    ~Rc() { release(); }
+    ~Ref() { release(); }
 
     // Dereference operators
-    T &operator*() const { return _data->_data; }
-    T *operator->() const { return &_data->_data; }
-    T *get() { return &_data->_data; }
-    T *get() const { return &_data->_data; }
+    T &operator*() const { return _data->getData(); }
+    T *operator->() const { return &_data->getData(); }
+    T *get() { return &_data->getData(); }
+    T *get() const { return &_data->getData(); }
     // Access reference count
     int use_count() const { return _data->_count; }
 
@@ -69,9 +69,6 @@ private:
 };
 
 template<typename T>
-using Ref = Rc<T>;
-
-template<typename T>
 Ref<T> new_ref(int typeId = 0) {
     RcData<T> *data = new RcData<T>();
     data->setId(typeId);
@@ -81,7 +78,7 @@ Ref<T> new_ref(int typeId = 0) {
 template<typename T>
 Ref<T> new_ref_data(T &dataItem, int typeId = 0) {
     auto *data = new RcData<T>();
-    data->_data = dataItem;
+    data->_box._data = dataItem;
     data->setId(typeId);
     return Ref<T>(data);
 }

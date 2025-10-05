@@ -103,6 +103,7 @@ internal static class MethodResolver
         {
             return;
         }
+        
         var methodsVoid = cilMethod.Operations.OfType<CallOp>().Select(x=>x.TargetMethod).ToArray();
         var methodsReturn = cilMethod.Operations.OfType<CallReturnOp>().Select(x => x.TargetMethod).ToArray();
         var joinedMethodsToResolve = methodsVoid.Concat(methodsReturn).ToArray();

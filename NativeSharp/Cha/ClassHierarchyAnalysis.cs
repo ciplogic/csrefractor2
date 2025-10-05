@@ -75,7 +75,7 @@ public static class ClassHierarchyAnalysis
         }
     }
 
-    private static void DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
+    public static void DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
     {
         var virtCallsIndices = IndexOfVirtualCalls(cilMethod).ToArray();
         foreach (var virtCallIndex in virtCallsIndices)
@@ -108,7 +108,10 @@ public static class ClassHierarchyAnalysis
         var staticOp = virtualCall.ToStatic();
         cilMethod.Operations[virtCallIndex] = staticOp;
         var callOp = (ICallOp)staticOp;
-        MethodResolver.ResolveAllTree(callOp.TargetMethod);
+         MethodResolver.ResolveAllTree(callOp.TargetMethod);
+         var cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
+         if (cilResolved is CilOperationsMethod resolved)
+         DevirtualizeCallsInMethod(resolved);
     }
 
     static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)

@@ -28,8 +28,8 @@ public class OptimizationSteps(bool isOptimizing)
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
             new MathSimplifications(),
-            //new RemoveUnusedVars(),
-            //new InlinerOptimization()
+            new RemoveUnusedVars(),
+            new InlinerOptimization()
         ];
     }
 
