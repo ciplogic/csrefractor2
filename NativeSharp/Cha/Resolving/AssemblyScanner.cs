@@ -2,9 +2,9 @@
 using NativeSharp.Lib.Resolvers;
 using NativeSharp.Lib.System;
 
-namespace NativeSharp.Resolving;
+namespace NativeSharp.Cha.Resolving;
 
-class AssemblyScanner
+internal static class AssemblyScanner
 {
     public static void ScanAssembly(Assembly assembly)
     {
@@ -26,6 +26,6 @@ class AssemblyScanner
 
     public static void DefaultMappings()
     {
-        MethodResolver.MappedType[typeof(System_String)] = typeof(string);
+        ClassHierarchyAnalysis.MappedType[typeof(System_String)] = typeof(string);
     }
 }

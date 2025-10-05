@@ -35,7 +35,7 @@ class Bar : IFoo
 
 public class InheritanceTests
 {
-    public static void Main()
+    public static void MainInherited()
     {
         var foo = new Foo();
         Console.WriteLine(foo.GetBasicFoo());

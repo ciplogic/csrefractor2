@@ -1,4 +1,6 @@
-﻿namespace NativeSharp.CodeGen;
+﻿using NativeSharp.Common;
+
+namespace NativeSharp.CodeGen;
 
 public class MainMethodCodeGenerator
 {

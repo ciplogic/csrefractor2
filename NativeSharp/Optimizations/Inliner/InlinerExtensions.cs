@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
+using NativeSharp.Cha.Resolving;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
-using NativeSharp.Resolving;
 
 namespace NativeSharp.Optimizations.Inliner;
 

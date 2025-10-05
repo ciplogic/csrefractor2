@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
+using NativeSharp.Cha;
+using NativeSharp.Cha.Resolving;
 using NativeSharp.EscapeAnalysis;
 using NativeSharp.Operations.Common;
-using NativeSharp.Resolving;
 
 namespace NativeSharp.CodeGen;
 
@@ -9,7 +10,7 @@ internal static class CppNameMangler
 {
     public static string Mangle(this Type? clrType, RefKind refKind = RefKind.Default)
     {
-        if (MethodResolver.MappedType.TryGetValue(clrType, out Type? mappedClrType))
+        if (ClassHierarchyAnalysis.MappedType.TryGetValue(clrType, out Type? mappedClrType))
         {
             clrType = mappedClrType;
         }
@@ -32,7 +33,7 @@ internal static class CppNameMangler
     
     public static string Mangle(this Type? clrType, EscapeKind escapeKind)
     {
-        if (MethodResolver.MappedType.TryGetValue(clrType, out Type? mappedClrType))
+        if (ClassHierarchyAnalysis.MappedType.TryGetValue(clrType, out Type? mappedClrType))
         {
             clrType = mappedClrType;
         }

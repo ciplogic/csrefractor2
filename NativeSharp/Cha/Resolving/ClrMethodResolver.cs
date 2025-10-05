@@ -5,9 +5,9 @@ using NativeSharp.Lib;
 using NativeSharp.Lib.Resolvers;
 using NativeSharp.Operations.Common;
 
-namespace NativeSharp.Resolving;
+namespace NativeSharp.Cha.Resolving;
 
-static class ClrMethodResolver
+internal static class ClrMethodResolver
 {
     public static BaseNativeMethod? ResolveSystemClrMethod(MethodBase? clrMethod)
     {
@@ -81,7 +81,7 @@ static class ClrMethodResolver
         return MethodResolver.TransformCilMethod(clrMethod, mappedMethod);
     }
 
-    static Type[] ExtractArgumentTypesOfMethod(this MethodBase method)
+    private static Type[] ExtractArgumentTypesOfMethod(this MethodBase method)
     {
         var result = new List<Type>();
         if (!method.IsStatic || method.IsConstructor)

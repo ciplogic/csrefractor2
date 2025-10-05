@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <chrono>
+#include <initializer_list>
 
 #include "native_rc.hpp"
 #include "native_heap_array.hpp"

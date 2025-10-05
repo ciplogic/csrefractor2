@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
+using NativeSharp.Cha;
+using NativeSharp.Cha.Resolving;
 using NativeSharp.CodeGen.Methods;
+using NativeSharp.Common;
 using NativeSharp.FrontEnd;
 using NativeSharp.Operations.Common;
-using NativeSharp.Resolving;
 
 namespace NativeSharp.CodeGen;
 
@@ -16,7 +18,7 @@ public class CodeGenerator
         cilMethodCodeGen = new CilMethodCodeGen(Code);
     }
 
-    public void WriteMethodsAndMain(string entryPoint)
+    public void WriteMethodsAndMain(string entryPoint, MethodInfo mainMethod)
     {
         Code.AddLine("#include \"native_sharp.hpp\"");
 
@@ -29,7 +31,7 @@ public class CodeGenerator
             WriteCilMethodHeader(method);
         }
 
-        WriteMainBody(entryPoint, "args");
+        WriteMainBody(entryPoint, mainMethod.GetParameters().Length == 1 ? "args" : "");
 
         foreach (BaseNativeMethod method in MethodResolver.MethodCache.Values)
         {
@@ -86,12 +88,12 @@ public class CodeGenerator
     private void WriteMainBody(string entryPoint, string args = "")
     {
         var mainCodeGen = new MainMethodCodeGenerator();
-        mainCodeGen.WriteMainMethodBody(Code, entryPoint, TimingMainKind.Millisecond, args );
+        mainCodeGen.WriteMainMethodBody(Code, entryPoint, TimingMainKind.Millisecond, args);
     }
 
     public void WriteReferencedTypes()
     {
-        Dictionary<Type?, Type?> mappedTypes = MethodResolver.MappedType.Straight;
+        Dictionary<Type?, Type?> mappedTypes = ClassHierarchyAnalysis.MappedType.Straight;
         foreach (KeyValuePair<Type?, Type?> kv in mappedTypes)
         {
             Code.AddLine($"struct {kv.Value.Mangle(RefKind.Value)};");

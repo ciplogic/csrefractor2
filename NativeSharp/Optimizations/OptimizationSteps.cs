@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations.Common;
+﻿using NativeSharp.Extensions;
+using NativeSharp.Operations.Common;
 using NativeSharp.Optimizations.BlockOptimizations;
 using NativeSharp.Optimizations.ConstExprOptimization;
 using NativeSharp.Optimizations.DeadCodeElimination;

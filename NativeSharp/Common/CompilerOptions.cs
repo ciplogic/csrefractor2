@@ -1,4 +1,4 @@
-﻿namespace NativeSharp;
+﻿namespace NativeSharp.Common;
 
 public class CompilerOptions
 {

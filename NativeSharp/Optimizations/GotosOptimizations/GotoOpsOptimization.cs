@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations.BranchOperations;
+﻿using NativeSharp.Extensions;
+using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Optimizations.GotosOptimizations;

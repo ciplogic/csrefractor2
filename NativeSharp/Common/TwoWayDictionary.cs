@@ -1,6 +1,6 @@
 ﻿namespace NativeSharp.Common;
 
-class TwoWayDictionary<T> where T : notnull
+public class TwoWayDictionary<T> where T : notnull
 {
     public Dictionary<T, T?> Straight { get; } = [];
     public Dictionary<T, T> Reverse { get; } = [];

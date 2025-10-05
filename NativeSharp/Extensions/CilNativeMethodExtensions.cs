@@ -1,8 +1,8 @@
-﻿using NativeSharp.Operations;
+﻿using NativeSharp.Cha.Resolving;
+using NativeSharp.Operations;
 using NativeSharp.Operations.Common;
-using NativeSharp.Resolving;
 
-namespace NativeSharp.Optimizations;
+namespace NativeSharp.Extensions;
 
 public static class CilNativeMethodExtensions
 {

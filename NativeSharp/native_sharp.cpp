@@ -8,9 +8,11 @@
 
 namespace {
     std::vector<uint8_t> marshallStringCharStar(System_String* text) {
-        std::vector<uint8_t> result;
         uint8_t *dataPtr = text->Data->data();
         int textLen = text->Data->size();
+        
+        std::vector<uint8_t> result;
+        result.reserve(textLen+1+text->Coder);
         for (int i = 0; i < textLen; i++) {
             result.push_back(dataPtr[i]);
         }

@@ -1,4 +1,5 @@
 ﻿using NativeSharp.Common;
+using NativeSharp.Extensions;
 using NativeSharp.FrontEnd.Transformers;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;

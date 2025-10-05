@@ -1,4 +1,5 @@
-﻿using NativeSharp.CodeGen;
+﻿using NativeSharp.Cha;
+using NativeSharp.CodeGen;
 using NativeSharp.EscapeAnalysis;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
@@ -10,6 +11,7 @@ internal class NewObjOp(IndexedVariable left) : LeftOp(left)
     public override string GenCode()
     {
         var expressionTypeName = Left.ExpressionType.Mangle(RefKind.Value);
+        var typeId = ClassHierarchyAnalysis.GetTypeId(Left.ExpressionType);
         if (Left.EscapeResult == EscapeKind.Local)
         {
             var leftCode = Left.Code();
@@ -19,7 +21,7 @@ internal class NewObjOp(IndexedVariable left) : LeftOp(left)
                     {leftCode} = &{leftCode}_instance;  
                  """;
         }
-        return $"{Left.Code()} = new_ref<{expressionTypeName}>();";
+        return $"{Left.Code()} = new_ref<{expressionTypeName}>({typeId});";
     }
 
     public override BaseOp Clone() => new NewObjOp(Left);

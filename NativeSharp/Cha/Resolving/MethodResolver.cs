@@ -7,43 +7,15 @@ using NativeSharp.Operations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 
-namespace NativeSharp.Resolving;
+namespace NativeSharp.Cha.Resolving;
 
 internal static class MethodResolver
 {
     public static Dictionary<MethodBase, BaseNativeMethod> MethodCache { get; } = [];
     public static Dictionary<MethodBase, MethodBase> RemappedMethods { get; } = [];
-    public static TwoWayDictionary<Type?> MappedType { get; } = new();
 
     public static List<IMethodResolver> AllMethodResolvers { get; } = [];
 
-
-    public static Type? ResolveType(Type? targetType)
-    {
-        if (targetType.IsArray)
-        {
-            ResolveType(targetType.GetElementType()!);
-            return targetType;
-        }
-        if (MappedType.TryGetValue(targetType, out Type? type))
-        {
-            return type;
-        }
-        var typeNamespace = targetType.Namespace ?? "";
-
-        if (typeNamespace.StartsWith("System"))
-        {
-            return targetType;
-        }
-        
-        MappedType[targetType] = targetType;
-        FieldInfo[] fieldInfos = targetType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        foreach (FieldInfo fieldInfo in fieldInfos)
-        {
-            ResolveType(fieldInfo.FieldType);
-        }
-        return targetType;
-    }
 
     public static BaseNativeMethod? Resolve(MethodBase clrMethod)
     {
@@ -63,7 +35,7 @@ internal static class MethodResolver
                 return systemClrMethod;
             }
 
-            ResolveType(clrMethod.DeclaringType);
+            ClassHierarchyAnalysis.ResolveType(clrMethod.DeclaringType);
             return TransformCilMethod(clrMethod, clrMethod);
         }
         catch

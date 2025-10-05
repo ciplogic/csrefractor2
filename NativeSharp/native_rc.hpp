@@ -1,24 +1,34 @@
 ﻿#pragma once
 
-#define OPTIMIZED_RC
-
-#ifndef OPTIMIZED_RC
-#include <memory>
-#else
-
-
-template <typename T> struct RcData {
-    int _count = 1;
+template
+<typename T>
+struct Box {
     int _typeId{};
     T _data{};
 };
 
-template <typename T> class Rc {
+
+template<typename T>
+struct RcData {
+    int _count = 1;
+    Box<T> _box{};
+
+    T &getData() {
+        return _box._data;
+    }
+    void setId(int id) {
+        _box._typeId = id;
+    }
+};
+
+template<typename T>
+class Rc {
     RcData<T> *_data;
 
 public:
     // Constructor
-    Rc(RcData<T> *p = nullptr) : _data(p) {}
+    Rc(RcData<T> *p = nullptr) : _data(p) {
+    }
 
     // Copy constructor
     Rc(const Rc &other) : _data(other._data) { ++_data->_count; }
@@ -57,33 +67,21 @@ private:
         }
     }
 };
-#endif
 
-template <typename T>
-using Ref =
-#ifdef OPTIMIZED_RC
-    Rc<T>;
-#else
-        std::shared_ptr<T>;
-#endif
+template<typename T>
+using Ref = Rc<T>;
 
-template <typename T> Ref<T> new_ref(int typeId = 0) {
-#ifdef OPTIMIZED_RC
+template<typename T>
+Ref<T> new_ref(int typeId = 0) {
     RcData<T> *data = new RcData<T>();
-    data->_typeId = typeId;
+    data->setId(typeId);
     return Ref(data);
-#else
-    return std::make_shared<T>();
-#endif
 }
 
-template <typename T> Ref<T> new_ref_data(T &dataItem, int typeId = 0) {
-#ifdef OPTIMIZED_RC
+template<typename T>
+Ref<T> new_ref_data(T &dataItem, int typeId = 0) {
     auto *data = new RcData<T>();
     data->_data = dataItem;
-    data->_typeId = typeId;
+    data->setId(typeId);
     return Ref<T>(data);
-#else
-    return std::make_shared<T>(dataItem);
-#endif
 }

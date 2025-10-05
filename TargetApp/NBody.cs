@@ -1,6 +1,6 @@
 ﻿class nbody
 {
-    public static void NBody_Main()
+    public static void Main()
     {
         int n = 10_000_000;
 
