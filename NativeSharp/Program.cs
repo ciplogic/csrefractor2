@@ -6,6 +6,7 @@ using NativeSharp.CodeGen;
 using NativeSharp.Common;
 using NativeSharp.EscapeAnalysis;
 using NativeSharp.Optimizations;
+using NativeSharp.Optimizations.IpoOptimizations;
 
 namespace NativeSharp;
 
@@ -34,7 +35,7 @@ internal class Program
 
         MethodResolver.ResolveAllTree(entryPoint);
 
-        MethodResolver.ResolveCilMethod(MethodResolver.Resolve(entryPoint));
+        //MethodResolver.ResolveCilMethod(MethodResolver.Resolve(entryPoint));
 
         MethodResolver.ResolveAllTree(typeof(Texts).GetMethod("FromIndex")!);
 
@@ -47,6 +48,9 @@ internal class Program
         ApplyDefaultOptimizations(options.Optimize);
 
         EscapeAnalysisStep.ApplyStaticAnalysis();
+        
+        TreeShaker treeShaker = new TreeShaker();
+        treeShaker.SetEntryPointsMethods(entryPoint, typeof(Texts).GetMethod("FromIndex")!);
 
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName(), entryPoint);

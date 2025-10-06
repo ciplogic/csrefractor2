@@ -4,7 +4,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations.Common;
 
-public class BaseNativeMethod
+public class NativeMethodBase
 {
     public ArgumentVariable[] Args { get; set; } = [];
     public MethodBase Target { get; set; } = null!;

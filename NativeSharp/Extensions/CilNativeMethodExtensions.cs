@@ -28,9 +28,9 @@ public static class CilNativeMethodExtensions
 
     public static CilOperationsMethod[] CilMethodsFromCache()
     {
-        BaseNativeMethod[] methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
+        NativeMethodBase[] methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
         List<CilOperationsMethod> cilMethods = [];
-        foreach (BaseNativeMethod method in methodCacheValues)
+        foreach (NativeMethodBase method in methodCacheValues)
         {
             if (method is CilOperationsMethod cilNativeMethod)
             {

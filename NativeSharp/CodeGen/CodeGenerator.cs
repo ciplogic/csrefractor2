@@ -27,21 +27,21 @@ public class CodeGenerator
         WriteReferencedTypes();
         WriteInitialCode();
 
-        foreach (BaseNativeMethod method in MethodResolver.MethodCache.Values)
+        foreach (NativeMethodBase method in MethodResolver.MethodCache.Values)
         {
             WriteCilMethodHeader(method);
         }
 
         WriteMainBody(entryPoint, mainMethod.GetParameters().Length == 1 ? "args" : "");
 
-        foreach (BaseNativeMethod method in MethodResolver.MethodCache.Values)
+        foreach (NativeMethodBase method in MethodResolver.MethodCache.Values)
         {
             switch (method)
             {
                 case CilOperationsMethod cilMethod:
                     cilMethodCodeGen.WriteCilMethod(cilMethod);
                     break;
-                case CppNativeMethod cppMethod:
+                case Cpp cppMethod:
                     WriteCppMethod(cppMethod);
                     break;
             }
@@ -54,13 +54,13 @@ public class CodeGenerator
         Code.WriteToFile();
     }
 
-    private void AddNativeCppHeaders(Dictionary<MethodBase, BaseNativeMethod> methodCacheValues)
+    private void AddNativeCppHeaders(Dictionary<MethodBase, NativeMethodBase> methodCacheValues)
     {
         HashSet<string> headersHash = [];
         Code.AddLine("// headers imported by native methods");
-        foreach (BaseNativeMethod method in methodCacheValues.Values)
+        foreach (NativeMethodBase method in methodCacheValues.Values)
         {
-            if (method is not CppNativeMethod cppMethod)
+            if (method is not Cpp cppMethod)
             {
                 continue;
             }
@@ -78,7 +78,7 @@ public class CodeGenerator
         Code.AddLine();
     }
 
-    private void WriteCppMethod(CppNativeMethod cppMethod)
+    private void WriteCppMethod(Cpp cppMethod)
     {
         CppNativeContent code = cppMethod.Content;
         Code.AddLine($"{cppMethod.MangledMethodHeader()} {{");
@@ -118,9 +118,9 @@ public class CodeGenerator
     }
 
 
-    private void WriteCilMethodHeader(BaseNativeMethod cilNativeMethod)
+    private void WriteCilMethodHeader(NativeMethodBase cil)
     {
-        Code.AddLine($"{cilNativeMethod.MangledMethodHeader()};");
+        Code.AddLine($"{cil.MangledMethodHeader()};");
     }
 
 

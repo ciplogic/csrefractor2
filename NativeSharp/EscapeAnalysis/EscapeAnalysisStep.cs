@@ -24,6 +24,7 @@ public class EscapeAnalysisStep
 
     private static void Analyze(CilOperationsMethod cilMethod)
     {
+        cilMethod.Analysis.EscapeAnalysis = AnalysisProgress.InProgress;
         Dictionary<string, Variable> variables = PopulateVariables(cilMethod);
         BaseOp[] instructions = cilMethod.Operations;
         foreach (BaseOp instruction in instructions)
@@ -37,7 +38,7 @@ public class EscapeAnalysisStep
             AddEscapingInstruction(instruction, variables);
         }
 
-        cilMethod.Analysis.IsEaAnalysisDone = true;
+        cilMethod.Analysis.EscapeAnalysis = AnalysisProgress.Done;
     }
 
     private static void AddEscapingInstruction(BaseOp instruction, Dictionary<string, Variable> variables)
@@ -80,7 +81,7 @@ public class EscapeAnalysisStep
         CilOperationsMethod? cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
         if (cilMethod is not null)
         {
-            if (cilMethod.Analysis.IsEaAnalysisDone == EaProgress.NotDone)
+            if (cilMethod.Analysis.EscapeAnalysis == AnalysisProgress.NotDone)
             {
                 Analyze(cilMethod);
             }

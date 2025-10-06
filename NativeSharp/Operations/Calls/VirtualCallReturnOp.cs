@@ -10,20 +10,21 @@ public class VirtualCallReturnOp(IndexedVariable left)
 {
     public IValueExpression[] Args { get; set; } = [];
 
-    public MethodBase TargetMethod { get; set; } = null!;
+    public MethodBase TargetMethod => Resolved.Target;
+    public NativeMethodBase Resolved { get; set; }
 
     public override BaseOp Clone() =>
         new VirtualCallReturnOp(Left)
         {
             Args = Args.ToArray(),
-            TargetMethod = TargetMethod
+            Resolved = Resolved
         };
 
     public BaseOp ToStatic()
         => new CallReturnOp(Left)
         {
             Args = Args,
-            TargetMethod = TargetMethod
+            Resolved = Resolved,
         };
 
     public override string ToString() => $"virt_call {TargetMethod.MangleMethodName()}";

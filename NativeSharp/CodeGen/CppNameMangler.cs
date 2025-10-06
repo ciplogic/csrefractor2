@@ -77,12 +77,12 @@ internal static class CppNameMangler
         return $"{declaringType}_{methodName}";
     }
 
-    public static string MangledMethodHeader(this BaseNativeMethod cilNativeMethod)
+    public static string MangledMethodHeader(this NativeMethodBase cil)
     {
         string args = string.Join(", ",
-            cilNativeMethod.Args.Select(x => $"{x.ExpressionType.Mangle(x.EscapeResult)} {x.GenCodeImpl()}"));
+            cil.Args.Select(x => $"{x.ExpressionType.Mangle(x.EscapeResult)} {x.GenCodeImpl()}"));
         string methodHeader =
-            $"{cilNativeMethod.Target.MangleMethodReturnType()} {cilNativeMethod.Target.MangleMethodName()}({args})";
+            $"{cil.Target.MangleMethodReturnType()} {cil.Target.MangleMethodName()}({args})";
         return methodHeader;
     }
 

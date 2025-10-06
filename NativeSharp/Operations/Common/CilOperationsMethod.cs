@@ -2,7 +2,7 @@
 
 namespace NativeSharp.Operations.Common;
 
-public class CilOperationsMethod : BaseNativeMethod
+public class CilOperationsMethod : NativeMethodBase
 {
     public BaseOp[] Operations { get; set; } = [];
     public IndexedVariable[] Locals { get; set; } = [];
@@ -12,10 +12,11 @@ public class CilOperationsMethod : BaseNativeMethod
 
 public class MetadataAnalysis
 {
-    public EaProgress IsEaAnalysisDone;
+    public AnalysisProgress EscapeAnalysis;
+    public AnalysisProgress CallsResolved;
 }
 
-public enum EaProgress
+public enum AnalysisProgress
 {
     NotDone,
     InProgress,

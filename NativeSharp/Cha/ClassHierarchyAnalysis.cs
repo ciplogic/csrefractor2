@@ -120,8 +120,9 @@ public static class ClassHierarchyAnalysis
             return true;
         }
 
-        return RegisteredTypes.Where(knownType => knownType != declaringType)
+        bool isEffectivelySealed = RegisteredTypes.Where(knownType => knownType != declaringType)
             .All(knownType => !declaringType.IsAssignableFrom(knownType));
+        return isEffectivelySealed;
     }
 
     private static void MakeCallStatic(CilOperationsMethod cilMethod, int virtCallIndex)
@@ -132,7 +133,7 @@ public static class ClassHierarchyAnalysis
         cilMethod.Operations[virtCallIndex] = staticOp;
         ICallOp callOp = (ICallOp)staticOp;
         MethodResolver.ResolveAllTree(callOp.TargetMethod);
-        BaseNativeMethod? cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
+        NativeMethodBase? cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
         if (cilResolved is CilOperationsMethod resolved)
         {
             DevirtualizeCallsInMethod(resolved);

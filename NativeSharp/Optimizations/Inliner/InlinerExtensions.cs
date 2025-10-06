@@ -50,7 +50,7 @@ internal static class InlinerExtensions
             return null;
         }
 
-        if (!MethodResolver.MethodCache.TryGetValue(targetMethod, out BaseNativeMethod? mappedCilMethod))
+        if (!MethodResolver.MethodCache.TryGetValue(targetMethod, out NativeMethodBase? mappedCilMethod))
         {
             return null;
         }

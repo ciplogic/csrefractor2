@@ -11,21 +11,20 @@ namespace NativeSharp.Cha.Resolving;
 
 internal static class MethodResolver
 {
-    public static Dictionary<MethodBase, BaseNativeMethod> MethodCache { get; } = [];
+    public static Dictionary<MethodBase, NativeMethodBase> MethodCache { get; } = [];
     public static Dictionary<MethodBase, MethodBase> RemappedMethods { get; } = [];
 
     public static List<IMethodResolver> AllMethodResolvers { get; } = [];
 
 
-    public static BaseNativeMethod? Resolve(MethodBase clrMethod)
+    public static NativeMethodBase? Resolve(MethodBase clrMethod)
     {
         try
         {
-            Type declaringType = clrMethod.DeclaringType!;
             string signature = clrMethod.MangleMethodName();
             if (signature.StartsWith("System"))
             {
-                BaseNativeMethod? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod);
+                NativeMethodBase? systemClrMethod = ClrMethodResolver.ResolveSystemClrMethod(clrMethod);
                 if (systemClrMethod != null)
                 {
                     systemClrMethod.Target = clrMethod;
@@ -44,7 +43,7 @@ internal static class MethodResolver
         }
     }
 
-    public static BaseNativeMethod? TransformCilMethod(MethodBase clrMethod, MethodBase? remappedClrMethod = null)
+    public static NativeMethodBase? TransformCilMethod(MethodBase clrMethod, MethodBase? remappedClrMethod = null)
     {
         remappedClrMethod ??= clrMethod;
         InstructionTransformer transformer = new InstructionTransformer();
@@ -57,8 +56,46 @@ internal static class MethodResolver
         transformCilMethod.Locals = transformer.LocalVariablesStackAndState.LocalVariables.ToArray();
         transformCilMethod.Args = transformer.Params.ToArray();
         transformCilMethod.Operations = operations;
-
+        ResolveCallsOfMethods(transformCilMethod);
         return transformCilMethod;
+    }
+
+    private static AnalysisProgress ResolveCallsOfMethods(CilOperationsMethod transformCilMethod)
+    {
+        if (transformCilMethod.Analysis.CallsResolved == AnalysisProgress.Done)
+        {
+            return AnalysisProgress.Done;
+        }
+        var result = AnalysisProgress.Done;
+        ICallOp[] callTargets = transformCilMethod.Operations.OfType<ICallOp>().ToArray();
+        foreach (ICallOp callTarget in callTargets)
+        {
+            if (callTarget.Resolved is not UnresolvedMethod unresolvedMethod)
+            {
+                continue;
+            }
+            if (!MethodCache.TryGetValue(unresolvedMethod.Target, out var resolvedMethod))
+            {
+                var resolved = Resolve(callTarget.TargetMethod);
+                if (resolved is not null)
+                {
+                    if (resolved is CilOperationsMethod resolveCilMethod)
+                    {
+                        ResolveCallsOfMethods(resolveCilMethod);
+                    }
+                    continue;
+                }
+                result = AnalysisProgress.NotDone;
+                continue;
+            }
+            callTarget.Resolved = resolvedMethod;
+            if (resolvedMethod is CilOperationsMethod resolvedCilMethod)
+            {
+                ResolveCallsOfMethods(resolvedCilMethod);
+            }
+        }
+
+        return result;
     }
 
     public static void ResolveMethod(MethodBase clrMethod)
@@ -68,54 +105,57 @@ internal static class MethodResolver
             return;
         }
 
-        ResolveCilMethod(ClrMethodResolver.ResolveSystemClrMethod(clrMethod as MethodInfo));
+        ResolveCilMethod(ClrMethodResolver.ResolveSystemClrMethod(clrMethod));
     }
 
-    public static void ResolveCilMethod(BaseNativeMethod? method)
+    public static void ResolveCilMethod(NativeMethodBase? method)
     {
         if (method is not CilOperationsMethod cilMethod)
         {
             return;
         }
 
-        MethodCache.TryAdd(cilMethod.Target, cilMethod);
-
-        MethodBase[] callTargets = cilMethod.Operations.OfType<CallOp>().Select(x => x.TargetMethod).ToArray();
-        foreach (MethodBase target in callTargets)
+        ICallOp[] callTargets = cilMethod.Operations.OfType<ICallOp>().ToArray();
+        foreach (var target in callTargets)
         {
-            BaseNativeMethod? resolved = Resolve(target);
+            NativeMethodBase? resolved = Resolve(target.TargetMethod);
             if (resolved is not null)
             {
-                MethodCache[target] = resolved!;
+                MethodCache[target.TargetMethod] = resolved;
             }
         }
+        cilMethod.Analysis.CallsResolved = ResolveCallsOfMethods(cilMethod);
     }
 
-    public static void ResolveAllTree(MethodBase entryPoint)
+    public static void ResolveAllTree(MethodBase? entryPoint)
     {
+        if (entryPoint is null)
+        {
+            return;
+        }
         if (MethodCache.ContainsKey(entryPoint))
         {
             return;
         }
         
-        BaseNativeMethod? resolvedMethod = Resolve(entryPoint);
+        NativeMethodBase? resolvedMethod = Resolve(entryPoint);
         if (resolvedMethod is not CilOperationsMethod cilMethod)
         {
             return;
         }
         
-        MethodBase[] methodsVoid = cilMethod.Operations.OfType<CallOp>().Select(x=>x.TargetMethod).ToArray();
-        MethodBase[] methodsReturn = cilMethod.Operations.OfType<CallReturnOp>().Select(x => x.TargetMethod).ToArray();
-        MethodBase[] joinedMethodsToResolve = methodsVoid.Concat(methodsReturn).ToArray();
-        if (joinedMethodsToResolve.Length == 0)
+        ICallOp[] methodCalls = cilMethod.Operations.OfType<ICallOp>().ToArray();
+        
+        foreach (ICallOp method in methodCalls)
         {
-            return;
+            if (method.Resolved is  UnresolvedMethod unresolvedMethod)
+            {
+                ResolveAllTree(unresolvedMethod.Target);    
+            }
+            
         }
-
-        foreach (MethodBase method in joinedMethodsToResolve)
-        {
-            ResolveAllTree(method);
-        }
+        
+        ResolveCallsOfMethods(cilMethod);
         
     }
 }

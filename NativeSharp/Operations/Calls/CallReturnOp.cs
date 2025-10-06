@@ -10,13 +10,14 @@ public class CallReturnOp(IndexedVariable left)
 {
     public IValueExpression[] Args { get; set; } = [];
 
-    public MethodBase TargetMethod { get; set; } = null!;
+    public MethodBase TargetMethod => Resolved.Target;
+    public NativeMethodBase Resolved { get; set; }
 
     public override BaseOp Clone() =>
         new CallReturnOp(Left)
         {
             Args = Args.ToArray(),
-            TargetMethod = TargetMethod
+            Resolved = Resolved,
         };
 
     public override string ToString() => $"call {TargetMethod.MangleMethodName()}";

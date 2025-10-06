@@ -2,6 +2,7 @@
 using NativeSharp.Common;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Calls;
+using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
 
@@ -52,7 +53,7 @@ static class TransformNewOps
         CallOp callOp = new()
         {
             Args = argsCombined.ToArray(),
-            TargetMethod = constructorInfo
+            Resolved = new UnresolvedMethod(){Target = constructorInfo},
         };
 
         CompositeOp combinedOps = new CompositeOp([newObjOp, callOp]);

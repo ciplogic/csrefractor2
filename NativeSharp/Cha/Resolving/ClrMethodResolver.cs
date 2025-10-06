@@ -9,14 +9,14 @@ namespace NativeSharp.Cha.Resolving;
 
 internal static class ClrMethodResolver
 {
-    public static BaseNativeMethod? ResolveSystemClrMethod(MethodBase? clrMethod)
+    public static NativeMethodBase? ResolveSystemClrMethod(MethodBase? clrMethod)
     {
         if (clrMethod is null)
         {
             return null;
         }
 
-        if (MethodResolver.MethodCache.TryGetValue(clrMethod, out BaseNativeMethod? method))
+        if (MethodResolver.MethodCache.TryGetValue(clrMethod, out NativeMethodBase? method))
         {
             return method;
         }
@@ -69,7 +69,7 @@ internal static class ClrMethodResolver
         CppCodeAttribute? cppCodeAttribute = mappedMethod.GetCustomAttribute<CppCodeAttribute>();
         if (cppCodeAttribute is not null)
         {
-            CppNativeMethod resolveSystemClrMethod = new(cppCodeAttribute.NativeContent)
+            Cpp resolveSystemClrMethod = new(cppCodeAttribute.NativeContent)
             {
                 Target = clrMethod,
                 Args = mappedMethod.GetMethodArguments(),
