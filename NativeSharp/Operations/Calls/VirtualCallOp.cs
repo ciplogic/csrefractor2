@@ -26,7 +26,7 @@ public class VirtualCallOp : BaseOp, ICallOp, IVirtualCall
             Args = Args
         };
 
-    public override string ToString() => $"call {TargetMethod.Name}";
+    public override string ToString() => $"virt_call {TargetMethod.Name}";
 
     public override string GenCode()
     {

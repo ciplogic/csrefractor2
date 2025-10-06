@@ -10,7 +10,7 @@ using NativeSharp.Optimizations.Common;
 
 namespace NativeSharp.Optimizations.Inliner;
 
-public class ComplexInlinerStep
+public static class ComplexInlinerStep
 {
     public static bool InlineComplex(CilOperationsMethod cilOperationsMethod, int row)
     {
@@ -31,7 +31,7 @@ public class ComplexInlinerStep
             return true;
         }
 
-        if (opsToInline.OpsCloned.Length > 25)
+        if (opsToInline.OpsCloned.Length > 5)
         {
             return false;
         }
@@ -49,7 +49,7 @@ public class ComplexInlinerStep
         IndexedVariable[] newVars,
         IValueExpression? returnValueExpression)
     {
-        List<BaseOp> newOps = new List<BaseOp>();
+        List<BaseOp> newOps = [];
 
         newOps.AddRange(cilOperationsMethod.Operations.Take(row));
         IValueExpression[] argumentsOps = GetCallArguments(cilOperationsMethod.Operations[row]);
@@ -113,8 +113,7 @@ public class ComplexInlinerStep
     private static Dictionary<IValueExpression, IValueExpression> CreateVariablesTable(CilOperationsMethod targets,
         int startIndex)
     {
-        Dictionary<IValueExpression, IValueExpression> variablesTable =
-            new Dictionary<IValueExpression, IValueExpression>();
+        Dictionary<IValueExpression, IValueExpression> variablesTable = [];
         LocalVariablesStackAndState localVariablesStack = new LocalVariablesStackAndState(startIndex);
 
         foreach (ArgumentVariable argumentVariable in targets.Args)
@@ -133,7 +132,7 @@ public class ComplexInlinerStep
     }
 
 
-    static int MaxIndexOfVariable(CilOperationsMethod cilOperationsMethod)
+    private static int MaxIndexOfVariable(CilOperationsMethod cilOperationsMethod)
     {
         int result = 0;
         foreach (IndexedVariable indexVariable in cilOperationsMethod.Locals)
@@ -158,16 +157,10 @@ public class ComplexInlinerStep
         return result;
     }
 
-    private static IValueExpression[] GetCallArguments(BaseOp op)
-    {
-        if (op is CallOp callOp)
-        {
-            return callOp.Args;
-        }
-
-        CallReturnOp callRetOp = (CallReturnOp)op;
-        return callRetOp.Args;
-    }
+    private static IValueExpression[] GetCallArguments(BaseOp op) 
+        => op is ICallOp callOp 
+            ? callOp.Args
+            : [];
 
     private static Dictionary<int, int> CreateLabelsTable(CilOperationsMethod cilOperationsMethod)
     {

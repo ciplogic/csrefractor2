@@ -26,7 +26,7 @@ public class VirtualCallReturnOp(IndexedVariable left)
             TargetMethod = TargetMethod
         };
 
-    public override string ToString() => $"call {TargetMethod.MangleMethodName()}";
+    public override string ToString() => $"virt_call {TargetMethod.MangleMethodName()}";
 
     public override string GenCode()
     {

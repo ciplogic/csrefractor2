@@ -6,7 +6,6 @@ using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.FieldsAndIndexing;
 using NativeSharp.Operations.Vars;
-using NativeSharp.Optimizations;
 using NativeSharp.Optimizations.Common;
 using NativeSharp.Optimizations.Inliner;
 
@@ -37,6 +36,8 @@ public class EscapeAnalysisStep
 
             AddEscapingInstruction(instruction, variables);
         }
+
+        cilMethod.Analysis.IsEaAnalysisDone = true;
     }
 
     private static void AddEscapingInstruction(BaseOp instruction, Dictionary<string, Variable> variables)
@@ -66,6 +67,7 @@ public class EscapeAnalysisStep
                 return;
             case CallReturnOp callReturnOp:
                 UpdateArgsVariableUsage(callReturnOp.Args, callReturnOp.TargetMethod, variables);
+                UpdateVarUsage(callReturnOp.Left.Code(), variables, EscapeKind.Escapes);
                 return;
         }
     }
@@ -78,6 +80,14 @@ public class EscapeAnalysisStep
         CilOperationsMethod? cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
         if (cilMethod is not null)
         {
+            if (!cilMethod.Analysis.IsEaAnalysisDone)
+            {
+                if (InlinerExtensions.IsSimpleMethod(cilMethod))
+                {
+                    Analyze(cilMethod);
+                }
+            }
+
             for (int index = 0; index < callOpArgs.Length; index++)
             {
                 IValueExpression arg = callOpArgs[index];

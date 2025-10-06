@@ -37,17 +37,25 @@ internal class Program
         MethodResolver.ResolveCilMethod(MethodResolver.Resolve(entryPoint));
 
         MethodResolver.ResolveAllTree(typeof(Texts).GetMethod("FromIndex")!);
-        
-        ClassHierarchyAnalysis.DevirtualizeCalls();
+
+        while (ClassHierarchyAnalysis.DevirtualizeCalls())
+        {
+            ApplyDefaultOptimizations(options.Optimize);
+        }
         //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
-        OptimizationSteps optimizer = new OptimizationSteps(options.Optimize);
-        OptimizationSteps.OptimizeMethodSet(optimizer.CilMethodOptimizations.ToArray());
+        ApplyDefaultOptimizations(options.Optimize);
 
         EscapeAnalysisStep.ApplyStaticAnalysis();
 
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName(), entryPoint);
         CodeGeneratorBaseTypes.GenerateNativeMappings();
+    }
+
+    public static void ApplyDefaultOptimizations(bool optimize = true)
+    {
+        OptimizationSteps optimizer = new OptimizationSteps(optimize);
+        OptimizationSteps.OptimizeMethodSet(optimizer.CilMethodOptimizations.ToArray());
     }
 }

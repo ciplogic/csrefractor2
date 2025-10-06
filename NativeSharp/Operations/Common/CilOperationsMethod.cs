@@ -6,4 +6,11 @@ public class CilOperationsMethod : BaseNativeMethod
 {
     public BaseOp[] Operations { get; set; } = [];
     public IndexedVariable[] Locals { get; set; } = [];
+
+    public MetadataAnalysis Analysis = new();
+}
+
+public class MetadataAnalysis
+{
+    public bool IsEaAnalysisDone;
 }

@@ -11,7 +11,7 @@ namespace NativeSharp.Optimizations;
 
 public class OptimizationSteps(bool isOptimizing)
 {
-    public List<OptimizationBase> CilMethodOptimizations = BuildOptimizations(isOptimizing);
+    public OptimizationBase[] CilMethodOptimizations = BuildOptimizations(isOptimizing).ToArray();
 
     private static List<OptimizationBase> BuildOptimizations(bool isOptimizing)
     {

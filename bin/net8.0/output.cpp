@@ -85,54 +85,26 @@ std::cout<<value<<'\n';
 
 System_Void NBodySystem_ctor(NBodySystem* _this)
 {
-  System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65,vreg_91,vreg_92,vreg_93,vreg_94,vreg_95,vreg_96;
+  System_Double local_0,local_1,local_2,vreg_33,vreg_38,vreg_39,vreg_46,vreg_51,vreg_52,vreg_59,vreg_64,vreg_65;
   System_Int32 local_3,vreg_74,vreg_75;
   RefArr<Ref<Body>> vreg_3;
+  Ref<Body> vreg_11,vreg_15,vreg_19,vreg_23,vreg_80,vreg_84,vreg_86;
   Arr<Ref<Body>>* vreg_30,*vreg_35,*vreg_43,*vreg_48,*vreg_56,*vreg_61,*vreg_72,*vreg_78;
-  Body* vreg_32,*vreg_37,*vreg_45,*vreg_50,*vreg_58,*vreg_63,*vreg_80;
+  Body* vreg_32,*vreg_37,*vreg_45,*vreg_50,*vreg_58,*vreg_63;
   System_UInt32 vreg_73;
-  Ref<Body> vreg_86,vreg_97,vreg_98,vreg_99,vreg_100;
 
   vreg_3 = new_arr<Ref<Body>>(5);
   vreg_86 = new_ref<Body>(2);
   vreg_86->Mass = 39.47841760435743;
   (*vreg_3)[0] = vreg_86;
-  vreg_97 = new_ref<Body>(2);
-  vreg_97->_X_k__BackingField = 4.841431442464721;
-  vreg_97->_Y_k__BackingField = -1.1603200440274284;
-  vreg_97->_Z_k__BackingField = -0.10362204447112311;
-  vreg_97->Vx = 0.606326392995832;
-  vreg_97->Vy = 2.81198684491626;
-  vreg_97->Vz = -0.02521836165988763;
-  vreg_97->Mass = 0.03769367487038949;
-  (*vreg_3)[1] = vreg_97;
-  vreg_98 = new_ref<Body>(2);
-  vreg_98->_X_k__BackingField = 8.34336671824458;
-  vreg_98->_Y_k__BackingField = 4.124798564124305;
-  vreg_98->_Z_k__BackingField = -0.4035234171143214;
-  vreg_98->Vx = -1.0107743461787924;
-  vreg_98->Vy = 1.8256623712304119;
-  vreg_98->Vz = 0.008415761376584154;
-  vreg_98->Mass = 0.011286326131968767;
-  (*vreg_3)[2] = vreg_98;
-  vreg_99 = new_ref<Body>(2);
-  vreg_99->_X_k__BackingField = 12.894369562139131;
-  vreg_99->_Y_k__BackingField = -15.111151401698631;
-  vreg_99->_Z_k__BackingField = -0.22330757889265573;
-  vreg_99->Vx = 1.0827910064415354;
-  vreg_99->Vy = 0.8687130181696082;
-  vreg_99->Vz = -0.010832637401363636;
-  vreg_99->Mass = 0.0017237240570597112;
-  (*vreg_3)[3] = vreg_99;
-  vreg_100 = new_ref<Body>(2);
-  vreg_100->_X_k__BackingField = 15.379697114850917;
-  vreg_100->_Y_k__BackingField = -25.919314609987964;
-  vreg_100->_Z_k__BackingField = 0.17925877295037118;
-  vreg_100->Vx = 0.979090732243898;
-  vreg_100->Vy = 0.5946989986476762;
-  vreg_100->Vz = -0.034755955504078104;
-  vreg_100->Mass = 0.0020336868699246304;
-  (*vreg_3)[4] = vreg_100;
+  vreg_11 = Body_jupiter();
+  (*vreg_3)[1] = vreg_11;
+  vreg_15 = Body_saturn();
+  (*vreg_3)[2] = vreg_15;
+  vreg_19 = Body_uranus();
+  (*vreg_3)[3] = vreg_19;
+  vreg_23 = Body_neptune();
+  (*vreg_3)[4] = vreg_23;
   _this->bodies = vreg_3;
   local_0 = 0;
   local_1 = 0;
@@ -172,16 +144,8 @@ System_Void NBodySystem_ctor(NBodySystem* _this)
   vreg_75 = clt (local_3, vreg_74);
   if (brtrue_s(vreg_75)) goto label_94;
   vreg_78 = _this->bodies.get();
-  vreg_80 = ((*vreg_78)[0]).get();
-  vreg_91 = neg (local_0);
-  vreg_92 = mul (vreg_91, 0.025330295910584444);
-  vreg_80->Vx = vreg_92;
-  vreg_93 = neg (local_1);
-  vreg_94 = mul (vreg_93, 0.025330295910584444);
-  vreg_80->Vy = vreg_94;
-  vreg_95 = neg (local_2);
-  vreg_96 = mul (vreg_95, 0.025330295910584444);
-  vreg_80->Vz = vreg_96;
+  vreg_80 = ((*vreg_78)[0]);
+  vreg_84 = Body_offsetMomentum(vreg_80, local_0, local_1, local_2);
 }
 
 Ref<Body> Body_sun()
@@ -308,7 +272,7 @@ System_Void System_String_ctor(System_String* _this)
 
 System_Double NBodySystem_energy(NBodySystem* _this)
 {
-  System_Double local_4,vreg_9,vreg_10,vreg_12,vreg_14,vreg_15,vreg_17,vreg_19,vreg_20,vreg_21,vreg_23,vreg_25,vreg_26,vreg_27,vreg_28,vreg_41,vreg_46,vreg_51,vreg_54,vreg_57,vreg_58,vreg_61,vreg_62,vreg_63,vreg_66,vreg_68,vreg_69,vreg_71,vreg_94,vreg_97,vreg_99,vreg_101,vreg_103,vreg_105;
+  System_Double local_4,vreg_9,vreg_10,vreg_12,vreg_14,vreg_15,vreg_17,vreg_19,vreg_20,vreg_21,vreg_23,vreg_25,vreg_26,vreg_27,vreg_28,vreg_41,vreg_46,vreg_51,vreg_54,vreg_57,vreg_58,vreg_61,vreg_62,vreg_63,vreg_66,vreg_68,vreg_69,vreg_71,vreg_94,vreg_97,vreg_100,vreg_103,vreg_106,vreg_109;
   System_Int32 local_5,local_7,vreg_80,vreg_81,vreg_90,vreg_91;
   Body* local_6,*vreg_5,*vreg_36;
   Arr<Ref<Body>>* vreg_3,*vreg_34,*vreg_78,*vreg_88;
@@ -344,12 +308,12 @@ System_Double NBodySystem_energy(NBodySystem* _this)
   vreg_94 = local_6->_X_k__BackingField;
   vreg_97 = vreg_36->_X_k__BackingField;
   vreg_41 = sub (vreg_94, vreg_97);
-  vreg_99 = local_6->_Y_k__BackingField;
-  vreg_101 = vreg_36->_Y_k__BackingField;
-  vreg_46 = sub (vreg_99, vreg_101);
-  vreg_103 = local_6->_Z_k__BackingField;
-  vreg_105 = vreg_36->_Z_k__BackingField;
-  vreg_51 = sub (vreg_103, vreg_105);
+  vreg_100 = local_6->_Y_k__BackingField;
+  vreg_103 = vreg_36->_Y_k__BackingField;
+  vreg_46 = sub (vreg_100, vreg_103);
+  vreg_106 = local_6->_Z_k__BackingField;
+  vreg_109 = vreg_36->_Z_k__BackingField;
+  vreg_51 = sub (vreg_106, vreg_109);
   vreg_54 = mul (vreg_41, vreg_41);
   vreg_57 = mul (vreg_46, vreg_46);
   vreg_58 = add (vreg_54, vreg_57);
@@ -446,28 +410,25 @@ System_Void NBodySystem_AdvanceTwoLoops(NBodySystem* _this, System_Double dt)
 
 System_Void NBodySystem_advanceInnerLoop(NBodySystem* _this, System_Double dt, Body* iBody, System_Int32 j)
 {
-  Body* vreg_0,*vreg_5,*vreg_8,*vreg_13,*vreg_16,*vreg_21,*vreg_50,*vreg_64,*vreg_78,*vreg_87,*vreg_101,*vreg_115;
-  System_Double vreg_1,vreg_6,vreg_7,vreg_9,vreg_14,vreg_15,vreg_17,vreg_22,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125;
   Arr<Ref<Body>>* vreg_3,*vreg_11,*vreg_19,*vreg_48,*vreg_62,*vreg_76,*vreg_85,*vreg_99,*vreg_113;
+  Body* vreg_5,*vreg_13,*vreg_21,*vreg_50,*vreg_64,*vreg_78,*vreg_87,*vreg_101,*vreg_115;
+  System_Double vreg_7,vreg_15,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125,vreg_127,vreg_129,vreg_131,vreg_133,vreg_135,vreg_137;
 
-  vreg_0 = iBody;
-  vreg_1 = Body_get_X(vreg_0);
+  vreg_127 = iBody->_X_k__BackingField;
   vreg_3 = _this->bodies.get();
   vreg_5 = ((*vreg_3)[j]).get();
-  vreg_6 = Body_get_X(vreg_5);
-  vreg_7 = sub (vreg_1, vreg_6);
-  vreg_8 = iBody;
-  vreg_9 = Body_get_Y(vreg_8);
+  vreg_129 = vreg_5->_X_k__BackingField;
+  vreg_7 = sub (vreg_127, vreg_129);
+  vreg_131 = iBody->_Y_k__BackingField;
   vreg_11 = _this->bodies.get();
   vreg_13 = ((*vreg_11)[j]).get();
-  vreg_14 = Body_get_Y(vreg_13);
-  vreg_15 = sub (vreg_9, vreg_14);
-  vreg_16 = iBody;
-  vreg_17 = Body_get_Z(vreg_16);
+  vreg_133 = vreg_13->_Y_k__BackingField;
+  vreg_15 = sub (vreg_131, vreg_133);
+  vreg_135 = iBody->_Z_k__BackingField;
   vreg_19 = _this->bodies.get();
   vreg_21 = ((*vreg_19)[j]).get();
-  vreg_22 = Body_get_Z(vreg_21);
-  vreg_23 = sub (vreg_17, vreg_22);
+  vreg_137 = vreg_21->_Z_k__BackingField;
+  vreg_23 = sub (vreg_135, vreg_137);
   vreg_26 = mul (vreg_7, vreg_7);
   vreg_29 = mul (vreg_15, vreg_15);
   vreg_30 = add (vreg_26, vreg_29);
@@ -530,8 +491,8 @@ System_Void NBodySystem_AdvanceBodiesEnergy(NBodySystem* _this, System_Double dt
 {
   Arr<Ref<Body>>* local_0,*vreg_37;
   System_Int32 local_1,vreg_39;
-  Body* vreg_5,*vreg_7,*vreg_8,*vreg_16,*vreg_17,*vreg_25,*vreg_26;
-  System_Double vreg_9,vreg_12,vreg_13,vreg_14,vreg_18,vreg_21,vreg_22,vreg_23,vreg_27,vreg_30,vreg_31,vreg_32;
+  Body* vreg_5;
+  System_Double vreg_12,vreg_13,vreg_14,vreg_21,vreg_22,vreg_23,vreg_30,vreg_31,vreg_32,vreg_42,vreg_44,vreg_46;
   System_UInt32 vreg_38;
   System_Boolean vreg_40;
 
@@ -540,27 +501,21 @@ System_Void NBodySystem_AdvanceBodiesEnergy(NBodySystem* _this, System_Double dt
   goto label_89;
   label_13:
   vreg_5 = ((*local_0)[local_1]).get();
-  vreg_7 = vreg_5;
-  vreg_8 = vreg_5;
-  vreg_9 = Body_get_X(vreg_8);
+  vreg_42 = vreg_5->_X_k__BackingField;
   vreg_12 = vreg_5->Vx;
   vreg_13 = mul (dt, vreg_12);
-  vreg_14 = add (vreg_9, vreg_13);
-  Body_set_X(vreg_7, vreg_14);
-  vreg_16 = vreg_5;
-  vreg_17 = vreg_5;
-  vreg_18 = Body_get_Y(vreg_17);
+  vreg_14 = add (vreg_42, vreg_13);
+  vreg_5->_X_k__BackingField = vreg_14;
+  vreg_44 = vreg_5->_Y_k__BackingField;
   vreg_21 = vreg_5->Vy;
   vreg_22 = mul (dt, vreg_21);
-  vreg_23 = add (vreg_18, vreg_22);
-  Body_set_Y(vreg_16, vreg_23);
-  vreg_25 = vreg_5;
-  vreg_26 = vreg_5;
-  vreg_27 = Body_get_Z(vreg_26);
+  vreg_23 = add (vreg_44, vreg_22);
+  vreg_5->_Y_k__BackingField = vreg_23;
+  vreg_46 = vreg_5->_Z_k__BackingField;
   vreg_30 = vreg_5->Vz;
   vreg_31 = mul (dt, vreg_30);
-  vreg_32 = add (vreg_27, vreg_31);
-  Body_set_Z(vreg_25, vreg_32);
+  vreg_32 = add (vreg_46, vreg_31);
+  vreg_5->_Z_k__BackingField = vreg_32;
   local_1 = add (local_1, 1);
   label_89:
   vreg_37 = local_0;

@@ -37,7 +37,7 @@ internal static class InlinerExtensions
         return indicesCalls.ToArray();
     }
 
-    private static bool IsInlinable(MethodBase callOpTargetMethod)
+    public static bool IsInlinable(MethodBase callOpTargetMethod)
     {
         CilOperationsMethod? mappedCilMethod = ResolvedMethod(callOpTargetMethod);
         return mappedCilMethod is not null && IsSimpleMethod(mappedCilMethod);
@@ -58,7 +58,7 @@ internal static class InlinerExtensions
         return mappedCilMethod as CilOperationsMethod;
     }
 
-    private static bool IsSimpleMethod(CilOperationsMethod cilOperationsMethod)
+    public static bool IsSimpleMethod(CilOperationsMethod cilOperationsMethod)
     {
         BaseOp[] ops = cilOperationsMethod.Operations;
         foreach (BaseOp op in ops)

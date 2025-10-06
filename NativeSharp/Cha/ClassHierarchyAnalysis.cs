@@ -5,6 +5,7 @@ using NativeSharp.Extensions;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
+using NativeSharp.Optimizations;
 
 namespace NativeSharp.Cha;
 
@@ -12,32 +13,36 @@ public static class ClassHierarchyAnalysis
 {
     public static List<Type> RegisteredTypes { get; } = [];
     public static TwoWayDictionary<Type> MappedType { get; } = new();
+
     public static Type ResolveType(Type targetType)
     {
         if (MappedType.TryGetValue(targetType, out Type? type))
         {
             return type!;
         }
+
         string typeNamespace = targetType.Namespace ?? "";
 
         if (typeNamespace.StartsWith("System"))
         {
             return targetType;
         }
-        
+
         if (targetType.IsArray)
         {
             RegisteredType(targetType);
             ResolveType(targetType.GetElementType()!);
             return targetType;
         }
-        
+
         MappedType[targetType] = targetType;
-        FieldInfo[] fieldInfos = targetType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        FieldInfo[] fieldInfos =
+            targetType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         foreach (FieldInfo fieldInfo in fieldInfos)
         {
             ResolveType(fieldInfo.FieldType);
         }
+
         return targetType;
     }
 
@@ -67,29 +72,45 @@ public static class ClassHierarchyAnalysis
         return -1;
     }
 
-    public static void DevirtualizeCalls()
+    public static bool DevirtualizeCalls()
     {
+        bool result = false;
         CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
         foreach (CilOperationsMethod cilMethod in cilMethods)
         {
-            DevirtualizeCallsInMethod(cilMethod);
+            result = DevirtualizeCallsInMethod(cilMethod) || result;
         }
+        return result;
     }
 
-    public static void DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
+    public static bool DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
     {
-        int[] virtCallsIndices = IndexOfVirtualCalls(cilMethod).ToArray();
-        foreach (int virtCallIndex in virtCallsIndices)
+        bool found = false;
+        do
         {
-            BaseOp op = cilMethod.Operations[virtCallIndex];
-            ICallOp callOp = (ICallOp)op;
-            Type declaringType = callOp.TargetMethod.DeclaringType!;
-            if (IsEffectivelySealed(declaringType))
+            int[] virtCallsIndices = IndexOfVirtualCalls(cilMethod).ToArray();
+            if (virtCallsIndices.Length == 0)
             {
-                MakeCallStatic(cilMethod, virtCallIndex);
-                continue;
+                break;
             }
-        }
+
+            foreach (int virtCallIndex in virtCallsIndices)
+            {
+                BaseOp op = cilMethod.Operations[virtCallIndex];
+                ICallOp callOp = (ICallOp)op;
+                Type declaringType = callOp.TargetMethod.DeclaringType!;
+                if (IsEffectivelySealed(declaringType))
+                {
+                    MakeCallStatic(cilMethod, virtCallIndex);
+                    Program.ApplyDefaultOptimizations(true);
+                    found = true;
+                    break;
+                }
+            }
+        } while (true);
+
+        return found;
+
     }
 
     private static bool IsEffectivelySealed(Type declaringType)
@@ -99,28 +120,31 @@ public static class ClassHierarchyAnalysis
             return true;
         }
 
-        return RegisteredTypes.Where(knownType => knownType != declaringType).All(knownType => !declaringType.IsAssignableFrom(knownType));
+        return RegisteredTypes.Where(knownType => knownType != declaringType)
+            .All(knownType => !declaringType.IsAssignableFrom(knownType));
     }
 
     private static void MakeCallStatic(CilOperationsMethod cilMethod, int virtCallIndex)
     {
         BaseOp op = cilMethod.Operations[virtCallIndex];
-        IVirtualCall virtualCall= (IVirtualCall)op;
+        IVirtualCall virtualCall = (IVirtualCall)op;
         BaseOp staticOp = virtualCall.ToStatic();
         cilMethod.Operations[virtCallIndex] = staticOp;
         ICallOp callOp = (ICallOp)staticOp;
-         MethodResolver.ResolveAllTree(callOp.TargetMethod);
-         BaseNativeMethod? cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
-         if (cilResolved is CilOperationsMethod resolved)
-         DevirtualizeCallsInMethod(resolved);
+        MethodResolver.ResolveAllTree(callOp.TargetMethod);
+        BaseNativeMethod? cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
+        if (cilResolved is CilOperationsMethod resolved)
+        {
+            DevirtualizeCallsInMethod(resolved);
+        }
     }
 
-    static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)
+    private static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)
     {
         for (int index = 0; index < cilMethod.Operations.Length; index++)
         {
             BaseOp op = cilMethod.Operations[index];
-            if ((op is VirtualCallOp ) ||(op is VirtualCallReturnOp))
+            if ((op is VirtualCallOp) || (op is VirtualCallReturnOp))
             {
                 yield return index;
             }
