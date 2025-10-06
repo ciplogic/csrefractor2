@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
+using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 using NativeSharp.Optimizations.Inliner;
 
@@ -11,17 +12,17 @@ public static class ArgsCallBuilder
     public static string WriteArgsCall(IValueExpression[] args, MethodBase targetMethod)
     {
         
-        var cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
+        CilOperationsMethod? cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
         if (cilMethod is null)
         {
             return string.Join(", ", args.Select(x => x.Code()));
         }
 
-        var sb = new StringBuilder();
-        for (var index = 0; index < args.Length; index++)
+        StringBuilder sb = new StringBuilder();
+        for (int index = 0; index < args.Length; index++)
         {
-            var arg = args[index];
-            var callArg = cilMethod.Args[index];
+            IValueExpression arg = args[index];
+            ArgumentVariable callArg = cilMethod.Args[index];
             string argValue = BuildArgCode(arg, callArg);
             sb.Append(argValue);
             if (index < args.Length - 1)

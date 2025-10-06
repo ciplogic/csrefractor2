@@ -13,7 +13,7 @@ internal static class CallOperationsTransformer
 
     public static BaseOp TransformCallOp(LocalVariablesStackAndState locals, Instruction instruction)
     {
-        var opName = instruction.OpCode.Name!;
+        string opName = instruction.OpCode.Name!;
         MethodBase operand = (MethodBase)instruction.Operand;
         bool isCallVirtual = opName == "callvirt";
         if (EmptyConstructorTypes.Contains(operand.DeclaringType))
@@ -26,7 +26,7 @@ internal static class CallOperationsTransformer
 
         int paramCount = operandAsMethodInfo?.GetParameters().Length ?? 0;
 
-        var argumentArray = BuildArgumentArray(locals, paramCount, operandAsMethodInfo);
+        IValueExpression[] argumentArray = BuildArgumentArray(locals, paramCount, operandAsMethodInfo);
 
         Type returnType = operandAsMethodInfo?.ReturnType ?? typeof(void);
         VReg? returnValue = null;

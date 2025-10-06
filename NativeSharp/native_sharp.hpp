@@ -11,6 +11,7 @@
 
 template <typename T>
 using Arr = HeapArray<T>;
+
 template <typename T>
 using RefArr = Ref<Arr<T>>;
 
@@ -29,38 +30,87 @@ RefArr<T> makeArr(std::initializer_list<T> init)
 }
 
 template <typename T>
-T add(T left, T right) { return left + right; }
+T add(T left, T right)
+{
+    return left + right;
+}
 
 template <typename T>
-T sub(T left, T right) { return left - right; }
+T sub(T left, T right)
+{
+    return left - right;
+}
 
 template <typename T>
-T mul(T left, T right) { return left * right; }
+T mul(T left, T right)
+{
+    return left * right;
+}
 
 template <typename T>
-T div(T left, T right) { return left / right; }
+T div(T left, T right)
+{
+    return left / right;
+}
 
 template <typename T>
-T rem(T left, T right) { return left % right; }
+T rem(T left, T right)
+{
+    return left % right;
+}
 
 template <typename T>
 T neg(T left) { return -left; }
 
-inline bool cgt(int left, int right) { return left > right; }
+inline bool cgt(int left, int right)
+{
+    return left > right;
+}
 
-inline bool clt(int left, int right) { return left < right; }
+inline bool clt(int left, int right)
+{
+    return left < right;
+}
 
-inline bool ceq(int left, int right) { return left == right; }
+inline bool ceq(int left, int right)
+{
+    return left == right;
+}
 
-inline bool brfalse_s(int left) { return !left; }
-inline bool brtrue_s(int left) { return left; }
-inline bool brfalse(int left) { return !left; }
-inline bool brtrue(int left) { return left; }
+inline bool brfalse_s(int left)
+{
+    return !left;
+}
+
+inline bool brtrue_s(int left)
+{
+    return left;
+}
+
+inline bool brfalse(int left)
+{
+    return !left;
+}
+
+inline bool brtrue(int left)
+{
+    return left;
+}
 
 template <typename T>
-bool blt_s(T left, T right) { return left < right; }
+bool blt_s(T left, T right)
+{
+    return left < right;
+}
 
 template <typename T>
-bool blt(T left, T right) { return left < right; }
+bool blt(T left, T right)
+{
+    return left < right;
+}
 
-inline int32_t conv_i4(uint32_t left) { return left; }
+template <typename T>
+int32_t conv_i4(T left)
+{
+    return left;
+}

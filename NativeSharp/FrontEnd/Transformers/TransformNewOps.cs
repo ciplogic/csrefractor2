@@ -55,7 +55,7 @@ static class TransformNewOps
             TargetMethod = constructorInfo
         };
 
-        var combinedOps = new CompositeOp([newObjOp, callOp]);
+        CompositeOp combinedOps = new CompositeOp([newObjOp, callOp]);
         return combinedOps;
     }
 

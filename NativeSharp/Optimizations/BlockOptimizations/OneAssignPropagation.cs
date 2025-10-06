@@ -9,16 +9,16 @@ public class OneAssignPropagation : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var ops = cilOperationsMethod.Operations;
-        for (var i = 1; i < ops.Length; i++)
+        BaseOp[] ops = cilOperationsMethod.Operations;
+        for (int i = 1; i < ops.Length; i++)
         {
-            var prev = ops[i - 1];
+            BaseOp prev = ops[i - 1];
             if (prev is not LeftOp leftOp)
             {
                 continue;
             }
 
-            var op = ops[i];
+            BaseOp op = ops[i];
             if (op is not AssignOp assignOp)
             {
                 continue;
@@ -43,9 +43,9 @@ public class OneAssignPropagation : OptimizationBase
 
     private static bool ValidateOp(BaseOp[] ops, int i, string varCode)
     {
-        for (var j = 0; j < ops.Length; j++)
+        for (int j = 0; j < ops.Length; j++)
         {
-            var op = ops[j];
+            BaseOp op = ops[j];
             if (op is LeftOp leftOp)
             {
                 if (j == i - 1)
@@ -61,7 +61,7 @@ public class OneAssignPropagation : OptimizationBase
 
             if (j != i)
             {
-                var usages = new HashSet<string>(InstructionUsages.GetUsagesOf(op));
+                HashSet<string> usages = new HashSet<string>(InstructionUsages.GetUsagesOf(op));
                 if (usages.Contains(varCode))
                 {
                     return false;

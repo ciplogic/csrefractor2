@@ -98,15 +98,15 @@ internal static class MethodResolver
             return;
         }
         
-        var resolvedMethod = Resolve(entryPoint);
+        BaseNativeMethod? resolvedMethod = Resolve(entryPoint);
         if (resolvedMethod is not CilOperationsMethod cilMethod)
         {
             return;
         }
         
-        var methodsVoid = cilMethod.Operations.OfType<CallOp>().Select(x=>x.TargetMethod).ToArray();
-        var methodsReturn = cilMethod.Operations.OfType<CallReturnOp>().Select(x => x.TargetMethod).ToArray();
-        var joinedMethodsToResolve = methodsVoid.Concat(methodsReturn).ToArray();
+        MethodBase[] methodsVoid = cilMethod.Operations.OfType<CallOp>().Select(x=>x.TargetMethod).ToArray();
+        MethodBase[] methodsReturn = cilMethod.Operations.OfType<CallReturnOp>().Select(x => x.TargetMethod).ToArray();
+        MethodBase[] joinedMethodsToResolve = methodsVoid.Concat(methodsReturn).ToArray();
         if (joinedMethodsToResolve.Length == 0)
         {
             return;

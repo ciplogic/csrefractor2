@@ -8,9 +8,9 @@ public class MathSimplifications : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var result = false;
+        bool result = false;
         BaseOp[] baseOps = cilOperationsMethod.Operations;
-        for (var index = 0; index < baseOps.Length; index++)
+        for (int index = 0; index < baseOps.Length; index++)
         {
             result = result || OptimizeOp(baseOps, index);
         }
@@ -20,7 +20,7 @@ public class MathSimplifications : OptimizationBase
 
     private static bool OptimizeOp(BaseOp[] baseOps, int index)
     {
-        var op = baseOps[index];
+        BaseOp op = baseOps[index];
         if (op is BinaryOp binaryOp)
         {
             return OptimizeBinaryOp(baseOps, index, binaryOp);
@@ -40,12 +40,12 @@ public class MathSimplifications : OptimizationBase
 
     private static bool TryOptimizeDivFloat(BaseOp[] baseOps, int index, BinaryOp binaryOp)
     {
-        var rightExpression = binaryOp.RightExpression;
+        IValueExpression rightExpression = binaryOp.RightExpression;
         if (rightExpression is ConstantValueExpression constantValueExpression)
         {
             if (constantValueExpression.ExpressionType == typeof(double))
             {
-                var doubleValue = (double)constantValueExpression.Value;
+                double doubleValue = (double)constantValueExpression.Value;
                 baseOps[index] = new BinaryOp(binaryOp.Left, "mul")
                 {
                     LeftExpression = binaryOp.LeftExpression,
@@ -55,7 +55,7 @@ public class MathSimplifications : OptimizationBase
             }
             if (constantValueExpression.ExpressionType == typeof(float))
             {
-                var doubleValue = (float)constantValueExpression.Value;
+                float doubleValue = (float)constantValueExpression.Value;
                 baseOps[index] = new BinaryOp(binaryOp.Left, "mul")
                 {
                     LeftExpression = binaryOp.LeftExpression,

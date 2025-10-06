@@ -2,6 +2,7 @@
 using NativeSharp.Cha.Resolving;
 using NativeSharp.Common;
 using NativeSharp.Extensions;
+using NativeSharp.Operations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
 
@@ -17,7 +18,7 @@ public static class ClassHierarchyAnalysis
         {
             return type!;
         }
-        var typeNamespace = targetType.Namespace ?? "";
+        string typeNamespace = targetType.Namespace ?? "";
 
         if (typeNamespace.StartsWith("System"))
         {
@@ -55,7 +56,7 @@ public static class ClassHierarchyAnalysis
             RegisteredType(targetType);
         }
 
-        for (var index = 0; index < RegisteredTypes.Count; index++)
+        for (int index = 0; index < RegisteredTypes.Count; index++)
         {
             if (RegisteredTypes[index] == targetType)
             {
@@ -68,8 +69,8 @@ public static class ClassHierarchyAnalysis
 
     public static void DevirtualizeCalls()
     {
-        var cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
-        foreach (var cilMethod in cilMethods)
+        CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
+        foreach (CilOperationsMethod cilMethod in cilMethods)
         {
             DevirtualizeCallsInMethod(cilMethod);
         }
@@ -77,12 +78,12 @@ public static class ClassHierarchyAnalysis
 
     public static void DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
     {
-        var virtCallsIndices = IndexOfVirtualCalls(cilMethod).ToArray();
-        foreach (var virtCallIndex in virtCallsIndices)
+        int[] virtCallsIndices = IndexOfVirtualCalls(cilMethod).ToArray();
+        foreach (int virtCallIndex in virtCallsIndices)
         {
-            var op = cilMethod.Operations[virtCallIndex];
-            var callOp = (ICallOp)op;
-            var declaringType = callOp.TargetMethod.DeclaringType!;
+            BaseOp op = cilMethod.Operations[virtCallIndex];
+            ICallOp callOp = (ICallOp)op;
+            Type declaringType = callOp.TargetMethod.DeclaringType!;
             if (IsEffectivelySealed(declaringType))
             {
                 MakeCallStatic(cilMethod, virtCallIndex);
@@ -103,22 +104,22 @@ public static class ClassHierarchyAnalysis
 
     private static void MakeCallStatic(CilOperationsMethod cilMethod, int virtCallIndex)
     {
-        var op = cilMethod.Operations[virtCallIndex];
-        var virtualCall= (IVirtualCall)op;
-        var staticOp = virtualCall.ToStatic();
+        BaseOp op = cilMethod.Operations[virtCallIndex];
+        IVirtualCall virtualCall= (IVirtualCall)op;
+        BaseOp staticOp = virtualCall.ToStatic();
         cilMethod.Operations[virtCallIndex] = staticOp;
-        var callOp = (ICallOp)staticOp;
+        ICallOp callOp = (ICallOp)staticOp;
          MethodResolver.ResolveAllTree(callOp.TargetMethod);
-         var cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
+         BaseNativeMethod? cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
          if (cilResolved is CilOperationsMethod resolved)
          DevirtualizeCallsInMethod(resolved);
     }
 
     static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)
     {
-        for (var index = 0; index < cilMethod.Operations.Length; index++)
+        for (int index = 0; index < cilMethod.Operations.Length; index++)
         {
-            var op = cilMethod.Operations[index];
+            BaseOp op = cilMethod.Operations[index];
             if ((op is VirtualCallOp ) ||(op is VirtualCallReturnOp))
             {
                 yield return index;

@@ -10,16 +10,16 @@ public class VariablesBulkWriter
 
     public void Populate(IEnumerable<IndexedVariable> enumerateVariables)
     {
-        foreach (var variable in enumerateVariables)
+        foreach (IndexedVariable variable in enumerateVariables)
         {
-            var variableType = variable.ExpressionType.Mangle(variable.EscapeResult);
+            string variableType = variable.ExpressionType.Mangle(variable.EscapeResult);
             if (!this.variables.TryGetValue(variableType, out List<string>? variableList))
             {
                 variableList = [];
                 this.variables[variableType] = variableList;
             }
 
-            var prefix = variable.EscapeResult == EscapeKind.Local && !variable.ExpressionType.IsValueType
+            string prefix = variable.EscapeResult == EscapeKind.Local && !variable.ExpressionType.IsValueType
                 ? "*"
                 : "";
             if (variableList.Count > 0)
@@ -38,7 +38,7 @@ public class VariablesBulkWriter
     public string Write()
     {
         StringBuilder builder = new(200);
-        foreach (var variable in variables)
+        foreach (KeyValuePair<string, List<string>> variable in variables)
         {
             builder
                 .Append("  ")

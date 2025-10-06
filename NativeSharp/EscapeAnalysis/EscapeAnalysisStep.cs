@@ -16,8 +16,8 @@ public class EscapeAnalysisStep
 {
     public static void ApplyStaticAnalysis()
     {
-        var cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
-        foreach (var cilMethod in cilMethods)
+        CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
+        foreach (CilOperationsMethod cilMethod in cilMethods)
         {
             Analyze(cilMethod);
         }
@@ -26,11 +26,11 @@ public class EscapeAnalysisStep
     private static void Analyze(CilOperationsMethod cilMethod)
     {
         Dictionary<string, Variable> variables = PopulateVariables(cilMethod);
-        var instructions = cilMethod.Operations;
-        foreach (var instruction in instructions)
+        BaseOp[] instructions = cilMethod.Operations;
+        foreach (BaseOp instruction in instructions)
         {
-            var usages = InstructionUsages.GetUsagesOf(instruction);
-            foreach (var usage in usages)
+            IEnumerable<string> usages = InstructionUsages.GetUsagesOf(instruction);
+            foreach (string usage in usages)
             {
                 UpdateVarUsage(usage, variables, EscapeKind.Local);
             }
@@ -45,19 +45,19 @@ public class EscapeAnalysisStep
         {
             case RetOp retOp:
             {
-                var valueExpressionText = retOp.ValueExpression?.Code() ?? string.Empty;
+                string valueExpressionText = retOp.ValueExpression?.Code() ?? string.Empty;
                 UpdateVarUsage(valueExpressionText, variables, EscapeKind.Escapes);
                 return;
             }
             case StoreFieldOp storeFieldOp:
             {
-                var storeElement = storeFieldOp.ValueToSet.Code();
+                string storeElement = storeFieldOp.ValueToSet.Code();
                 UpdateVarUsage(storeElement, variables, EscapeKind.Escapes);
                 return;
             }
             case StoreElementOp storeElementOp:
             {
-                var storeElement = storeElementOp.ValueToSet.Code();
+                string storeElement = storeElementOp.ValueToSet.Code();
                 UpdateVarUsage(storeElement, variables, EscapeKind.Escapes);
                 return;
             }
@@ -75,20 +75,20 @@ public class EscapeAnalysisStep
         MethodBase targetMethod,
         Dictionary<string, Variable> variables)
     {
-        var cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
+        CilOperationsMethod? cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
         if (cilMethod is not null)
         {
-            for (var index = 0; index < callOpArgs.Length; index++)
+            for (int index = 0; index < callOpArgs.Length; index++)
             {
-                var arg = callOpArgs[index];
-                var methodArg = cilMethod.Args[index];
+                IValueExpression arg = callOpArgs[index];
+                ArgumentVariable methodArg = cilMethod.Args[index];
                 UpdateVarUsage(arg.Code(), variables, methodArg.EscapeResult);
             }
         }
         else
         {
-            var args = callOpArgs.SelectToArray(x => x.Code());
-            foreach (var arg in args)
+            string[] args = callOpArgs.SelectToArray(x => x.Code());
+            foreach (string arg in args)
             {
                 UpdateVarUsage(arg, variables, EscapeKind.Escapes);
             }
@@ -111,7 +111,7 @@ public class EscapeAnalysisStep
 
     private static Dictionary<string, Variable> PopulateVariables(CilOperationsMethod cilMethod)
     {
-        var result = new Dictionary<string, Variable>();
+        Dictionary<string, Variable> result = new Dictionary<string, Variable>();
         foreach (ArgumentVariable argumentVariable in cilMethod.Args)
         {
             result.Add(argumentVariable.Code(), argumentVariable);

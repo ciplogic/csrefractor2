@@ -23,7 +23,7 @@ internal class Program
         }
         else
         {
-            var json = File.ReadAllText("compiler_options.json");
+            string json = File.ReadAllText("compiler_options.json");
             options = JsonSerializer.Deserialize<CompilerOptions>(json) ?? new CompilerOptions();
         }
 
@@ -41,7 +41,7 @@ internal class Program
         ClassHierarchyAnalysis.DevirtualizeCalls();
         //MethodResolver.TransformCilMethod(typeof(Texts).GetMethod("BuildSystemString")!);
 
-        var optimizer = new OptimizationSteps(options.Optimize);
+        OptimizationSteps optimizer = new OptimizationSteps(options.Optimize);
         OptimizationSteps.OptimizeMethodSet(optimizer.CilMethodOptimizations.ToArray());
 
         EscapeAnalysisStep.ApplyStaticAnalysis();

@@ -10,9 +10,9 @@ public abstract class BlockBasedOptimizationBase : OptimizationBase
 
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var basicBlocks = BasicBlocksExtraction(cilOperationsMethod.Operations);
-        var optimized = false;
-        foreach (var basicBlock in basicBlocks)
+        ArraySegment<BaseOp>[] basicBlocks = BasicBlocksExtraction(cilOperationsMethod.Operations);
+        bool optimized = false;
+        foreach (ArraySegment<BaseOp> basicBlock in basicBlocks)
         {
             optimized |= OptimizeSegment(basicBlock);
         }
@@ -22,30 +22,30 @@ public abstract class BlockBasedOptimizationBase : OptimizationBase
 
     private static ArraySegment<BaseOp>[] BasicBlocksExtraction(BaseOp[] ops)
     {
-        var resultList = new List<ArraySegment<BaseOp>>(ops.Length / 4);
-        var startPos = 0;
-        for (var index = 0; index < ops.Length; index++)
+        List<ArraySegment<BaseOp>> resultList = new (ops.Length / 4);
+        int startPos = 0;
+        for (int index = 0; index < ops.Length; index++)
         {
-            var op = ops[index];
+            BaseOp op = ops[index];
             if (!op.IsJumpOp())
             {
                 continue;
             }
 
-            var len = index - startPos;
+            int len = index - startPos;
             if (len > 0)
             {
-                var segment = new ArraySegment<BaseOp>(ops, startPos, len + 1);
+                ArraySegment<BaseOp> segment = new ArraySegment<BaseOp>(ops, startPos, len + 1);
                 resultList.Add(segment);
             }
 
             startPos = index + 1;
         }
 
-        var lenFinal = ops.Length - startPos;
+        int lenFinal = ops.Length - startPos;
         if (lenFinal > 0)
         {
-            var segment = new ArraySegment<BaseOp>(ops, startPos, lenFinal);
+            ArraySegment<BaseOp> segment = new ArraySegment<BaseOp>(ops, startPos, lenFinal);
             resultList.Add(segment);
         }
 

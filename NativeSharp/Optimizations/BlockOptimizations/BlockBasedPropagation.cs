@@ -11,10 +11,10 @@ internal class BlockBasedPropagation : BlockBasedOptimizationBase
     {
         Dictionary<IValueExpression, IValueExpression> updates = [];
 
-        var result = false;
-        for (var i = 0; i < segment.Count; i++)
+        bool result = false;
+        for (int i = 0; i < segment.Count; i++)
         {
-            var op = segment[i];
+            BaseOp op = segment[i];
             result |= InstructionUsages.UpdateKnownOpUsages(op, updates);
             if (op is not AssignOp assignOp)
             {

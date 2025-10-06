@@ -25,15 +25,15 @@ internal class InstructionTransformer
         Instruction[] instructions2 = MethodBodyReader.GetInstructions(parentMethod);
 
         List<BaseOp> resultList = new List<BaseOp>();
-        for (var index = 0; index < instructions2.Length; index++)
+        for (int index = 0; index < instructions2.Length; index++)
         {
-            var instruction = instructions2[index];
+            Instruction instruction = instructions2[index];
             if (LocalVariablesStackAndState.TargetBranches.Contains(instruction.Offset))
             {
                 resultList.Add(new LabelOp(instruction.Offset));
             }
 
-            var transformedOp = TransformOp(instruction);
+            BaseOp transformedOp = TransformOp(instruction);
             if (transformedOp is CompositeOp compositeOp)
             {
                 foreach (BaseOp baseOp in compositeOp.Ops)
@@ -150,9 +150,9 @@ internal class InstructionTransformer
     private BaseOp TransformStoreElement(Instruction instruction,
         LocalVariablesStackAndState localVariablesStackAndState)
     {
-        var valueToSet = localVariablesStackAndState.Pop();
-        var index = localVariablesStackAndState.Pop();
-        var arrPtr = (IndexedVariable)localVariablesStackAndState.Pop();
+        IValueExpression valueToSet = localVariablesStackAndState.Pop();
+        IValueExpression index = localVariablesStackAndState.Pop();
+        IndexedVariable arrPtr = (IndexedVariable)localVariablesStackAndState.Pop();
 
         return new StoreElementOp(arrPtr, index, valueToSet);
     }
@@ -205,13 +205,13 @@ internal class InstructionTransformer
     {
         IValueExpression leftOp = localVariablesStackAndState.Pop();
         IValueExpression right = localVariablesStackAndState.Pop();
-        var left = localVariablesStackAndState.NewVirtVar<bool>();
-        var binaryOp = new BinaryOp(left, opName)
+        VReg left = localVariablesStackAndState.NewVirtVar<bool>();
+        BinaryOp binaryOp = new BinaryOp(left, opName)
         {
             LeftExpression = leftOp,
             RightExpression = right
         };
-        var operand = (Instruction)instruction.Operand;
+        Instruction operand = (Instruction)instruction.Operand;
         BranchOp branchOp = new(operand.Offset, "brtrue", left);
         CompositeOp combinedOp = new([binaryOp, branchOp]);
 
@@ -222,7 +222,7 @@ internal class InstructionTransformer
     {
         IValueExpression rightOp = LocalVariablesStackAndState.Pop();
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
-        var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
+        VReg left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
         return new BinaryOp(left, instruction.OpCode.Name!)
         {
             LeftExpression = leftOp,
@@ -233,7 +233,7 @@ internal class InstructionTransformer
     private BaseOp TransformUnaryOp(Instruction instruction)
     {
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
-        var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
+        VReg left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
         return new UnaryOp(left)
         {
             ValueExpression = leftOp,
@@ -246,7 +246,7 @@ internal class InstructionTransformer
     {
         IValueExpression rightOp = LocalVariablesStackAndState.Pop();
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
-        var left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
+        VReg left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
         return new BinaryOp(left, instruction.OpCode.Name!)
         {
             LeftExpression = leftOp,
@@ -279,9 +279,9 @@ internal class InstructionTransformer
                 }
             }
 
-            var leftVar = LocalVariablesStackAndState.LocalVariables[index];
+            IndexedVariable leftVar = LocalVariablesStackAndState.LocalVariables[index];
 
-            var expression = LocalVariablesStackAndState.Pop();
+            IValueExpression expression = LocalVariablesStackAndState.Pop();
             AssignOp assignOp = new(leftVar, expression);
             return assignOp;
         }

@@ -39,7 +39,7 @@ public class OptimizationSteps(bool isOptimizing)
         do
         {
             canOptimize = false;
-            foreach (var cilNativeMethod in methodsToOptimize)
+            foreach (CilOperationsMethod cilNativeMethod in methodsToOptimize)
             {
                 canOptimize |= OptimizeMethod(cilNativeMethod, cilMethodOptimizations);
             }
@@ -48,8 +48,8 @@ public class OptimizationSteps(bool isOptimizing)
 
     private static bool OptimizeMethod(CilOperationsMethod method, OptimizationBase[] cilMethodOptimizations)
     {
-        var result = false;
-        foreach (var opt in cilMethodOptimizations)
+        bool result = false;
+        foreach (OptimizationBase opt in cilMethodOptimizations)
         {
             result |= opt.Optimize(method);
         }
@@ -59,7 +59,7 @@ public class OptimizationSteps(bool isOptimizing)
 
     public static void OptimizeMethodSet(OptimizationBase[] optimizerCilMethodOptimizations)
     {
-        var cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
+        CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
         OptimizeMethodSet(cilMethods, optimizerCilMethodOptimizations);
       
     }

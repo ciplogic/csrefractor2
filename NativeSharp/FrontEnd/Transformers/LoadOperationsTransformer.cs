@@ -63,7 +63,7 @@ static class LoadOperationsTransformer
             {
                 int operandAsInt = OperandAsInt(operand);
                 IndexedVariable localVar = variablesStackAndState.LocalVariables[operandAsInt];
-                var variableToAssign = variablesStackAndState.NewVirtVar(localVar.ExpressionType);
+                VReg variableToAssign = variablesStackAndState.NewVirtVar(localVar.ExpressionType);
                 return new AssignOp(variableToAssign, localVar);
             }
             default:
@@ -149,10 +149,10 @@ static class LoadOperationsTransformer
             index = (int)instruction.Operand;
         }
 
-        var expressionType = localVariablesStackAndState.LocalVariables[index].ExpressionType;
+        Type expressionType = localVariablesStackAndState.LocalVariables[index].ExpressionType;
         VReg left = localVariablesStackAndState.NewVirtVar(expressionType);
 
-        var expression = localVariablesStackAndState.LocalVariables[index];
+        IndexedVariable expression = localVariablesStackAndState.LocalVariables[index];
         return new AssignOp(left, expression);
     }
 

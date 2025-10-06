@@ -12,9 +12,9 @@ internal static class InlinerExtensions
     internal static int[] CalculateIsCandidate(BaseOp[] ops)
     {
         List<int> indicesCalls = [];
-        for (var index = 0; index < ops.Length; index++)
+        for (int index = 0; index < ops.Length; index++)
         {
-            var op = ops[index];
+            BaseOp op = ops[index];
             switch (op)
             {
                 case CallOp callOp:
@@ -50,7 +50,7 @@ internal static class InlinerExtensions
             return null;
         }
 
-        if (!MethodResolver.MethodCache.TryGetValue(targetMethod, out var mappedCilMethod))
+        if (!MethodResolver.MethodCache.TryGetValue(targetMethod, out BaseNativeMethod? mappedCilMethod))
         {
             return null;
         }
@@ -61,14 +61,14 @@ internal static class InlinerExtensions
     private static bool IsSimpleMethod(CilOperationsMethod cilOperationsMethod)
     {
         BaseOp[] ops = cilOperationsMethod.Operations;
-        foreach (var op in ops)
+        foreach (BaseOp op in ops)
         {
             if (op is LabelOp || op is BranchOp)
             {
                 return false;
             }
 
-            var targetCall = GetTargetCall(op);
+            CilOperationsMethod? targetCall = GetTargetCall(op);
             if (targetCall is not null)
             {
                 return false;

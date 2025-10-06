@@ -20,7 +20,7 @@ public record ClassFieldsWriter(CodeGenToFile Code, Type? sourceType, Type? mapp
         List<string> fieldNames = [];
         foreach (FieldInfo variable in fieldsOfType)
         {
-            var fieldCurrentType = variable.FieldType.Mangle();
+            string fieldCurrentType = variable.FieldType.Mangle();
             if (fieldCurrentType != currentType)
             {
                 WriteCurrentFields(currentType, fieldNames);
@@ -41,7 +41,7 @@ public record ClassFieldsWriter(CodeGenToFile Code, Type? sourceType, Type? mapp
             return;
         }
 
-        var variableNames = string.Join(',', fieldNames);
+        string variableNames = string.Join(',', fieldNames);
         Code.AddLine($"{fieldType} {variableNames};", 2);
         fieldNames.Clear();
     }

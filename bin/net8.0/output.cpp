@@ -446,25 +446,27 @@ System_Void NBodySystem_AdvanceTwoLoops(NBodySystem* _this, System_Double dt)
 
 System_Void NBodySystem_advanceInnerLoop(NBodySystem* _this, System_Double dt, Body* iBody, System_Int32 j)
 {
+  Body* vreg_0,*vreg_5,*vreg_8,*vreg_13,*vreg_16,*vreg_21,*vreg_50,*vreg_64,*vreg_78,*vreg_87,*vreg_101,*vreg_115;
   System_Double vreg_1,vreg_6,vreg_7,vreg_9,vreg_14,vreg_15,vreg_17,vreg_22,vreg_23,vreg_26,vreg_29,vreg_30,vreg_33,vreg_34,vreg_36,vreg_40,vreg_41,vreg_45,vreg_51,vreg_52,vreg_54,vreg_55,vreg_59,vreg_65,vreg_66,vreg_68,vreg_69,vreg_73,vreg_79,vreg_80,vreg_82,vreg_83,vreg_90,vreg_93,vreg_94,vreg_96,vreg_97,vreg_104,vreg_107,vreg_108,vreg_110,vreg_111,vreg_118,vreg_121,vreg_122,vreg_124,vreg_125;
   Arr<Ref<Body>>* vreg_3,*vreg_11,*vreg_19,*vreg_48,*vreg_62,*vreg_76,*vreg_85,*vreg_99,*vreg_113;
-  Body vreg_5,vreg_13,vreg_21;
-  Body* vreg_50,*vreg_64,*vreg_78,*vreg_87,*vreg_101,*vreg_115;
 
-  vreg_1 = Body_get_X(vreg_0.get());
+  vreg_0 = iBody;
+  vreg_1 = Body_get_X(vreg_0);
   vreg_3 = _this->bodies.get();
-  vreg_5 = ((*vreg_3)[j]);
-  vreg_6 = Body_get_X(vreg_5.get());
+  vreg_5 = ((*vreg_3)[j]).get();
+  vreg_6 = Body_get_X(vreg_5);
   vreg_7 = sub (vreg_1, vreg_6);
-  vreg_9 = Body_get_Y(vreg_8.get());
+  vreg_8 = iBody;
+  vreg_9 = Body_get_Y(vreg_8);
   vreg_11 = _this->bodies.get();
-  vreg_13 = ((*vreg_11)[j]);
-  vreg_14 = Body_get_Y(vreg_13.get());
+  vreg_13 = ((*vreg_11)[j]).get();
+  vreg_14 = Body_get_Y(vreg_13);
   vreg_15 = sub (vreg_9, vreg_14);
-  vreg_17 = Body_get_Z(vreg_16.get());
+  vreg_16 = iBody;
+  vreg_17 = Body_get_Z(vreg_16);
   vreg_19 = _this->bodies.get();
-  vreg_21 = ((*vreg_19)[j]);
-  vreg_22 = Body_get_Z(vreg_21.get());
+  vreg_21 = ((*vreg_19)[j]).get();
+  vreg_22 = Body_get_Z(vreg_21);
   vreg_23 = sub (vreg_17, vreg_22);
   vreg_26 = mul (vreg_7, vreg_7);
   vreg_29 = mul (vreg_15, vreg_15);
@@ -528,7 +530,7 @@ System_Void NBodySystem_AdvanceBodiesEnergy(NBodySystem* _this, System_Double dt
 {
   Arr<Ref<Body>>* local_0,*vreg_37;
   System_Int32 local_1,vreg_39;
-  Body* vreg_5;
+  Body* vreg_5,*vreg_7,*vreg_8,*vreg_16,*vreg_17,*vreg_25,*vreg_26;
   System_Double vreg_9,vreg_12,vreg_13,vreg_14,vreg_18,vreg_21,vreg_22,vreg_23,vreg_27,vreg_30,vreg_31,vreg_32;
   System_UInt32 vreg_38;
   System_Boolean vreg_40;
@@ -538,21 +540,27 @@ System_Void NBodySystem_AdvanceBodiesEnergy(NBodySystem* _this, System_Double dt
   goto label_89;
   label_13:
   vreg_5 = ((*local_0)[local_1]).get();
-  vreg_9 = Body_get_X(vreg_8.get());
+  vreg_7 = vreg_5;
+  vreg_8 = vreg_5;
+  vreg_9 = Body_get_X(vreg_8);
   vreg_12 = vreg_5->Vx;
   vreg_13 = mul (dt, vreg_12);
   vreg_14 = add (vreg_9, vreg_13);
-  Body_set_X(vreg_7.get(), vreg_14);
-  vreg_18 = Body_get_Y(vreg_17.get());
+  Body_set_X(vreg_7, vreg_14);
+  vreg_16 = vreg_5;
+  vreg_17 = vreg_5;
+  vreg_18 = Body_get_Y(vreg_17);
   vreg_21 = vreg_5->Vy;
   vreg_22 = mul (dt, vreg_21);
   vreg_23 = add (vreg_18, vreg_22);
-  Body_set_Y(vreg_16.get(), vreg_23);
-  vreg_27 = Body_get_Z(vreg_26.get());
+  Body_set_Y(vreg_16, vreg_23);
+  vreg_25 = vreg_5;
+  vreg_26 = vreg_5;
+  vreg_27 = Body_get_Z(vreg_26);
   vreg_30 = vreg_5->Vz;
   vreg_31 = mul (dt, vreg_30);
   vreg_32 = add (vreg_27, vreg_31);
-  Body_set_Z(vreg_25.get(), vreg_32);
+  Body_set_Z(vreg_25, vreg_32);
   local_1 = add (local_1, 1);
   label_89:
   vreg_37 = local_0;

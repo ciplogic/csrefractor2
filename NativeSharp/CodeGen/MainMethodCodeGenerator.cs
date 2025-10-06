@@ -15,7 +15,7 @@ public class MainMethodCodeGenerator
             Code.AddLine("auto ARGS = argsToStrings(argc, argv);");
         }
 
-        var lineOfCode = timingMainKind switch
+        string lineOfCode = timingMainKind switch
         {
             TimingMainKind.None => $"{LambdaBodyMethod()}();",
             TimingMainKind.Millisecond => $"timeItMilliseconds({LambdaBodyMethod()});",

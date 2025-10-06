@@ -4,6 +4,7 @@ using NativeSharp.Cha.Resolving;
 using NativeSharp.CodeGen.Methods;
 using NativeSharp.Common;
 using NativeSharp.FrontEnd;
+using NativeSharp.Lib;
 using NativeSharp.Operations.Common;
 
 namespace NativeSharp.CodeGen;
@@ -64,8 +65,8 @@ public class CodeGenerator
                 continue;
             }
 
-            var headers = cppMethod.Content.Headers;
-            foreach (var header in headers)
+            string[] headers = cppMethod.Content.Headers;
+            foreach (string header in headers)
             {
                 if (headersHash.Add(header))
                 {
@@ -79,7 +80,7 @@ public class CodeGenerator
 
     private void WriteCppMethod(CppNativeMethod cppMethod)
     {
-        var code = cppMethod.Content;
+        CppNativeContent code = cppMethod.Content;
         Code.AddLine($"{cppMethod.MangledMethodHeader()} {{");
         Code.AddLine(code.MethodBody);
         Code.AddLine("}");
@@ -87,7 +88,7 @@ public class CodeGenerator
 
     private void WriteMainBody(string entryPoint, string args = "")
     {
-        var mainCodeGen = new MainMethodCodeGenerator();
+        MainMethodCodeGenerator mainCodeGen = new MainMethodCodeGenerator();
         mainCodeGen.WriteMainMethodBody(Code, entryPoint, TimingMainKind.Millisecond, args);
     }
 
@@ -101,7 +102,7 @@ public class CodeGenerator
 
         foreach (KeyValuePair<Type?, Type?> kv in mappedTypes)
         {
-            var writer = new ClassFieldsWriter(Code, kv.Value, kv.Key);
+            ClassFieldsWriter writer = new ClassFieldsWriter(Code, kv.Value, kv.Key);
             writer.WriteFieldsOfType();
         }
     }

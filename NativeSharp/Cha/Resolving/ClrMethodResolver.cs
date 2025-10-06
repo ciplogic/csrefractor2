@@ -83,13 +83,13 @@ internal static class ClrMethodResolver
 
     private static Type[] ExtractArgumentTypesOfMethod(this MethodBase method)
     {
-        var result = new List<Type>();
+        List<Type> result = new List<Type>();
         if (!method.IsStatic || method.IsConstructor)
         {
             result.Add(method.DeclaringType);
         }
 
-        var args = method.GetParameters();
+        ParameterInfo[] args = method.GetParameters();
         for (int i = 0; i < args.Length; i++)
         {
             result.Add(args[i].ParameterType);
@@ -103,7 +103,7 @@ internal static class ClrMethodResolver
         Type[] parameterInfos = clrMethod.ExtractArgumentTypesOfMethod();
 
         Type[] mappedMethodInfo = methodInfo.ExtractArgumentTypesOfMethod();
-        for (var i = 0; i < parameterInfos.Length; i++)
+        for (int i = 0; i < parameterInfos.Length; i++)
         {
             Type mappedParam = mappedMethodInfo[i];
             Type param = parameterInfos[i];

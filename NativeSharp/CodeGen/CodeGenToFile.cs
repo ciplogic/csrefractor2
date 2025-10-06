@@ -14,7 +14,7 @@ public class CodeGenToFile(string fileName)
             return this;
         }
 
-        var indentText = new string(' ', indent);
+        string indentText = new string(' ', indent);
         Text
             .Append(indentText)
             .AppendLine(text);

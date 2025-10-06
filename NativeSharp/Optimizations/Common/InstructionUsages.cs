@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations;
+﻿using NativeSharp.Common;
+using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
@@ -44,8 +45,8 @@ static class InstructionUsages
         };
     }
 
-    private static IEnumerable<string> GetUsagesOfCall(this ICallOp callOp)
-        => callOp.Args.Select(arg => arg.VarCode());
+    private static string[] GetUsagesOfCall(this ICallOp callOp)
+        => callOp.Args.SelectToArray(arg => arg.VarCode());
 
     public static string[] GetUsagesOfArr(this BaseOp instruction)
         => GetUsagesOf(instruction)
@@ -54,21 +55,21 @@ static class InstructionUsages
 
     public static bool RefreshLocalVariables(this CilOperationsMethod cilOperationsMethod)
     {
-        var usages = cilOperationsMethod.Operations.GetUsagesAndDeclarationsOfOps();
-        var oldLocalCount = cilOperationsMethod.Locals.Length;
-        var vars = cilOperationsMethod.Locals
+        HashSet<string> usages = cilOperationsMethod.Operations.GetUsagesAndDeclarationsOfOps();
+        int oldLocalCount = cilOperationsMethod.Locals.Length;
+        IndexedVariable[] vars = cilOperationsMethod.Locals
             .Where(localVar => usages.Contains(localVar.Code()))
             .ToArray();
         cilOperationsMethod.Locals = vars;
         return vars.Length != oldLocalCount;
     }
 
-    public static HashSet<string> GetUsagesOfOps(this IEnumerable<BaseOp> instructions)
+    public static HashSet<string> GetUsagesOfOps(this BaseOp[] instructions)
     {
         HashSet<string> result = [];
         foreach (BaseOp instruction in instructions)
         {
-            var usagesArr = instruction.GetUsagesOfArr();
+            string[] usagesArr = instruction.GetUsagesOfArr();
             foreach (string usage in usagesArr)
             {
                 result.Add(usage);
@@ -78,7 +79,7 @@ static class InstructionUsages
         return result;
     }
 
-    public static HashSet<string> GetUsagesAndDeclarationsOfOps(this IEnumerable<BaseOp> instructions)
+    public static HashSet<string> GetUsagesAndDeclarationsOfOps(this BaseOp[] instructions)
     {
         HashSet<string> result = GetUsagesOfOps(instructions);
         foreach (BaseOp op in instructions)
@@ -116,7 +117,7 @@ static class InstructionUsages
             return;
         }
 
-        if (updates.TryGetValue(leftOp.Left, out var update))
+        if (updates.TryGetValue(leftOp.Left, out IValueExpression? update))
         {
             leftOp.Left = (IndexedVariable)update;
         }
@@ -161,11 +162,11 @@ static class InstructionUsages
 
     private static bool MapStoreField(StoreFieldOp op, FromTo fromTo)
     {
-        var expr1 = UpdateExpression(op,
+        bool expr1 = UpdateExpression(op,
             x => x.ThisPtr,
             (x, field) => x.ThisPtr = (IndexedVariable)field,
             fromTo);
-        var expr2 = UpdateExpression(op,
+        bool expr2 = UpdateExpression(op,
             x => x.ValueToSet,
             (x, v) => x.ValueToSet = v,
             fromTo);
@@ -175,15 +176,15 @@ static class InstructionUsages
 
     private static bool MatchStoreElem(StoreElementOp op, FromTo fromTo)
     {
-        var expr1 = UpdateExpression(op,
+        bool expr1 = UpdateExpression(op,
             x => x.ArrPtr,
             (x, v) => x.ArrPtr = (IndexedVariable)v,
             fromTo);
-        var expr2 = UpdateExpression(op,
+        bool expr2 = UpdateExpression(op,
             x => x.Index,
             (x, v) => x.Index = v,
             fromTo);
-        var expr3 = UpdateExpression(op,
+        bool expr3 = UpdateExpression(op,
             x => x.ValueToSet,
             (x, v) => x.ValueToSet = v,
             fromTo);
@@ -192,11 +193,11 @@ static class InstructionUsages
 
     private static bool MatchLoadElem(LoadElementOp op, FromTo fromTo)
     {
-        var arrayUpdate = UpdateExpression(op,
+        bool arrayUpdate = UpdateExpression(op,
             x => x.Array,
             (x, v) => x.Array = (IndexedVariable)v,
             fromTo);
-        var indexUpdate = UpdateExpression(op,
+        bool indexUpdate = UpdateExpression(op,
             x => x.Index,
             (x, v) => x.Index = v,
             fromTo
@@ -212,11 +213,11 @@ static class InstructionUsages
 
     private static bool MatchBinaryOp(BinaryOp op, FromTo fromTo)
     {
-        var leftUpdate = UpdateExpression(op,
+        bool leftUpdate = UpdateExpression(op,
             x => x.LeftExpression,
             (x, v) => x.LeftExpression = v,
             fromTo);
-        var rightUpdate = UpdateExpression(op,
+        bool rightUpdate = UpdateExpression(op,
             x => x.RightExpression,
             (x, v) => x.RightExpression = v,
             fromTo);
@@ -243,10 +244,10 @@ static class InstructionUsages
 
     private static bool UpdateUsagesArguments(IValueExpression[] parameters, FromTo fromTo)
     {
-        var result = false;
-        for (var index = 0; index < parameters.Length; index++)
+        bool result = false;
+        for (int index = 0; index < parameters.Length; index++)
         {
-            var target = UpdateTargetExpression(parameters[index], fromTo);
+            (IValueExpression Mapped, bool Changed) target = UpdateTargetExpression(parameters[index], fromTo);
             parameters[index] = target.Mapped;
             result |= target.Changed;
         }
@@ -257,8 +258,8 @@ static class InstructionUsages
     private static bool UpdateExpressionT<T>(T op, Func<T, FromTo, bool> match,
         Dictionary<IValueExpression, IValueExpression> updates) where T : BaseOp
     {
-        var result = false;
-        foreach (var kv in updates)
+        bool result = false;
+        foreach (KeyValuePair<IValueExpression, IValueExpression> kv in updates)
         {
             result |= match(op, new FromTo(kv.Key, kv.Value));
         }
@@ -270,7 +271,7 @@ static class InstructionUsages
         Action<T, IValueExpression> update,
         FromTo fromTo) where T : BaseOp
     {
-        var target = UpdateTargetExpression(getFieldFunc(storeFieldOp), fromTo);
+        (IValueExpression Mapped, bool Changed) target = UpdateTargetExpression(getFieldFunc(storeFieldOp), fromTo);
         if (target.Changed)
         {
             update(storeFieldOp, target.Mapped);

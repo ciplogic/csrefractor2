@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations.Common;
+﻿using NativeSharp.Operations;
+using NativeSharp.Operations.Common;
 
 namespace NativeSharp.Optimizations.Inliner;
 
@@ -6,16 +7,16 @@ public class InlinerOptimization : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var ops = cilOperationsMethod.Operations;
-        var rowsWithCalls = InlinerExtensions.CalculateIsCandidate(ops);
+        BaseOp[] ops = cilOperationsMethod.Operations;
+        int[] rowsWithCalls = InlinerExtensions.CalculateIsCandidate(ops);
 
         if (rowsWithCalls.Length == 0)
         {
             return false;
         }
 
-        var result = false;
-        foreach (var row in rowsWithCalls)
+        bool result = false;
+        foreach (int row in rowsWithCalls)
         {
             if (ComplexInlinerStep.InlineComplex(cilOperationsMethod, row))
             {

@@ -14,13 +14,13 @@ public class ComplexInlinerStep
 {
     public static bool InlineComplex(CilOperationsMethod cilOperationsMethod, int row)
     {
-        var target = InlinerExtensions.GetTargetCall(cilOperationsMethod.Operations[row]);
+        CilOperationsMethod? target = InlinerExtensions.GetTargetCall(cilOperationsMethod.Operations[row]);
         if (target is null)
         {
             return false;
         }
 
-        var startVregIndex = Math.Max(MaxIndexOfVariable(cilOperationsMethod), MaxIndexOfVariable(target)) + 1;
+        int startVregIndex = Math.Max(MaxIndexOfVariable(cilOperationsMethod), MaxIndexOfVariable(target)) + 1;
 
         Dictionary<IValueExpression, IValueExpression> fromToVariables = CreateVariablesTable(target, startVregIndex);
         (BaseOp[] OpsCloned, IndexedVariable[] newVars, IValueExpression? returnValueExpression) opsToInline =
@@ -49,21 +49,21 @@ public class ComplexInlinerStep
         IndexedVariable[] newVars,
         IValueExpression? returnValueExpression)
     {
-        var newOps = new List<BaseOp>();
+        List<BaseOp> newOps = new List<BaseOp>();
 
         newOps.AddRange(cilOperationsMethod.Operations.Take(row));
-        var argumentsOps = GetCallArguments(cilOperationsMethod.Operations[row]);
-        for (var index = 0; index < argumentsOps.Length; index++)
+        IValueExpression[] argumentsOps = GetCallArguments(cilOperationsMethod.Operations[row]);
+        for (int index = 0; index < argumentsOps.Length; index++)
         {
-            var argument = argumentsOps[index];
-            var leftSide = newVars[index];
+            IValueExpression argument = argumentsOps[index];
+            IndexedVariable leftSide = newVars[index];
             newOps.Add(new AssignOp(leftSide, argument));
         }
 
         newOps.AddRange(opsCloned);
         if (returnValueExpression is not null)
         {
-            var callRetOp = (CallReturnOp)cilOperationsMethod.Operations[row];
+            CallReturnOp callRetOp = (CallReturnOp)cilOperationsMethod.Operations[row];
             newOps.Add(new AssignOp(callRetOp.Left, returnValueExpression));
         }
 
@@ -76,10 +76,10 @@ public class ComplexInlinerStep
     private static (BaseOp[] OpsCloned, IndexedVariable[], IValueExpression? returnValueExpression) GetOpsToInline(
         CilOperationsMethod target, Dictionary<IValueExpression, IValueExpression> fromToVariables)
     {
-        var labelsTable = CreateLabelsTable(target);
-        var opsToInline = BuildOpsToInline(target, fromToVariables, labelsTable);
+        Dictionary<int, int> labelsTable = CreateLabelsTable(target);
+        BaseOp[] opsToInline = BuildOpsToInline(target, fromToVariables, labelsTable);
 
-        var lastOp = opsToInline.Last();
+        BaseOp lastOp = opsToInline.Last();
         if (lastOp is not RetOp retOp)
         {
             throw new InvalidDataException("No final return");
@@ -94,12 +94,12 @@ public class ComplexInlinerStep
         Dictionary<IValueExpression, IValueExpression> fromToVariables, Dictionary<int, int> labelsTable)
     {
         BaseOp[] opsToInline = target.Operations.SelectToArray(op => op.Clone());
-        foreach (var op in opsToInline)
+        foreach (BaseOp op in opsToInline)
         {
             InstructionUsages.UpdateUsagesAndDefinitions(op, fromToVariables);
         }
 
-        foreach (var op in opsToInline)
+        foreach (BaseOp op in opsToInline)
         {
             if (op is OffsetOp offsetOp)
             {
@@ -115,9 +115,9 @@ public class ComplexInlinerStep
     {
         Dictionary<IValueExpression, IValueExpression> variablesTable =
             new Dictionary<IValueExpression, IValueExpression>();
-        var localVariablesStack = new LocalVariablesStackAndState(startIndex);
+        LocalVariablesStackAndState localVariablesStack = new LocalVariablesStackAndState(startIndex);
 
-        foreach (var argumentVariable in targets.Args)
+        foreach (ArgumentVariable argumentVariable in targets.Args)
         {
             VReg variableToMapTo = localVariablesStack.NewVirtVar(argumentVariable.ExpressionType);
             variablesTable[argumentVariable] = variableToMapTo;
@@ -136,7 +136,7 @@ public class ComplexInlinerStep
     static int MaxIndexOfVariable(CilOperationsMethod cilOperationsMethod)
     {
         int result = 0;
-        foreach (var indexVariable in cilOperationsMethod.Locals)
+        foreach (IndexedVariable indexVariable in cilOperationsMethod.Locals)
         {
             result = Math.Max(result, indexVariable.Index);
         }
@@ -147,7 +147,7 @@ public class ComplexInlinerStep
     private static int MaxLabelIndex(CilOperationsMethod cilOperationsMethod)
     {
         int result = 0;
-        foreach (var op in cilOperationsMethod.Operations)
+        foreach (BaseOp op in cilOperationsMethod.Operations)
         {
             if (op is LabelOp labelOp)
             {
@@ -165,7 +165,7 @@ public class ComplexInlinerStep
             return callOp.Args;
         }
 
-        var callRetOp = (CallReturnOp)op;
+        CallReturnOp callRetOp = (CallReturnOp)op;
         return callRetOp.Args;
     }
 
@@ -174,7 +174,7 @@ public class ComplexInlinerStep
         Dictionary<int, int> result = [];
         int startIndex = MaxLabelIndex(cilOperationsMethod) + 1;
 
-        foreach (var op in cilOperationsMethod.Operations)
+        foreach (BaseOp op in cilOperationsMethod.Operations)
         {
             if (op is LabelOp labelOp)
             {

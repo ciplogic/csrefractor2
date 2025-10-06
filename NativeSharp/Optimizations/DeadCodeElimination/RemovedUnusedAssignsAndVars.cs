@@ -9,7 +9,7 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var candidatesForRemoval = new HashSet<string>();
+        HashSet<string> candidatesForRemoval = new HashSet<string>();
 
         foreach (BaseOp instruction in cilOperationsMethod.Operations)
         {
@@ -21,7 +21,7 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
 
         HashSet<string> usages = cilOperationsMethod.Operations.GetUsagesOfOps();
 
-        foreach (var usage in usages)
+        foreach (string usage in usages)
         {
             candidatesForRemoval.Remove(usage);
         }
@@ -32,7 +32,7 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
         }
 
 
-        var indicesToRemove = GetAssignmentIndicesToRemove(cilOperationsMethod, candidatesForRemoval);
+        int[] indicesToRemove = GetAssignmentIndicesToRemove(cilOperationsMethod, candidatesForRemoval);
 
         CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, indicesToRemove); 
         
@@ -42,10 +42,10 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
     private static int[] GetAssignmentIndicesToRemove(CilOperationsMethod cilOperationsMethod,
         HashSet<string> candidatesForRemoval)
     {
-        var indicesToRemove = new List<int>();
-        for (var index = 0; index < cilOperationsMethod.Operations.Length; index++)
+        List<int> indicesToRemove = new List<int>();
+        for (int index = 0; index < cilOperationsMethod.Operations.Length; index++)
         {
-            var instruction = cilOperationsMethod.Operations[index];
+            BaseOp instruction = cilOperationsMethod.Operations[index];
             if (instruction is AssignOp assignOp)
             {
                 if (candidatesForRemoval.Contains(assignOp.Left.Code()))
@@ -60,11 +60,11 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
 
     private static HashSet<string> GetHashOfUsedVariables(CilOperationsMethod cilOperationsMethod)
     {
-        var usedVariables = new HashSet<string>();
-        foreach (var instruction in cilOperationsMethod.Operations)
+        HashSet<string> usedVariables = new HashSet<string>();
+        foreach (BaseOp instruction in cilOperationsMethod.Operations)
         {
-            var usages = InstructionUsages.GetUsagesOfArr(instruction);
-            foreach (var usage in usages)
+            string[] usages = InstructionUsages.GetUsagesOfArr(instruction);
+            foreach (string usage in usages)
             {
                 usedVariables.Add(usage);
             }

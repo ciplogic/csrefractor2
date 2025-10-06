@@ -1,4 +1,5 @@
-﻿using NativeSharp.Extensions;
+﻿using System.Reflection;
+using NativeSharp.Extensions;
 using NativeSharp.Operations;
 using NativeSharp.Operations.BranchOperations;
 using NativeSharp.Operations.FieldsAndIndexing;
@@ -10,11 +11,11 @@ static class PhiFixup
 {
     public static BaseOp[] FixupMerges(BaseOp[] ops)
     {
-        var indicesGotos = VregGotos(ops);
-        foreach (var index in indicesGotos)
+        int[] indicesGotos = VregGotos(ops);
+        foreach (int index in indicesGotos)
         {
-            var gotoAssign = (AssignOp)ops[index - 1];
-            var targetGoto = (GotoOp)ops[index];
+            AssignOp gotoAssign = (AssignOp)ops[index - 1];
+            GotoOp targetGoto = (GotoOp)ops[index];
             int indexLabel = ops.IndexOfOp<LabelOp>(label => label.Offset == targetGoto.Offset);
             if (indexLabel == -1)
             {
@@ -26,8 +27,8 @@ static class PhiFixup
                 continue;
             }
 
-            var afterLabelAssign = (AssignOp)ops[indexLabel + 1];
-            var sourceVreg = (VReg)gotoAssign.Left;
+            AssignOp afterLabelAssign = (AssignOp)ops[indexLabel + 1];
+            VReg sourceVreg = (VReg)gotoAssign.Left;
             labelAssign.Left = sourceVreg;
             afterLabelAssign.Expression = sourceVreg;
         }
@@ -37,9 +38,9 @@ static class PhiFixup
             BaseOp op = ops[index];
             if (op is LoadNullOp loadNullOp)
             {
-                var nextRow = ops[index + 1];
-                var leftExpressionType = nextRow.EvaluateRightSideExpression();
-                var assignOp = new AssignOp(loadNullOp.Left,
+                BaseOp nextRow = ops[index + 1];
+                Type leftExpressionType = nextRow.EvaluateRightSideExpression();
+                AssignOp assignOp = new AssignOp(loadNullOp.Left,
                     new ConstantValueExpression(null) { ExpressionType = leftExpressionType });
                 ops[index] = assignOp;
             }
@@ -53,8 +54,8 @@ static class PhiFixup
         switch (baseOp)
         {
             case StoreFieldOp storeElementOp:
-                var thisPtr = storeElementOp.ThisPtr.ExpressionType;
-                var field = thisPtr.GetField(storeElementOp.FieldName);
+                Type thisPtr = storeElementOp.ThisPtr.ExpressionType;
+                FieldInfo? field = thisPtr.GetField(storeElementOp.FieldName);
                 return field!.FieldType;
             default:
                 throw new NotImplementedException();
@@ -63,11 +64,11 @@ static class PhiFixup
 
     private static int[] VregGotos(BaseOp[] ops)
     {
-        var indices = new List<int>();
-        for (var index = 1; index < ops.Length; index++)
+        List<int> indices = new List<int>();
+        for (int index = 1; index < ops.Length; index++)
         {
-            var op = ops[index];
-            var prevOp = ops[index - 1];
+            BaseOp op = ops[index];
+            BaseOp prevOp = ops[index - 1];
 
             if (op is GotoOp gotoOp && prevOp is AssignOp assignOp && assignOp.Left is VReg)
             {

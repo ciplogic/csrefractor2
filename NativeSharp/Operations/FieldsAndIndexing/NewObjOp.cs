@@ -10,11 +10,11 @@ internal class NewObjOp(IndexedVariable left) : LeftOp(left)
 {
     public override string GenCode()
     {
-        var expressionTypeName = Left.ExpressionType.Mangle(RefKind.Value);
-        var typeId = ClassHierarchyAnalysis.GetTypeId(Left.ExpressionType);
+        string expressionTypeName = Left.ExpressionType.Mangle(RefKind.Value);
+        int typeId = ClassHierarchyAnalysis.GetTypeId(Left.ExpressionType);
         if (Left.EscapeResult == EscapeKind.Local)
         {
-            var leftCode = Left.Code();
+            string leftCode = Left.Code();
             return
                 $"""
                   {expressionTypeName} {leftCode}_instance;

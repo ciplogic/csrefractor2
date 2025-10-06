@@ -14,8 +14,8 @@ public static class CilNativeMethodExtensions
             return;
         }
 
-        var newOps = new List<BaseOp>(cilOperationsMethod.Operations.Length - indicesToRemove.Length);
-        for (var index = 0; index < cilOperationsMethod.Operations.Length; index++)
+        List<BaseOp> newOps = new List<BaseOp>(cilOperationsMethod.Operations.Length - indicesToRemove.Length);
+        for (int index = 0; index < cilOperationsMethod.Operations.Length; index++)
         {
             if (!indicesToRemove.Contains(index))
             {
@@ -28,9 +28,9 @@ public static class CilNativeMethodExtensions
 
     public static CilOperationsMethod[] CilMethodsFromCache()
     {
-        var methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
+        BaseNativeMethod[] methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
         List<CilOperationsMethod> cilMethods = [];
-        foreach (var method in methodCacheValues)
+        foreach (BaseNativeMethod method in methodCacheValues)
         {
             if (method is CilOperationsMethod cilNativeMethod)
             {
