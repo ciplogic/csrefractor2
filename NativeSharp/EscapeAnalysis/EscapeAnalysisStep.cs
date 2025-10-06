@@ -80,12 +80,9 @@ public class EscapeAnalysisStep
         CilOperationsMethod? cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
         if (cilMethod is not null)
         {
-            if (!cilMethod.Analysis.IsEaAnalysisDone)
+            if (cilMethod.Analysis.IsEaAnalysisDone == EaProgress.NotDone)
             {
-                if (InlinerExtensions.IsSimpleMethod(cilMethod))
-                {
-                    Analyze(cilMethod);
-                }
+                Analyze(cilMethod);
             }
 
             for (int index = 0; index < callOpArgs.Length; index++)

@@ -12,5 +12,12 @@ public class CilOperationsMethod : BaseNativeMethod
 
 public class MetadataAnalysis
 {
-    public bool IsEaAnalysisDone;
+    public EaProgress IsEaAnalysisDone;
+}
+
+public enum EaProgress
+{
+    NotDone,
+    InProgress,
+    Done
 }
