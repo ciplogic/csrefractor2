@@ -21,8 +21,10 @@ static class InstructionUsages
         return instruction switch
         {
             AssignOp assignOp => [assignOp.Expression.VarCode()],
-            CallOp callOp => callOp.Args.Select(arg => arg.VarCode()),
-            CallReturnOp callReturnOp => callReturnOp.Args.Select(arg => arg.VarCode()),
+            CallOp callOp => callOp.GetUsagesOfCall(),
+            CallReturnOp callReturnOp => callReturnOp.GetUsagesOfCall(),
+            VirtualCallOp callOp => callOp.GetUsagesOfCall(),
+            VirtualCallReturnOp callReturnOp => callReturnOp.GetUsagesOfCall(),
             StoreElementOp storeElementOp =>
             [
                 storeElementOp.ArrPtr.VarCode(),
@@ -41,6 +43,9 @@ static class InstructionUsages
             _ => []
         };
     }
+
+    private static IEnumerable<string> GetUsagesOfCall(this ICallOp callOp)
+        => callOp.Args.Select(arg => arg.VarCode());
 
     public static string[] GetUsagesOfArr(this BaseOp instruction)
         => GetUsagesOf(instruction)
