@@ -127,17 +127,12 @@ public static class ClassHierarchyAnalysis
 
     private static void MakeCallStatic(CilOperationsMethod cilMethod, int virtCallIndex)
     {
-        BaseOp op = cilMethod.Operations[virtCallIndex];
+        BaseOp[] operations = cilMethod.Operations;
+        BaseOp op = operations[virtCallIndex];
         IVirtualCall virtualCall = (IVirtualCall)op;
         BaseOp staticOp = virtualCall.ToStatic();
-        cilMethod.Operations[virtCallIndex] = staticOp;
-        ICallOp callOp = (ICallOp)staticOp;
-        MethodResolver.ResolveAllTree(callOp.TargetMethod);
-        NativeMethodBase? cilResolved = MethodResolver.Resolve(callOp.TargetMethod);
-        if (cilResolved is CilOperationsMethod resolved)
-        {
-            DevirtualizeCallsInMethod(resolved);
-        }
+        operations[virtCallIndex] = staticOp;
+      
     }
 
     private static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)

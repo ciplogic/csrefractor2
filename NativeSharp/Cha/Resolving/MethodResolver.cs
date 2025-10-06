@@ -11,7 +11,7 @@ namespace NativeSharp.Cha.Resolving;
 
 internal static class MethodResolver
 {
-    public static Dictionary<MethodBase, NativeMethodBase> MethodCache { get; } = [];
+    public static Dictionary<MethodBase, NativeMethodBase> MethodCache { get; set; } = [];
     public static Dictionary<MethodBase, MethodBase> RemappedMethods { get; } = [];
 
     public static List<IMethodResolver> AllMethodResolvers { get; } = [];
@@ -66,7 +66,7 @@ internal static class MethodResolver
         {
             return AnalysisProgress.Done;
         }
-        var result = AnalysisProgress.Done;
+        AnalysisProgress result = AnalysisProgress.Done;
         ICallOp[] callTargets = transformCilMethod.Operations.OfType<ICallOp>().ToArray();
         foreach (ICallOp callTarget in callTargets)
         {
@@ -74,9 +74,9 @@ internal static class MethodResolver
             {
                 continue;
             }
-            if (!MethodCache.TryGetValue(unresolvedMethod.Target, out var resolvedMethod))
+            if (!MethodCache.TryGetValue(unresolvedMethod.Target, out NativeMethodBase? resolvedMethod))
             {
-                var resolved = Resolve(callTarget.TargetMethod);
+                NativeMethodBase? resolved = Resolve(callTarget.TargetMethod);
                 if (resolved is not null)
                 {
                     if (resolved is CilOperationsMethod resolveCilMethod)
@@ -116,7 +116,7 @@ internal static class MethodResolver
         }
 
         ICallOp[] callTargets = cilMethod.Operations.OfType<ICallOp>().ToArray();
-        foreach (var target in callTargets)
+        foreach (ICallOp target in callTargets)
         {
             NativeMethodBase? resolved = Resolve(target.TargetMethod);
             if (resolved is not null)

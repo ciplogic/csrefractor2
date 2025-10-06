@@ -14,22 +14,22 @@ internal static class CallOperationsTransformer
 
     public static BaseOp TransformCallOp(LocalVariablesStackAndState locals, Instruction instruction)
     {
-        var opName = instruction.OpCode.Name!;
-        var operand = (MethodBase)instruction.Operand;
-        var isCallVirtual = opName == "callvirt";
+        string opName = instruction.OpCode.Name!;
+        MethodBase operand = (MethodBase)instruction.Operand;
+        bool isCallVirtual = opName == "callvirt";
         if (EmptyConstructorTypes.Contains(operand.DeclaringType))
         {
             locals.Pop();
             return new CompositeOp([]);
         }
 
-        var operandAsMethodInfo = operand as MethodInfo;
+        MethodInfo? operandAsMethodInfo = operand as MethodInfo;
 
-        var paramCount = operandAsMethodInfo?.GetParameters().Length ?? 0;
+        int paramCount = operandAsMethodInfo?.GetParameters().Length ?? 0;
 
-        var argumentArray = BuildArgumentArray(locals, paramCount, operandAsMethodInfo);
+        IValueExpression[] argumentArray = BuildArgumentArray(locals, paramCount, operandAsMethodInfo);
 
-        var returnType = operandAsMethodInfo?.ReturnType ?? typeof(void);
+        Type returnType = operandAsMethodInfo?.ReturnType ?? typeof(void);
         VReg? returnValue = null;
 
         MethodResolver.ResolveMethod(operand);
@@ -66,8 +66,8 @@ internal static class CallOperationsTransformer
     private static IValueExpression[] BuildArgumentArray(LocalVariablesStackAndState locals, int paramCount,
         MethodInfo? operandAsMethodInfo)
     {
-        var argumentList = new List<IValueExpression>();
-        for (var i = 0; i < paramCount; i++) argumentList.Add(locals.Pop());
+        List<IValueExpression> argumentList = new List<IValueExpression>();
+        for (int i = 0; i < paramCount; i++) argumentList.Add(locals.Pop());
 
         if (operandAsMethodInfo != null && !operandAsMethodInfo.IsStatic)
             //makes sure that this pointer is also pushed for non static methods.
@@ -75,7 +75,7 @@ internal static class CallOperationsTransformer
 
         argumentList.Reverse();
 
-        var argumentArray = argumentList.ToArray();
+        IValueExpression[] argumentArray = argumentList.ToArray();
         return argumentArray;
     }
 }
