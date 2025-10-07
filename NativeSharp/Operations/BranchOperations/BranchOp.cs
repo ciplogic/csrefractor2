@@ -22,5 +22,5 @@ internal class BranchOp : JumpToOffset
         => GenCode();
 
     public override string GenCode()
-        => $"if ({Name.Mangle()}({Condition.Code()})) goto label_{Offset};";
+        => $"if ({Name.Mangle()}({Condition.Code()})) goto label_{OffsetStr};";
 }

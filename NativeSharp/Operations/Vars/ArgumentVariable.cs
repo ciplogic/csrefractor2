@@ -1,3 +1,5 @@
+using NativeSharp.Operations.BranchOperations;
+
 namespace NativeSharp.Operations.Vars;
 
 public class ArgumentVariable : IndexedVariable
@@ -6,7 +8,7 @@ public class ArgumentVariable : IndexedVariable
 
     public override string GenCodeImpl()
         => string.IsNullOrEmpty(Name)
-            ? $"arg_{Index}"
+            ? $"arg_{CompactNumberWriter.Str(Index)}"
             : Name;
 
     public override string ToString()

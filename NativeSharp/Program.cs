@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using NativeSharp.Cha;
 using NativeSharp.Cha.Resolving;
@@ -14,6 +15,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        var sw = Stopwatch.StartNew();
         CompilerOptions options = new()
         {
             Optimize = true
@@ -27,6 +29,8 @@ internal class Program
             string json = File.ReadAllText("compiler_options.json");
             options = JsonSerializer.Deserialize<CompilerOptions>(json) ?? new CompilerOptions();
         }
+        
+        CodeGeneratorBaseTypes.DefaultTypeMappings();
 
         Assembly asm = Assembly.LoadFrom("TargetApp.dll");
         MethodInfo entryPoint = asm.EntryPoint!;
@@ -55,6 +59,9 @@ internal class Program
         CodeGenerator codeGen = new CodeGenerator();
         codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName(), entryPoint);
         CodeGeneratorBaseTypes.GenerateNativeMappings();
+        
+        sw.Stop();
+        Console.WriteLine($"Time to compile: {sw.Elapsed}");
     }
 
     public static void ApplyDefaultOptimizations(bool optimize = true)

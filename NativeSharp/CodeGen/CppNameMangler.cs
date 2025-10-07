@@ -63,7 +63,7 @@ internal static class CppNameMangler
         };
     }
 
-    public static string Mangle(this string fullName) => fullName.CleanupFieldName();
+    public static string Mangle(this string fullName) => fullName.CleanupFieldName() .SimpleTypeMap();
 
     public static string MangleMethodName(this MethodBase method)
     {

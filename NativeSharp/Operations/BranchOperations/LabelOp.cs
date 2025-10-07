@@ -7,5 +7,5 @@ internal class LabelOp(int offset) : OffsetOp(offset)
     public override string ToString() => GenCode();
 
     public override string GenCode()
-        => $"label_{Offset}:";
+        => $"label_{OffsetStr}:";
 }

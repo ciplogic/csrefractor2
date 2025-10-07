@@ -1,17 +1,15 @@
 ﻿using System.Reflection;
-using NativeSharp.Cha.Resolving;
 using NativeSharp.Common;
 using NativeSharp.Extensions;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;
-using NativeSharp.Optimizations;
 
 namespace NativeSharp.Cha;
 
 public static class ClassHierarchyAnalysis
 {
-    public static List<Type> RegisteredTypes { get; } = [];
+    public static OrderedList<Type> RegisteredTypes { get; } = new();
     public static TwoWayDictionary<Type> MappedType { get; } = new();
 
     public static Type ResolveType(Type targetType)
@@ -46,31 +44,11 @@ public static class ClassHierarchyAnalysis
         return targetType;
     }
 
-    private static void RegisteredType(Type targetType)
-    {
-        if (!RegisteredTypes.Contains(targetType))
-        {
-            RegisteredTypes.Add(targetType);
-        }
-    }
+    private static void RegisteredType(Type targetType) 
+        => RegisteredTypes.Set(targetType);
 
-    public static int GetTypeId(Type targetType)
-    {
-        if (!RegisteredTypes.Contains(targetType))
-        {
-            RegisteredType(targetType);
-        }
-
-        for (int index = 0; index < RegisteredTypes.Count; index++)
-        {
-            if (RegisteredTypes[index] == targetType)
-            {
-                return index;
-            }
-        }
-
-        return -1;
-    }
+    public static int GetTypeId(Type targetType) 
+        => RegisteredTypes.Set(targetType);
 
     public static bool DevirtualizeCalls()
     {
@@ -120,7 +98,9 @@ public static class ClassHierarchyAnalysis
             return true;
         }
 
-        bool isEffectivelySealed = RegisteredTypes.Where(knownType => knownType != declaringType)
+        bool isEffectivelySealed = RegisteredTypes
+            .Items
+            .Where(knownType => knownType != declaringType)
             .All(knownType => !declaringType.IsAssignableFrom(knownType));
         return isEffectivelySealed;
     }
@@ -132,7 +112,6 @@ public static class ClassHierarchyAnalysis
         IVirtualCall virtualCall = (IVirtualCall)op;
         BaseOp staticOp = virtualCall.ToStatic();
         operations[virtCallIndex] = staticOp;
-      
     }
 
     private static IEnumerable<int> IndexOfVirtualCalls(CilOperationsMethod cilMethod)
@@ -140,7 +119,7 @@ public static class ClassHierarchyAnalysis
         for (int index = 0; index < cilMethod.Operations.Length; index++)
         {
             BaseOp op = cilMethod.Operations[index];
-            if ((op is VirtualCallOp) || (op is VirtualCallReturnOp))
+            if (op is VirtualCallOp or VirtualCallReturnOp)
             {
                 yield return index;
             }

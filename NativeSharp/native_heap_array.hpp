@@ -8,7 +8,6 @@ struct HeapArray
     int _size;
     Ref<T*> _data;
 
-public:
     // Factory method
     static HeapArray create(int n)
     {
