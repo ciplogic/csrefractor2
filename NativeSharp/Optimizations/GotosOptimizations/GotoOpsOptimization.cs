@@ -9,6 +9,7 @@ public class GotoOpsOptimization : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
+        return false;
         int[] indicesToRemove = GotosIndicesToNextLine(cilOperationsMethod);
 
         bool result = false;

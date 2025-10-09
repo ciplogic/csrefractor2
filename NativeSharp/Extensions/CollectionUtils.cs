@@ -21,6 +21,13 @@ public static class CollectionUtils
                     Instruction targetInstruction = (Instruction)instruction.Operand;
                     targets.Add(targetInstruction.Offset);
                     break;
+                case OperandType.InlineSwitch:
+                    Instruction[] targetSwitchInstructions = (Instruction[])instruction.Operand;
+                    foreach (Instruction targetSwitchInstruction in targetSwitchInstructions)
+                    {
+                        targets.Add(targetSwitchInstruction.Offset);
+                    }
+                    break;
             }
         }
 

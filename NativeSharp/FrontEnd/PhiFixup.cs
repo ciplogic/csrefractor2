@@ -40,7 +40,7 @@ static class PhiFixup
 
     private static void PatchNullValueLoad(BaseOp[] ops)
     {
-        for (int index = 0; index < ops.Length; index++)
+        for (int index = 0; index <= ops.Length - 2; index++)
         {
             BaseOp op = ops[index];
             if (op is LoadNullOp loadNullOp)

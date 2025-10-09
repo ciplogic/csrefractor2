@@ -25,6 +25,7 @@ static class CompactNumberWriter
 
     public static string Str(int offset)
     {
+        return offset.ToString();
         if (offset == 0)
         {
             return "0";

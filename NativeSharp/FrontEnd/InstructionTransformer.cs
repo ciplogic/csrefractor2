@@ -109,12 +109,12 @@ internal class InstructionTransformer
 
         if (opName.StartsWith("stelem"))
         {
-            return TransformStoreElement(instruction, LocalVariablesStackAndState);
+            return TransformStoreElement(LocalVariablesStackAndState);
         }
 
         if (LogicalBinaryOp.Contains(opName))
         {
-            return TransformLogicalBinaryOp(instruction);
+            return TransformLogicalBinaryOp(instruction.OpCode.Name!);
         }
 
         if (BinaryOps.Contains(opName))
@@ -143,12 +143,38 @@ internal class InstructionTransformer
             return TransformDup();
         }
 
+        if (opName == "switch")
+        {
+            return TransformSwitchOp(instruction,  LocalVariablesStackAndState);
+        }
+
 
         throw new InvalidOperationException(opName);
     }
 
-    private BaseOp TransformStoreElement(Instruction instruction,
-        LocalVariablesStackAndState localVariablesStackAndState)
+    private BaseOp TransformSwitchOp(Instruction instruction, LocalVariablesStackAndState localVariablesStackAndState)
+    {
+        var jumps = (Instruction[])instruction.Operand;
+        var jumpIndices = jumps.Select(j => j.Offset).ToArray();
+        IValueExpression indexToSwitch = localVariablesStackAndState.Pop();
+        var opsList = new List<BaseOp>();
+        for (var index = 0; index < jumpIndices.Length; index++)
+        {
+            var offset = jumpIndices[index];
+            var newLocal = localVariablesStackAndState.NewVirtVar<bool>();
+            opsList.Add(new BinaryOp(newLocal, "cgt")
+            {
+                LeftExpression = indexToSwitch,
+                RightExpression = new ConstantValueExpression(index)
+            });
+
+            opsList.Add(new BranchOp(offset, "brfalse", newLocal));
+        }
+        
+        return new CompositeOp(opsList.ToArray());
+    }
+
+    private BaseOp TransformStoreElement(LocalVariablesStackAndState localVariablesStackAndState)
     {
         IValueExpression valueToSet = localVariablesStackAndState.Pop();
         IValueExpression index = localVariablesStackAndState.Pop();
@@ -242,12 +268,12 @@ internal class InstructionTransformer
     }
 
 
-    private BaseOp TransformLogicalBinaryOp(Instruction instruction)
+    private BaseOp TransformLogicalBinaryOp(string opCodeName)
     {
         IValueExpression rightOp = LocalVariablesStackAndState.Pop();
         IValueExpression leftOp = LocalVariablesStackAndState.Pop();
         VReg left = LocalVariablesStackAndState.NewVirtVar(leftOp.ExpressionType);
-        return new BinaryOp(left, instruction.OpCode.Name!)
+        return new BinaryOp(left, opCodeName)
         {
             LeftExpression = leftOp,
             RightExpression = rightOp
