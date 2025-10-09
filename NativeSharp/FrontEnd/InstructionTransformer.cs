@@ -24,7 +24,7 @@ internal class InstructionTransformer
 
         Instruction[] instructions2 = MethodBodyReader.GetInstructions(parentMethod);
 
-        List<BaseOp> resultList = new List<BaseOp>();
+        List<BaseOp> resultList = new (instructions2.Length);
         for (int index = 0; index < instructions2.Length; index++)
         {
             Instruction instruction = instructions2[index];
@@ -203,8 +203,8 @@ internal class InstructionTransformer
 
     private static BaseOp TransformBoolBinaryOp(Instruction instruction, string opName, LocalVariablesStackAndState localVariablesStackAndState)
     {
-        IValueExpression leftOp = localVariablesStackAndState.Pop();
         IValueExpression right = localVariablesStackAndState.Pop();
+        IValueExpression leftOp = localVariablesStackAndState.Pop();
         VReg left = localVariablesStackAndState.NewVirtVar<bool>();
         BinaryOp binaryOp = new BinaryOp(left, opName)
         {

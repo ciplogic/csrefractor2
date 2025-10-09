@@ -30,12 +30,11 @@ internal static class CallOperationsTransformer
         IValueExpression[] argumentArray = BuildArgumentArray(locals, paramCount, operandAsMethodInfo);
 
         Type returnType = operandAsMethodInfo?.ReturnType ?? typeof(void);
-        VReg? returnValue = null;
 
         MethodResolver.ResolveMethod(operand);
         if (returnType != typeof(void))
         {
-            returnValue = locals.NewVirtVar(returnType);
+            VReg returnValue = locals.NewVirtVar(returnType);
 
             return isCallVirtual
                 ? new VirtualCallReturnOp(returnValue)

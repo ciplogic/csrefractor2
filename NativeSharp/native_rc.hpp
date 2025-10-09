@@ -22,13 +22,10 @@ struct RcData {
 };
 
 template<typename T>
-class Ref {
+struct Ref {
     RcData<T> *_data;
 
-public:
-    // Constructor
-    Ref(RcData<T> *p = nullptr) : _data(p) {
-    }
+    Ref(RcData<T> *p = nullptr) : _data(p) {}
 
     // Copy constructor
     Ref(const Ref &other) : _data(other._data) { ++_data->_count; }

@@ -47,10 +47,9 @@ return 0;
 }
 void nbody_Main()
 {
-  int32_t local_0,local_2;
+  int32_t local_0,local_2,vreg_c;
   NBodySystem* local_1,*vreg_1;
-  double vreg_3,vreg_e;
-  bool vreg_c;
+  double vreg_3,vreg_f;
 
   local_0 = 10000000;
    NBodySystem vreg_1_instance;
@@ -60,15 +59,15 @@ void nbody_Main()
   vreg_3 = NBodySystem_energy(vreg_1);
   System_Console_WriteLine(vreg_3);
   local_2 = 0;
-  goto label_K;
-  label_r:
+  goto label_N;
+  label_t:
   NBodySystem_advance(local_1, 0.01);
   local_2 = add (local_2, 1);
-  label_K:
-  vreg_c = blt_s (local_0, local_2);
-  if (brtrue(vreg_c)) goto label_r;
-  vreg_e = NBodySystem_energy(local_1);
-  System_Console_WriteLine(vreg_e);
+  label_N:
+  vreg_c = clt (local_2, local_0);
+  if (brtrue_s(vreg_c)) goto label_t;
+  vreg_f = NBodySystem_energy(local_1);
+  System_Console_WriteLine(vreg_f);
 }
 
 void System_Console_WriteLine(double value) {
@@ -78,18 +77,17 @@ std::cout<<value<<'\n';
 void NBodySystem_ctor(NBodySystem* _this)
 {
   double local_0,local_1,local_2,vreg_x,vreg_C,vreg_D,vreg_K,vreg_P,vreg_Q,vreg_X,vreg_12,vreg_13;
-  int32_t local_3,vreg_1c;
+  int32_t local_3,vreg_1c,vreg_1d;
   RefArr<Ref<Body>> vreg_3;
-  Ref<Body> vreg_b,vreg_f,vreg_j,vreg_n,vreg_1h,vreg_1l,vreg_1m;
-  Arr<Ref<Body>>* vreg_u,*vreg_z,*vreg_H,*vreg_M,*vreg_U,*vreg_Z,*vreg_1a,*vreg_1f;
+  Ref<Body> vreg_b,vreg_f,vreg_j,vreg_n,vreg_1i,vreg_1m,vreg_1o;
+  Arr<Ref<Body>>* vreg_u,*vreg_z,*vreg_H,*vreg_M,*vreg_U,*vreg_Z,*vreg_1a,*vreg_1g;
   Body* vreg_w,*vreg_B,*vreg_J,*vreg_O,*vreg_W,*vreg_11;
   uint32_t vreg_1b;
-  bool vreg_1d;
 
   vreg_3 = new_arr<Ref<Body>>(5);
-  vreg_1m = new_ref<Body>(0);
-  vreg_1m->Mass = 39.47841760435743;
-  (*vreg_3)[0] = vreg_1m;
+  vreg_1o = new_ref<Body>(0);
+  vreg_1o->Mass = 39.47841760435743;
+  (*vreg_3)[0] = vreg_1o;
   vreg_b = Body_jupiter();
   (*vreg_3)[1] = vreg_b;
   vreg_f = Body_saturn();
@@ -103,8 +101,8 @@ void NBodySystem_ctor(NBodySystem* _this)
   local_1 = 0;
   local_2 = 0;
   local_3 = 0;
-  goto label_30;
-  label_1u:
+  goto label_34;
+  label_1w:
   vreg_u = _this->bodies.get();
   vreg_w = ((*vreg_u)[local_3]).get();
   vreg_x = vreg_w->Vx;
@@ -130,15 +128,15 @@ void NBodySystem_ctor(NBodySystem* _this)
   vreg_13 = mul (vreg_X, vreg_12);
   local_2 = add (local_2, vreg_13);
   local_3 = add (local_3, 1);
-  label_30:
+  label_34:
   vreg_1a = _this->bodies.get();
   vreg_1b = vreg_1a->size();
   vreg_1c = conv_i4 (vreg_1b);
-  vreg_1d = blt_s (vreg_1c, local_3);
-  if (brtrue(vreg_1d)) goto label_1u;
-  vreg_1f = _this->bodies.get();
-  vreg_1h = ((*vreg_1f)[0]);
-  vreg_1l = Body_offsetMomentum(vreg_1h, local_0, local_1, local_2);
+  vreg_1d = clt (local_3, vreg_1c);
+  if (brtrue_s(vreg_1d)) goto label_1w;
+  vreg_1g = _this->bodies.get();
+  vreg_1i = ((*vreg_1g)[0]);
+  vreg_1m = Body_offsetMomentum(vreg_1i, local_0, local_1, local_2);
 }
 
 Ref<Body> Body_jupiter()
@@ -219,20 +217,19 @@ Ref<Body> Body_offsetMomentum(Ref<Body> _this, double px, double py, double pz)
 
 double NBodySystem_energy(NBodySystem* _this)
 {
-  double local_3,vreg_9,vreg_a,vreg_c,vreg_e,vreg_f,vreg_h,vreg_j,vreg_k,vreg_l,vreg_n,vreg_p,vreg_q,vreg_r,vreg_s,vreg_F,vreg_K,vreg_P,vreg_S,vreg_V,vreg_W,vreg_Z,vreg_10,vreg_11,vreg_14,vreg_16,vreg_17,vreg_19,vreg_1u,vreg_1w,vreg_1y,vreg_1A,vreg_1C,vreg_1E;
-  int32_t local_4,local_6,vreg_1i,vreg_1r;
-  Body* local_5,*vreg_5,*vreg_A;
-  Arr<Ref<Body>>* vreg_3,*vreg_y,*vreg_1g,*vreg_1p;
-  uint32_t vreg_1h,vreg_1q;
-  bool vreg_1j,vreg_1s;
+  double local_4,vreg_9,vreg_a,vreg_c,vreg_e,vreg_f,vreg_h,vreg_j,vreg_k,vreg_l,vreg_n,vreg_p,vreg_q,vreg_r,vreg_s,vreg_F,vreg_K,vreg_P,vreg_S,vreg_V,vreg_W,vreg_Z,vreg_10,vreg_11,vreg_14,vreg_16,vreg_17,vreg_19,vreg_1v,vreg_1x,vreg_1z,vreg_1B,vreg_1D,vreg_1F;
+  int32_t local_5,local_7,vreg_1i,vreg_1j,vreg_1s,vreg_1t;
+  Body* local_6,*vreg_5,*vreg_A;
+  Arr<Ref<Body>>* vreg_3,*vreg_y,*vreg_1g,*vreg_1q;
+  uint32_t vreg_1h,vreg_1r;
 
-  local_3 = 0;
   local_4 = 0;
-  goto label_3B;
-  label_i:
+  local_5 = 0;
+  goto label_3T;
+  label_k:
   vreg_3 = _this->bodies.get();
-  vreg_5 = ((*vreg_3)[local_4]).get();
-  local_5 = vreg_5;
+  vreg_5 = ((*vreg_3)[local_5]).get();
+  local_6 = vreg_5;
   vreg_9 = vreg_5->Mass;
   vreg_a = mul (0.5, vreg_9);
   vreg_c = vreg_5->Vx;
@@ -247,47 +244,47 @@ double NBodySystem_energy(NBodySystem* _this)
   vreg_q = mul (vreg_n, vreg_p);
   vreg_r = add (vreg_l, vreg_q);
   vreg_s = mul (vreg_a, vreg_r);
-  local_3 = add (local_3, vreg_s);
-  local_6 = add (local_4, 1);
-  goto label_3j;
-  label_1H:
+  local_4 = add (local_4, vreg_s);
+  local_7 = add (local_5, 1);
+  goto label_3u;
+  label_1M:
   vreg_y = _this->bodies.get();
-  vreg_A = ((*vreg_y)[local_6]).get();
-  vreg_1u = local_5->_X_k__BackingField;
-  vreg_1w = vreg_A->_X_k__BackingField;
-  vreg_F = sub (vreg_1u, vreg_1w);
-  vreg_1y = local_5->_Y_k__BackingField;
-  vreg_1A = vreg_A->_Y_k__BackingField;
-  vreg_K = sub (vreg_1y, vreg_1A);
-  vreg_1C = local_5->_Z_k__BackingField;
-  vreg_1E = vreg_A->_Z_k__BackingField;
-  vreg_P = sub (vreg_1C, vreg_1E);
+  vreg_A = ((*vreg_y)[local_7]).get();
+  vreg_1v = local_6->_X_k__BackingField;
+  vreg_1x = vreg_A->_X_k__BackingField;
+  vreg_F = sub (vreg_1v, vreg_1x);
+  vreg_1z = local_6->_Y_k__BackingField;
+  vreg_1B = vreg_A->_Y_k__BackingField;
+  vreg_K = sub (vreg_1z, vreg_1B);
+  vreg_1D = local_6->_Z_k__BackingField;
+  vreg_1F = vreg_A->_Z_k__BackingField;
+  vreg_P = sub (vreg_1D, vreg_1F);
   vreg_S = mul (vreg_F, vreg_F);
   vreg_V = mul (vreg_K, vreg_K);
   vreg_W = add (vreg_S, vreg_V);
   vreg_Z = mul (vreg_P, vreg_P);
   vreg_10 = add (vreg_W, vreg_Z);
   vreg_11 = System_Math_Sqrt(vreg_10);
-  vreg_14 = local_5->Mass;
+  vreg_14 = local_6->Mass;
   vreg_16 = vreg_A->Mass;
   vreg_17 = mul (vreg_14, vreg_16);
   vreg_19 = div (vreg_17, vreg_11);
-  local_3 = sub (local_3, vreg_19);
-  local_6 = add (local_6, 1);
-  label_3j:
+  local_4 = sub (local_4, vreg_19);
+  local_7 = add (local_7, 1);
+  label_3u:
   vreg_1g = _this->bodies.get();
   vreg_1h = vreg_1g->size();
   vreg_1i = conv_i4 (vreg_1h);
-  vreg_1j = blt_s (vreg_1i, local_6);
-  if (brtrue(vreg_1j)) goto label_1H;
-  local_4 = add (local_4, 1);
-  label_3B:
-  vreg_1p = _this->bodies.get();
-  vreg_1q = vreg_1p->size();
-  vreg_1r = conv_i4 (vreg_1q);
-  vreg_1s = blt (vreg_1r, local_4);
-  if (brtrue(vreg_1s)) goto label_i;
-  return local_3;
+  vreg_1j = clt (local_7, vreg_1i);
+  if (brtrue_s(vreg_1j)) goto label_1M;
+  local_5 = add (local_5, 1);
+  label_3T:
+  vreg_1q = _this->bodies.get();
+  vreg_1r = vreg_1q->size();
+  vreg_1s = conv_i4 (vreg_1r);
+  vreg_1t = clt (local_5, vreg_1s);
+  if (brtrue(vreg_1t)) goto label_k;
+  return local_4;
 }
 
 double System_Math_Sqrt(double val) {
@@ -302,35 +299,34 @@ void NBodySystem_advance(NBodySystem* _this, double dt)
 
 void NBodySystem_AdvanceTwoLoops(NBodySystem* _this, double dt)
 {
-  int32_t local_0,local_2,vreg_j,vreg_s;
+  int32_t local_0,local_2,vreg_j,vreg_k,vreg_t,vreg_u;
   Body* local_1;
-  Arr<Ref<Body>>* vreg_2,*vreg_h,*vreg_q;
-  uint32_t vreg_i,vreg_r;
-  bool vreg_k,vreg_t;
+  Arr<Ref<Body>>* vreg_2,*vreg_h,*vreg_r;
+  uint32_t vreg_i,vreg_s;
 
   local_0 = 0;
-  goto label_L;
-  label_4:
+  goto label_V;
+  label_5:
   vreg_2 = _this->bodies.get();
   local_1 = ((*vreg_2)[local_0]).get();
   local_2 = add (local_0, 1);
-  goto label_w;
-  label_j:
+  goto label_B;
+  label_l:
   NBodySystem_advanceInnerLoop(_this, dt, local_1, local_2);
   local_2 = add (local_2, 1);
-  label_w:
+  label_B:
   vreg_h = _this->bodies.get();
   vreg_i = vreg_h->size();
   vreg_j = conv_i4 (vreg_i);
-  vreg_k = blt_s (vreg_j, local_2);
-  if (brtrue(vreg_k)) goto label_j;
+  vreg_k = clt (local_2, vreg_j);
+  if (brtrue_s(vreg_k)) goto label_l;
   local_0 = add (local_0, 1);
-  label_L:
-  vreg_q = _this->bodies.get();
-  vreg_r = vreg_q->size();
-  vreg_s = conv_i4 (vreg_r);
-  vreg_t = blt_s (vreg_s, local_0);
-  if (brtrue(vreg_t)) goto label_4;
+  label_V:
+  vreg_r = _this->bodies.get();
+  vreg_s = vreg_r->size();
+  vreg_t = conv_i4 (vreg_s);
+  vreg_u = clt (local_0, vreg_t);
+  if (brtrue_s(vreg_u)) goto label_5;
 }
 
 void NBodySystem_advanceInnerLoop(NBodySystem* _this, double dt, Body* iBody, int32_t j)
@@ -423,8 +419,8 @@ void NBodySystem_AdvanceBodiesEnergy(NBodySystem* _this, double dt)
 
   local_0 = _this->bodies.get();
   local_1 = 0;
-  goto label_1k;
-  label_b:
+  goto label_1r;
+  label_d:
   vreg_5 = ((*local_0)[local_1]).get();
   vreg_G = vreg_5->_X_k__BackingField;
   vreg_c = vreg_5->Vx;
@@ -442,24 +438,24 @@ void NBodySystem_AdvanceBodiesEnergy(NBodySystem* _this, double dt)
   vreg_w = add (vreg_K, vreg_v);
   vreg_5->_Z_k__BackingField = vreg_w;
   local_1 = add (local_1, 1);
-  label_1k:
+  label_1r:
   vreg_B = local_0;
   vreg_C = vreg_B->size();
   vreg_D = conv_i4 (vreg_C);
-  vreg_E = blt_s (vreg_D, local_1);
-  if (brtrue(vreg_E)) goto label_b;
+  vreg_E = blt_s (local_1, vreg_D);
+  if (brtrue(vreg_E)) goto label_d;
 }
 
 Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32_t>* startPos, Arr<int32_t>* lengths, Arr<uint8_t>* data)
 {
+  Ref<System_String> local_3;
   int32_t vreg_2,vreg_5,vreg_8;
-  Ref<System_String> vreg_c;
 
   vreg_2 = ((*startPos)[index]);
   vreg_5 = ((*lengths)[index]);
   vreg_8 = ((*codes)[index]);
-  vreg_c = Texts_BuildSystemString(vreg_8, data, vreg_2, vreg_5);
-  return vreg_c;
+  local_3 = Texts_BuildSystemString(vreg_8, data, vreg_2, vreg_5);
+  return local_3;
 }
 
 Ref<System_String> Texts_BuildSystemString(int32_t code, Arr<uint8_t>* data, int32_t startPos, int32_t len)
@@ -470,6 +466,7 @@ Ref<System_String> Texts_BuildSystemString(int32_t code, Arr<uint8_t>* data, int
   vreg_1 = new_arr<uint8_t>(len);
   System_Array_Copy(data, startPos, vreg_1.get(), 0, len);
   vreg_7 = new_ref<System_String>(0);
+  vreg_7->Data = nullptr;
   vreg_7->Coder = code;
   vreg_7->Data = vreg_1;
   return vreg_7;
@@ -477,21 +474,20 @@ Ref<System_String> Texts_BuildSystemString(int32_t code, Arr<uint8_t>* data, int
 
 void System_Array_Copy(Arr<uint8_t>* sourceArray, int32_t sourceIndex, Arr<uint8_t>* destinationArray, int32_t destinationIndex, int32_t len)
 {
-  int32_t local_0,vreg_3,vreg_6;
+  int32_t local_0,vreg_3,vreg_6,vreg_i;
   uint8_t vreg_9;
-  bool vreg_i;
 
   local_0 = 0;
-  goto label_o;
-  label_4:
+  goto label_r;
+  label_5:
   vreg_3 = add (sourceIndex, local_0);
   vreg_6 = add (destinationIndex, local_0);
   vreg_9 = ((*sourceArray)[vreg_3]);
   (*destinationArray)[vreg_6] = vreg_9;
   local_0 = add (local_0, 1);
-  label_o:
-  vreg_i = blt_s (len, local_0);
-  if (brtrue(vreg_i)) goto label_4;
+  label_r:
+  vreg_i = clt (local_0, len);
+  if (brtrue_s(vreg_i)) goto label_5;
 }
 
 namespace {

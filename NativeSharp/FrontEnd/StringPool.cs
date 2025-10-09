@@ -2,7 +2,7 @@
 
 namespace NativeSharp.FrontEnd;
 
-class StringPool
+internal class StringPool
 {
     public Dictionary<string, int> Pool { get; } = new();
 

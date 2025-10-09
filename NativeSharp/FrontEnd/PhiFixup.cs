@@ -33,6 +33,13 @@ static class PhiFixup
             afterLabelAssign.Expression = sourceVreg;
         }
 
+        PatchNullValueLoad(ops);
+
+        return ops;
+    }
+
+    private static void PatchNullValueLoad(BaseOp[] ops)
+    {
         for (int index = 0; index < ops.Length; index++)
         {
             BaseOp op = ops[index];
@@ -45,8 +52,6 @@ static class PhiFixup
                 ops[index] = assignOp;
             }
         }
-
-        return ops;
     }
 
     static Type EvaluateRightSideExpression(this BaseOp baseOp)
