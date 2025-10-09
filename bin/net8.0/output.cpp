@@ -47,7 +47,6 @@ void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args)
   goto label_66;
   label_53:
   System_Console_WriteLine(_str(2));
-  goto label_66;
   label_66:
 }
 
@@ -71,28 +70,21 @@ Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32
   vreg_5 = ((*lengths)[index]);
   vreg_8 = ((*codes)[index]);
   local_3 = Texts_BuildSystemString(vreg_8, data, vreg_2, vreg_5);
-  goto label_26;
-  label_26:
   return local_3;
 }
 
 Ref<System_String> Texts_BuildSystemString(int32_t code, Arr<uint8_t>* data, int32_t startPos, int32_t len)
 {
-  Ref<System_String> local_2;
   RefArr<uint8_t> vreg_1;
-  System_String* vreg_7;
+  Ref<System_String> vreg_7;
 
   vreg_1 = new_arr<uint8_t>(len);
   System_Array_Copy(data, startPos, vreg_1.get(), 0, len);
-   System_String vreg_7_instance;
-   vreg_7 = &vreg_7_instance;  
+  vreg_7 = new_ref<System_String>(0);
   vreg_7->Data = nullptr;
   vreg_7->Coder = code;
   vreg_7->Data = vreg_1;
-  local_2 = vreg_7;
-  goto label_43;
-  label_43:
-  return local_2;
+  return vreg_7;
 }
 
 void System_Array_Copy(Arr<uint8_t>* sourceArray, int32_t sourceIndex, Arr<uint8_t>* destinationArray, int32_t destinationIndex, int32_t len)
