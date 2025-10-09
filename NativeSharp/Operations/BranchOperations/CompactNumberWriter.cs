@@ -1,8 +1,8 @@
 ﻿namespace NativeSharp.Operations.BranchOperations;
 
-static class CompactNumberWriter
+internal static class CompactNumberWriter
 {
-    private static char[] Chars = BuildCharsTable();
+    private static char[] _chars = BuildCharsTable();
 
     private static char[] BuildCharsTable()
     {
@@ -32,11 +32,11 @@ static class CompactNumberWriter
         }
 
         var chars = new List<char>();
-        var len = Chars.Length;
+        var len = _chars.Length;
         while (offset > 0)
         {
             var reminder =  offset % len;
-            chars.Add(Chars[reminder]);
+            chars.Add(_chars[reminder]);
             offset /= len;
         }
         var charArray = chars.ToArray();

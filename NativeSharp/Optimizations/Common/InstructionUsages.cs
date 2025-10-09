@@ -8,7 +8,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Optimizations.Common;
 
-static class InstructionUsages
+internal static class InstructionUsages
 {
     public static bool IsJumpOp(this BaseOp op)
         => op switch
@@ -93,7 +93,7 @@ static class InstructionUsages
         return result;
     }
 
-    static string VarCode(this IValueExpression? valueExpression)
+    private static string VarCode(this IValueExpression? valueExpression)
     {
         if (valueExpression is null)
         {
@@ -286,5 +286,5 @@ static class InstructionUsages
             ? (fromTo.To, true)
             : (targetExpression, false);
 
-    record struct FromTo(IValueExpression From, IValueExpression To);
+    private record struct FromTo(IValueExpression From, IValueExpression To);
 }

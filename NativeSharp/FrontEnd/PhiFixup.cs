@@ -7,7 +7,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd;
 
-static class PhiFixup
+internal static class PhiFixup
 {
     public static BaseOp[] FixupMerges(BaseOp[] ops)
     {
@@ -54,7 +54,7 @@ static class PhiFixup
         }
     }
 
-    static Type EvaluateRightSideExpression(this BaseOp baseOp)
+    private static Type EvaluateRightSideExpression(this BaseOp baseOp)
     {
         switch (baseOp)
         {

@@ -3,7 +3,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
-class UnaryOp : LeftOp
+internal class UnaryOp : LeftOp
 {
     public UnaryOp(IndexedVariable left) : base(left)
     {

@@ -4,15 +4,15 @@ namespace NativeSharp.CodeGen;
 
 public class MainMethodCodeGenerator
 {
-    public void WriteMainMethodBody(CodeGenToFile Code, string mainMethod, TimingMainKind timingMainKind,
+    public void WriteMainMethodBody(CodeGenToFile code, string mainMethod, TimingMainKind timingMainKind,
         string argumentsVar = "")
     {
-        Code
+        code
             .AddLine("#include \"native_sharp.cpp\"");
-        Code.AddLine("int main(int argc, char**argv) {");
+        code.AddLine("int main(int argc, char**argv) {");
         if (!string.IsNullOrEmpty(argumentsVar))
         {
-            Code.AddLine("auto ARGS = argsToStrings(argc, argv);");
+            code.AddLine("auto ARGS = argsToStrings(argc, argv);");
         }
 
         string lineOfCode = timingMainKind switch
@@ -23,8 +23,8 @@ public class MainMethodCodeGenerator
             TimingMainKind.Nanosecond=> $"timeItNanoseconds({LambdaBodyMethod()});",
             _ => throw new ArgumentOutOfRangeException(nameof(timingMainKind), timingMainKind, null)
         };
-        Code.AddLine(lineOfCode);
-        Code.AddLine("return 0;")
+        code.AddLine(lineOfCode);
+        code.AddLine("return 0;")
             .AddLine("}");
 
         string LambdaBodyMethod()

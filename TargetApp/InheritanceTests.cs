@@ -12,7 +12,7 @@ public abstract class BaseFoo
     public abstract int GetBasicFoo();
 }
 
-class Foo : BaseFoo, IFoo
+internal class Foo : BaseFoo, IFoo
 {
     public override int GetBasicFoo()
     {
@@ -25,7 +25,7 @@ class Foo : BaseFoo, IFoo
     }
 }
 
-class Bar : IFoo
+internal class Bar : IFoo
 {
     public int GetFoo()
     {

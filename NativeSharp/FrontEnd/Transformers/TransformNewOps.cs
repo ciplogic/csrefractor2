@@ -8,7 +8,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd.Transformers;
 
-static class TransformNewOps
+internal static class TransformNewOps
 {
     public static BaseOp TransformNewDeclarations(Instruction instruction,
         LocalVariablesStackAndState localVariablesStackAndState)

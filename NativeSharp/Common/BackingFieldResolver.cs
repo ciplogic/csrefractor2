@@ -33,13 +33,13 @@ namespace NativeSharp.Common;
 
 public static class BackingFieldResolver
 {
-    private class FieldPattern : ILPattern
+    private class FieldPattern : IlPattern
     {
         public static object FieldKey = new();
 
-        private ILPattern pattern;
+        private IlPattern pattern;
 
-        public FieldPattern(ILPattern pattern)
+        public FieldPattern(IlPattern pattern)
         {
             this.pattern = pattern;
         }
@@ -47,7 +47,7 @@ public static class BackingFieldResolver
         public override void Match(MatchContext context)
         {
             pattern.Match(context);
-            if (!context.success)
+            if (!context.Success)
             {
                 return;
             }
@@ -58,41 +58,41 @@ public static class BackingFieldResolver
         }
     }
 
-    private static ILPattern Field(OpCode opcode)
+    private static IlPattern Field(OpCode opcode)
     {
-        return new FieldPattern(ILPattern.OpCode(opcode));
+        return new FieldPattern(IlPattern.OpCode(opcode));
     }
 
-    private static ILPattern GetterPattern =
-        ILPattern.Sequence(
-            ILPattern.Optional(OpCodes.Nop),
-            ILPattern.Either(
+    private static IlPattern _getterPattern =
+        IlPattern.Sequence(
+            IlPattern.Optional(OpCodes.Nop),
+            IlPattern.Either(
                 Field(OpCodes.Ldsfld),
-                ILPattern.Sequence(
-                    ILPattern.OpCode(OpCodes.Ldarg_0),
+                IlPattern.Sequence(
+                    IlPattern.OpCode(OpCodes.Ldarg_0),
                     Field(OpCodes.Ldfld))),
-            ILPattern.Optional(
-                ILPattern.Sequence(
-                    ILPattern.OpCode(OpCodes.Stloc_0),
-                    ILPattern.OpCode(OpCodes.Br_S),
-                    ILPattern.OpCode(OpCodes.Ldloc_0))),
-            ILPattern.OpCode(OpCodes.Ret));
+            IlPattern.Optional(
+                IlPattern.Sequence(
+                    IlPattern.OpCode(OpCodes.Stloc_0),
+                    IlPattern.OpCode(OpCodes.Br_S),
+                    IlPattern.OpCode(OpCodes.Ldloc_0))),
+            IlPattern.OpCode(OpCodes.Ret));
 
-    private static ILPattern SetterPattern =
-        ILPattern.Sequence(
-            ILPattern.Optional(OpCodes.Nop),
-            ILPattern.OpCode(OpCodes.Ldarg_0),
-            ILPattern.Either(
+    private static IlPattern _setterPattern =
+        IlPattern.Sequence(
+            IlPattern.Optional(OpCodes.Nop),
+            IlPattern.OpCode(OpCodes.Ldarg_0),
+            IlPattern.Either(
                 Field(OpCodes.Stsfld),
-                ILPattern.Sequence(
-                    ILPattern.OpCode(OpCodes.Ldarg_1),
+                IlPattern.Sequence(
+                    IlPattern.OpCode(OpCodes.Ldarg_1),
                     Field(OpCodes.Stfld))),
-            ILPattern.OpCode(OpCodes.Ret));
+            IlPattern.OpCode(OpCodes.Ret));
 
-    private static FieldInfo GetBackingField(MethodInfo method, ILPattern pattern)
+    private static FieldInfo GetBackingField(MethodInfo method, IlPattern pattern)
     {
-        MatchContext result = ILPattern.Match(method, pattern);
-        if (!result.success)
+        MatchContext result = IlPattern.Match(method, pattern);
+        if (!result.Success)
         {
             throw new ArgumentException();
         }
@@ -113,13 +113,13 @@ public static class BackingFieldResolver
         MethodInfo? getter = self.GetGetMethod(true);
         if (getter != null)
         {
-            return GetBackingField(getter, GetterPattern);
+            return GetBackingField(getter, _getterPattern);
         }
 
         MethodInfo? setter = self.GetSetMethod(true);
         if (setter != null)
         {
-            return GetBackingField(setter, SetterPattern);
+            return GetBackingField(setter, _setterPattern);
         }
 
         throw new ArgumentException();

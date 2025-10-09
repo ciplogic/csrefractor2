@@ -1,4 +1,4 @@
-﻿class nbody2
+﻿internal class nbody2
 {
     public static void Main3()
     {
@@ -13,7 +13,7 @@
     }
 }
 
-class Bodies
+internal class Bodies
 {
     public double energy;
 

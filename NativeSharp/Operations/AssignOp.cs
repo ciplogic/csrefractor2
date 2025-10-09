@@ -3,7 +3,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
-class AssignOp : LeftOp
+internal class AssignOp : LeftOp
 {
     public IValueExpression Expression { get; set; }
 

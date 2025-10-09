@@ -29,7 +29,7 @@ public class GotoOpsOptimization : OptimizationBase
         return result;
     }
 
-    static int[] LabelsToRemove(CilOperationsMethod cilOperationsMethod)
+    private static int[] LabelsToRemove(CilOperationsMethod cilOperationsMethod)
     {
         Dictionary<int, int> labels = LabelsAtRows(cilOperationsMethod);
         HashSet<int> referencedLabels = ReferencedJumps(cilOperationsMethod);
@@ -41,7 +41,7 @@ public class GotoOpsOptimization : OptimizationBase
         return labels.Values.ToArray();
     }
 
-    static Dictionary<int, int> LabelsAtRows(CilOperationsMethod cilOperationsMethod)
+    private static Dictionary<int, int> LabelsAtRows(CilOperationsMethod cilOperationsMethod)
     {
         Dictionary<int, int> result = [];
         BaseOp[] ops = cilOperationsMethod.Operations;

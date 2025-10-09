@@ -5,7 +5,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd.Transformers;
 
-class LocalVariablesStackAndState(int vregIndex = 0)
+internal class LocalVariablesStackAndState(int vregIndex = 0)
 {
     public List<IndexedVariable> LocalVariables { get; } = [];
     private readonly Stack<IValueExpression> variableStack = new();

@@ -7,7 +7,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.FrontEnd.Transformers;
 
-static class LoadOperationsTransformer
+internal static class LoadOperationsTransformer
 {
     public static BaseOp TransformLoadOp(Instruction instruction, List<ArgumentVariable> argumentVariables,
         LocalVariablesStackAndState variablesStackAndState)

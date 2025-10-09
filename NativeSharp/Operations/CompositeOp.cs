@@ -1,6 +1,6 @@
 ﻿namespace NativeSharp.Operations;
 
-class CompositeOp(BaseOp[] ops) : BaseOp
+internal class CompositeOp(BaseOp[] ops) : BaseOp
 {
     public BaseOp[] Ops { get; } = ops;
 

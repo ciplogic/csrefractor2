@@ -33,13 +33,13 @@ namespace NativeSharp.Common;
 
 public class MethodBodyReader
 {
-    private static readonly OpCode[] one_byte_opcodes;
-    private static readonly OpCode[] two_bytes_opcodes;
+    private static readonly OpCode[] OneByteOpcodes;
+    private static readonly OpCode[] TwoBytesOpcodes;
 
     static MethodBodyReader()
     {
-        one_byte_opcodes = new OpCode [0xe1];
-        two_bytes_opcodes = new OpCode [0x1f];
+        OneByteOpcodes = new OpCode [0xe1];
+        TwoBytesOpcodes = new OpCode [0x1f];
 
         FieldInfo[] fields = typeof(OpCodes).GetFields(
             BindingFlags.Public | BindingFlags.Static);
@@ -54,11 +54,11 @@ public class MethodBodyReader
 
             if (opcode.Size == 1)
             {
-                one_byte_opcodes[opcode.Value] = opcode;
+                OneByteOpcodes[opcode.Value] = opcode;
             }
             else
             {
-                two_bytes_opcodes[opcode.Value & 0xff] = opcode;
+                TwoBytesOpcodes[opcode.Value & 0xff] = opcode;
             }
         }
     }
@@ -66,8 +66,8 @@ public class MethodBodyReader
     private readonly MethodBase method;
     private readonly MethodBody body;
     private readonly Module module;
-    private readonly Type[] type_arguments;
-    private readonly Type[] method_arguments;
+    private readonly Type[] typeArguments;
+    private readonly Type[] methodArguments;
     private readonly ByteBuffer il;
     private readonly ParameterInfo[] parameters;
     private readonly IList<LocalVariableInfo> locals;
@@ -91,12 +91,12 @@ public class MethodBodyReader
 
         if (!(method is ConstructorInfo))
         {
-            method_arguments = method.GetGenericArguments();
+            methodArguments = method.GetGenericArguments();
         }
 
         if (method.DeclaringType != null)
         {
-            type_arguments = method.DeclaringType.GetGenericArguments();
+            typeArguments = method.DeclaringType.GetGenericArguments();
         }
 
         parameters = method.GetParameters();
@@ -110,9 +110,9 @@ public class MethodBodyReader
     {
         Instruction previous = null;
 
-        while (il.position < il.buffer.Length)
+        while (il.Position < il.Buffer.Length)
         {
-            Instruction instruction = new Instruction(il.position, ReadOpCode());
+            Instruction instruction = new Instruction(il.Position, ReadOpCode());
 
             ReadOperand(instruction);
 
@@ -137,18 +137,18 @@ public class MethodBodyReader
                 break;
             case OperandType.InlineSwitch:
                 int length = il.ReadInt32();
-                int base_offset = il.position + 4 * length;
+                int baseOffset = il.Position + 4 * length;
                 int[] branches = new int [length];
                 for (int i = 0; i < length; i++)
-                    branches[i] = il.ReadInt32() + base_offset;
+                    branches[i] = il.ReadInt32() + baseOffset;
 
                 instruction.Operand = branches;
                 break;
             case OperandType.ShortInlineBrTarget:
-                instruction.Operand = (sbyte)il.ReadByte() + il.position;
+                instruction.Operand = (sbyte)il.ReadByte() + il.Position;
                 break;
             case OperandType.InlineBrTarget:
-                instruction.Operand = il.ReadInt32() + il.position;
+                instruction.Operand = il.ReadInt32() + il.Position;
                 break;
             case OperandType.ShortInlineI:
                 if (instruction.OpCode == OpCodes.Ldc_I4_S)
@@ -183,7 +183,7 @@ public class MethodBodyReader
             case OperandType.InlineType:
             case OperandType.InlineMethod:
             case OperandType.InlineField:
-                instruction.Operand = module.ResolveMember(il.ReadInt32(), type_arguments, method_arguments);
+                instruction.Operand = module.ResolveMember(il.ReadInt32(), typeArguments, methodArguments);
                 break;
             case OperandType.ShortInlineVar:
                 instruction.Operand = GetVariable(instruction, il.ReadByte());
@@ -276,8 +276,8 @@ public class MethodBodyReader
     {
         byte op = il.ReadByte();
         return op != 0xfe
-            ? one_byte_opcodes[op]
-            : two_bytes_opcodes[il.ReadByte()];
+            ? OneByteOpcodes[op]
+            : TwoBytesOpcodes[il.ReadByte()];
     }
 
     public static Instruction[] GetInstructions(MethodBase method)

@@ -4,33 +4,33 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.CodeGen.Methods;
 
-class CilMethodCodeGen(CodeGenToFile Code)
+internal class CilMethodCodeGen(CodeGenToFile code)
 {
-    private readonly VariablesBulkWriter _writer = new();
+    private readonly VariablesBulkWriter writer = new();
 
     public void WriteCilMethod(CilOperationsMethod cilOperationsMethod)
     {
         string methodHeader = cilOperationsMethod.MangledMethodHeader();
-        Code.AddLine(methodHeader);
+        code.AddLine(methodHeader);
 
-        Code.AddLine("{");
+        code.AddLine("{");
         WriteLocals(cilOperationsMethod.Locals);
         WriteInstructions(cilOperationsMethod.Operations);
-        Code.AddLine("}");
+        code.AddLine("}");
     }
 
     private void WriteLocals(IndexedVariable[] cilMethodLocals)
     {
-        _writer.Clear();
-        _writer.Populate(cilMethodLocals);
-        Code.AddLine(_writer.Write());
+        writer.Clear();
+        writer.Populate(cilMethodLocals);
+        code.AddLine(writer.Write());
     }
 
     private void WriteInstructions(BaseOp[] instructions)
     {
         foreach (BaseOp instruction in instructions)
         {
-            Code.AddLine(instruction.GenCode(), 2);
+            code.AddLine(instruction.GenCode(), 2);
         }
     }
 }

@@ -3,7 +3,7 @@ using NativeSharp.Lib.Resolvers;
 
 namespace TargetApp;
 
-class Primes
+internal class Primes
 {
     private static bool IsPrime(int number)
     {
@@ -43,14 +43,14 @@ class Primes
         return primeCount;
     }
 
-    static void Main2()
+    private static void Main2()
     {
         var primeCount = GetPrimeCount(10_000_000);
 
         Console.WriteLine(primeCount);
     }
-    
-    static void MainSimple()
+
+    private static void MainSimple()
     {
         bool isTrue = false;
         var trueText = isTrue.ToString();

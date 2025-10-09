@@ -2,14 +2,14 @@
 
 namespace NativeSharp.CodeGen.Methods;
 
-public record ClassFieldsWriter(CodeGenToFile Code, Type? sourceType, Type? mappedType)
+public record ClassFieldsWriter(CodeGenToFile Code, Type? SourceType, Type? MappedType)
 {
     public void WriteFieldsOfType()
     {
         FieldInfo[] fieldsOfType =
-            mappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            MappedType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-        string className = sourceType.Mangle(RefKind.Value);
+        string className = SourceType.Mangle(RefKind.Value);
         if (fieldsOfType.Length == 0)
         {
             Code.AddLine($"struct {className} {{}};");

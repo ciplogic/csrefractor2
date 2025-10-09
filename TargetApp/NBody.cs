@@ -1,4 +1,4 @@
-﻿class nbody
+﻿internal class nbody
 {
     public static void Main2()
     {
@@ -12,7 +12,7 @@
     }
 }
 
-class NBodySystem
+internal class NBodySystem
 {
     private Body[] bodies;
 
@@ -118,11 +118,11 @@ class NBodySystem
 }
 
 
-class Body
+internal class Body
 {
-    const double PI = 3.141592653589793;
-    const double SOLAR_MASS = 4 * PI * PI;
-    const double DAYS_PER_YEAR = 365.24;
+    private const double PI = 3.141592653589793;
+    private const double SOLAR_MASS = 4 * PI * PI;
+    private const double DAYS_PER_YEAR = 365.24;
 
     public double X { get; set; }
     public double Y { get; set; }

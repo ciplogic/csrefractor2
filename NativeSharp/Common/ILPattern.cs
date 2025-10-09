@@ -31,28 +31,28 @@ using System.Reflection.Emit;
 
 namespace NativeSharp.Common;
 
-public abstract class ILPattern
+public abstract class IlPattern
 {
-    public static ILPattern Optional(OpCode opcode)
+    public static IlPattern Optional(OpCode opcode)
     {
         return Optional(OpCode(opcode));
     }
 
-    public static ILPattern Optional(params OpCode[] opcodes)
+    public static IlPattern Optional(params OpCode[] opcodes)
     {
         return Optional(Sequence(opcodes.Select(opcode => OpCode(opcode)).ToArray()));
     }
 
-    public static ILPattern Optional(ILPattern pattern)
+    public static IlPattern Optional(IlPattern pattern)
     {
         return new OptionalPattern(pattern);
     }
 
-    private class OptionalPattern : ILPattern
+    private class OptionalPattern : IlPattern
     {
-        private ILPattern pattern;
+        private IlPattern pattern;
 
-        public OptionalPattern(ILPattern optional)
+        public OptionalPattern(IlPattern optional)
         {
             pattern = optional;
         }
@@ -63,27 +63,27 @@ public abstract class ILPattern
         }
     }
 
-    public static ILPattern Sequence(params ILPattern[] patterns)
+    public static IlPattern Sequence(params IlPattern[] patterns)
     {
         return new SequencePattern(patterns);
     }
 
-    private class SequencePattern : ILPattern
+    private class SequencePattern : IlPattern
     {
-        private ILPattern[] patterns;
+        private IlPattern[] patterns;
 
-        public SequencePattern(ILPattern[] patterns)
+        public SequencePattern(IlPattern[] patterns)
         {
             this.patterns = patterns;
         }
 
         public override void Match(MatchContext context)
         {
-            foreach (ILPattern pattern in patterns)
+            foreach (IlPattern pattern in patterns)
             {
                 pattern.Match(context);
 
-                if (!context.success)
+                if (!context.Success)
                 {
                     break;
                 }
@@ -91,12 +91,12 @@ public abstract class ILPattern
         }
     }
 
-    public static ILPattern OpCode(OpCode opcode)
+    public static IlPattern OpCode(OpCode opcode)
     {
         return new OpCodePattern(opcode);
     }
 
-    private class OpCodePattern : ILPattern
+    private class OpCodePattern : IlPattern
     {
         private OpCode opcode;
 
@@ -107,28 +107,28 @@ public abstract class ILPattern
 
         public override void Match(MatchContext context)
         {
-            if (context.instruction == null)
+            if (context.Instruction == null)
             {
-                context.success = false;
+                context.Success = false;
                 return;
             }
 
-            context.success = context.instruction.OpCode == opcode;
+            context.Success = context.Instruction.OpCode == opcode;
             context.Advance();
         }
     }
 
-    public static ILPattern Either(ILPattern a, ILPattern b)
+    public static IlPattern Either(IlPattern a, IlPattern b)
     {
         return new EitherPattern(a, b);
     }
 
-    private class EitherPattern : ILPattern
+    private class EitherPattern : IlPattern
     {
-        private ILPattern a;
-        private ILPattern b;
+        private IlPattern a;
+        private IlPattern b;
 
-        public EitherPattern(ILPattern a, ILPattern b)
+        public EitherPattern(IlPattern a, IlPattern b)
         {
             this.a = a;
             this.b = b;
@@ -147,20 +147,20 @@ public abstract class ILPattern
 
     protected static Instruction GetLastMatchingInstruction(MatchContext context)
     {
-        if (context.instruction == null)
+        if (context.Instruction == null)
         {
             return null;
         }
 
-        return context.instruction.Previous;
+        return context.Instruction.Previous;
     }
 
     public bool TryMatch(MatchContext context)
     {
-        Instruction instruction = context.instruction;
+        Instruction instruction = context.Instruction;
         Match(context);
 
-        if (context.success)
+        if (context.Success)
         {
             return true;
         }
@@ -169,7 +169,7 @@ public abstract class ILPattern
         return false;
     }
 
-    public static MatchContext Match(MethodBase method, ILPattern pattern)
+    public static MatchContext Match(MethodBase method, IlPattern pattern)
     {
         ArgumentNullException.ThrowIfNull(method);
         ArgumentNullException.ThrowIfNull(pattern);
@@ -188,15 +188,15 @@ public abstract class ILPattern
 
 public sealed class MatchContext
 {
-    internal Instruction instruction;
-    internal bool success;
+    internal Instruction Instruction;
+    internal bool Success;
 
     private Dictionary<object, object> data = new();
 
     public bool IsMatch
     {
-        get => success;
-        set => success = true;
+        get => Success;
+        set => Success = true;
     }
 
     internal MatchContext(Instruction instruction)
@@ -216,12 +216,12 @@ public sealed class MatchContext
 
     internal void Reset(Instruction instruction)
     {
-        this.instruction = instruction;
-        success = true;
+        this.Instruction = instruction;
+        Success = true;
     }
 
     internal void Advance()
     {
-        instruction = instruction.Next;
+        Instruction = Instruction.Next;
     }
 }

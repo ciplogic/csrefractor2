@@ -4,7 +4,7 @@ using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.Operations;
 
-class BinaryOp : LeftOp
+internal class BinaryOp : LeftOp
 {
     public BinaryOp(IndexedVariable left, string name) : base(left)
     {

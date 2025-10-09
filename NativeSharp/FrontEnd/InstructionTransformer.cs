@@ -112,17 +112,17 @@ internal class InstructionTransformer
             return TransformStoreElement(LocalVariablesStackAndState);
         }
 
-        if (LogicalBinaryOp.Contains(opName))
+        if (logicalBinaryOp.Contains(opName))
         {
             return TransformLogicalBinaryOp(instruction.OpCode.Name!);
         }
 
-        if (BinaryOps.Contains(opName))
+        if (binaryOps.Contains(opName))
         {
             return TransformBinaryOp(instruction);
         }
 
-        if (UnaryOps.Contains(opName))
+        if (unaryOps.Contains(opName))
         {
             return TransformUnaryOp(instruction);
         }
@@ -203,18 +203,18 @@ internal class InstructionTransformer
         return new CompositeOp([assignOp1, assignOp2]);
     }
 
-    static string[] BranchOps = ["brfalse", "brtrue"];
+    private static string[] _branchOps = ["brfalse", "brtrue"];
 
-    private static string[] BoolBinaryOperations = ["blt", "bgt", "blt.s", "bgt.s"];
+    private static string[] _boolBinaryOperations = ["blt", "bgt", "blt.s", "bgt.s"];
 
     private BaseOp TransformBranchOperation(Instruction instruction, string opName)
     {
-        if (BoolBinaryOperations.Contains(opName))
+        if (_boolBinaryOperations.Contains(opName))
         {
             return TransformBoolBinaryOp(instruction, opName, LocalVariablesStackAndState);
         }
 
-        bool isConditional = BranchOps.Any(opName.StartsWith);
+        bool isConditional = _branchOps.Any(opName.StartsWith);
 
         Instruction targetInstruction = (Instruction)instruction.Operand;
         int targetInstructionOffset = targetInstruction.Offset;
@@ -280,10 +280,10 @@ internal class InstructionTransformer
         };
     }
 
-    string[] LogicalBinaryOp = ["cgt", "ceq", "clt", "cle", "cgt.un", "clt.un", "ceq.un", "cne.un"];
+    private string[] logicalBinaryOp = ["cgt", "ceq", "clt", "cle", "cgt.un", "clt.un", "ceq.un", "cne.un"];
 
-    string[] BinaryOps = ["rem", "add", "sub", "mul", "div"];
-    string[] UnaryOps = ["neg"];
+    private string[] binaryOps = ["rem", "add", "sub", "mul", "div"];
+    private string[] unaryOps = ["neg"];
 
     private BaseOp TransformStoreOp(Instruction instruction)
     {

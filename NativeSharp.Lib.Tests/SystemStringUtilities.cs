@@ -3,7 +3,7 @@ using NativeSharp.Lib.System;
 
 namespace NativeSharp.Lib.Tests;
 
-static class SystemStringUtilities
+internal static class SystemStringUtilities
 {
     public static System_String ToSystemString(this string text)
     {
