@@ -17,6 +17,15 @@ public class EscapeAnalysisStep
     {
         CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
         
+        MarkNonClrMethodsAsEscaping();
+        foreach (CilOperationsMethod cilMethod in cilMethods)
+        {
+            Analyze(cilMethod);
+        }
+    }
+
+    private static void MarkNonClrMethodsAsEscaping()
+    {
         NativeMethodBase[] methodCacheValues = CilNativeMethodExtensions.AllMethods();
 
         foreach (NativeMethodBase method in methodCacheValues)
@@ -29,10 +38,6 @@ public class EscapeAnalysisStep
             {
                 methodArg.EscapeResult = EscapeKind.Escapes;
             }
-        }
-        foreach (CilOperationsMethod cilMethod in cilMethods)
-        {
-            Analyze(cilMethod);
         }
     }
 

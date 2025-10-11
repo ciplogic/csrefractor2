@@ -66,7 +66,7 @@ Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32
   Ref<System_String> local_3;
   int32_t vreg_2,vreg_5,vreg_8;
 
-  vreg_2 = ((*startPos)[index]);
+  vreg_2 = (*startPos)[index];
   vreg_5 = ((*lengths)[index]);
   vreg_8 = ((*codes)[index]);
   local_3 = Texts_BuildSystemString(vreg_8, data, vreg_2, vreg_5);
