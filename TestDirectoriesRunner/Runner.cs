@@ -26,6 +26,10 @@ public class Runner
         var (output, error) = resultExecute;
         Console.WriteLine(output);
         Console.WriteLine(error);
+        if (string.IsNullOrEmpty(error))
+        {
+            await DotnetRunner.RunDotnetRunAsync(directory.FullName, "build");
+        }
     }
 
     private static void AddCsProj(string path)
@@ -33,7 +37,6 @@ public class Runner
         var projectContent =
             """
             <Project Sdk="Microsoft.NET.Sdk">
-
                 <PropertyGroup>
                     <TargetFramework>net8.0</TargetFramework>
                     <LangVersion>latest</LangVersion>
@@ -41,7 +44,6 @@ public class Runner
                     <Nullable>enable</Nullable>
                     <OutputType>Exe</OutputType>
                 </PropertyGroup>
-
             </Project>
             """;
         File.WriteAllText(Path.Combine(path, "app.csproj"), projectContent);
