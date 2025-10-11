@@ -40,4 +40,6 @@ public static class CilNativeMethodExtensions
 
         return cilMethods.ToArray();
     }
+    public static NativeMethodBase[] AllMethods() 
+        => MethodResolver.MethodCache.Values.ToArray();
 }

@@ -16,6 +16,20 @@ public class EscapeAnalysisStep
     public static void ApplyStaticAnalysis()
     {
         CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
+        
+        NativeMethodBase[] methodCacheValues = CilNativeMethodExtensions.AllMethods();
+
+        foreach (NativeMethodBase method in methodCacheValues)
+        {
+            if (method is CilOperationsMethod)
+            {
+                continue;
+            }
+            foreach (var methodArg in method.Args)
+            {
+                methodArg.EscapeResult = EscapeKind.Escapes;
+            }
+        }
         foreach (CilOperationsMethod cilMethod in cilMethods)
         {
             Analyze(cilMethod);

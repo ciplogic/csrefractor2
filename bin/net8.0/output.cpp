@@ -16,7 +16,7 @@ namespace {
     Ref<System_String> _str(int index);
 }
 void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args);
-void System_Console_WriteLine(System_String value);
+void System_Console_WriteLine(Ref<System_String> value);
 Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32_t>* startPos, Arr<int32_t>* lengths, Arr<uint8_t>* data);
 Ref<System_String> Texts_BuildSystemString(int32_t code, Arr<uint8_t>* data, int32_t startPos, int32_t len);
 void System_Array_Copy(Arr<uint8_t>* sourceArray, int32_t sourceIndex, Arr<uint8_t>* destinationArray, int32_t destinationIndex, int32_t len);
@@ -50,7 +50,7 @@ void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args)
   label_66:
 }
 
-void System_Console_WriteLine(System_String value) {
+void System_Console_WriteLine(Ref<System_String> value) {
 auto arrText= marshallStringCharStar(value.get());
 if (value->Coder){
     wchar_t *text = (wchar_t*)arrText.data();
