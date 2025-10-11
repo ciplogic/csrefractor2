@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿namespace TestDirectoriesRunner;
 
-namespace TestDirectoriesRunner;
+public record ExecutionResult (string Output, string Error, int ExitCode);
 
 public class Runner
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var startPath = @"C:\oss\csrefractor2\Tests\TestSuite\Examples\";
         var currentPath = Directory.GetCurrentDirectory();
@@ -13,28 +13,17 @@ public class Runner
         {
             Directory.SetCurrentDirectory(directory.FullName);
             AddCsProj(directory.FullName);
-            BuildLocally();
+            await BuildLocally(directory);
             Console.WriteLine(directory.FullName);
         }
 
         Directory.SetCurrentDirectory(currentPath);
     }
 
-    private static void BuildLocally()
+    private static async Task BuildLocally(DirectoryInfo directory)
     {
-        Process.Start("dotnet", "build")?.WaitForExit();
-        Process runProcess = new Process()
-        {
-            StartInfo = new ProcessStartInfo("dotnet", "run")
-            {
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-            }
-        };
-        runProcess?.WaitForExit();
-        var output = runProcess?.StandardOutput?.ReadToEnd();
-        var error = runProcess?.StandardError?.ReadToEnd();
+        var resultExecute = await DotnetRunner.RunDotnetRunAsync(directory.FullName, "run App.cs");
+        var (output, error) = resultExecute;
         Console.WriteLine(output);
         Console.WriteLine(error);
     }
