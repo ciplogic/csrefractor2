@@ -27,19 +27,14 @@ return 0;
 }
 void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args)
 {
-  int32_t local_0,local_1,vreg_4,vreg_9;
+  int32_t local_0,local_1,vreg_9;
 
   local_0 = 2;
   local_1 = 3;
-  vreg_4 = cgt (2, 3);
-  if (brfalse_s(vreg_4)) goto label_22;
+
   System_Console_WriteLine(local_0);
-  label_22:
-  vreg_9 = clt (local_0, 3);
-  if (brfalse_s(vreg_9)) goto label_41;
   System_Console_WriteLine(local_0);
   goto label_50;
-  label_41:
   System_Console_WriteLine(local_1);
   label_50:
 }

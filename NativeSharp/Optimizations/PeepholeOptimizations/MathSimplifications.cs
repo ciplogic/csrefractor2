@@ -2,6 +2,8 @@
 using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
+using static NativeSharp.Optimizations.PeepholeOptimizations.SimplificationUtilities;
+
 namespace NativeSharp.Optimizations.PeepholeOptimizations;
 
 public class MathSimplifications : OptimizationBase
@@ -30,11 +32,30 @@ public class MathSimplifications : OptimizationBase
 
     private static bool OptimizeBinaryOp(BaseOp[] baseOps, int index, BinaryOp binaryOp)
     {
-        if (binaryOp.Name == "div")
+        return binaryOp.Name switch
         {
-            return TryOptimizeDivFloat(baseOps, index, binaryOp);
+            "div" => TryOptimizeDivFloat(baseOps, index, binaryOp),
+            "cgt" => TryOptimizeCompareGreaterThan(baseOps, index, binaryOp),
+            _ => false
+        };
+    }
+
+    private static bool TryOptimizeCompareGreaterThan(BaseOp[] baseOps, int index, BinaryOp binaryOp)
+    {
+        if (UpdateBinaryOperation<float>(baseOps, index, (leftValue, rightValue) => leftValue > rightValue ? 1 : 0))
+        {
+            return true;
         }
-        
+
+        if (UpdateBinaryOperation<double>(baseOps, index, (leftValue, rightValue) => leftValue > rightValue ? 1 : 0))
+        {
+            return true;
+        }
+        if (UpdateBinaryOperation<int>(baseOps, index, (leftValue, rightValue) => leftValue > rightValue ? 1 : 0))
+        {
+            return true;
+        }
+
         return false;
     }
 

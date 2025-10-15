@@ -9,108 +9,94 @@
 #include "native_rc.hpp"
 #include "native_heap_array.hpp"
 
-template <typename T>
+template<typename T>
 using Arr = HeapArray<T>;
 
-template <typename T>
-using RefArr = Ref<Arr<T>>;
+template<typename T>
+using RefArr = Ref<Arr<T> >;
 
-template <class T>
-RefArr<T> new_arr(int size)
-{
+template<class T>
+RefArr<T> new_arr(int size) {
     Arr<T> arr = Arr<T>::create(size);
     return new_ref_data(arr);
 }
 
-template <class T>
-RefArr<T> makeArr(std::initializer_list<T> init)
-{
+template<class T>
+RefArr<T> makeArr(std::initializer_list<T> init) {
     Arr<T> arr = Arr<T>::create(init);
     return new_ref_data(arr);
 }
 
-template <typename T>
-T add(T left, T right)
-{
+template<typename T>
+T add(T left, T right) {
     return left + right;
 }
 
-template <typename T>
-T sub(T left, T right)
-{
+template<typename T>
+T sub(T left, T right) {
     return left - right;
 }
 
-template <typename T>
-T mul(T left, T right)
-{
+template<typename T>
+T mul(T left, T right) {
     return left * right;
 }
 
-template <typename T>
-T div(T left, T right)
-{
+template<typename T>
+T div(T left, T right) {
     return left / right;
 }
 
-template <typename T>
-T rem(T left, T right)
-{
+template<typename T>
+T rem(T left, T right) {
     return left % right;
 }
 
-template <typename T>
+template<typename T>
 T neg(T left) { return -left; }
 
-inline bool cgt(int left, int right)
-{
-    return left > right;
+template<typename T>
+int cgt(T left, T right) {
+    return left > right ? 1 : 0;
 }
 
-inline bool clt(int left, int right)
-{
-    return left < right;
+template<typename T>
+int clt(T left, T right) {
+    return left < right ? 1 : 0;
 }
 
-inline bool ceq(int left, int right)
-{
-    return left == right;
+template<typename T>
+int ceq(T left, T right) {
+    return left == right ? 1 : 0;
 }
 
-inline bool brfalse_s(int left)
-{
+inline bool brfalse_s(int left) {
     return !left;
 }
 
-inline bool brtrue_s(int left)
-{
+inline bool brtrue_s(int left) {
     return left;
 }
 
-inline bool brfalse(int left)
-{
+inline bool brfalse(int left) {
     return !left;
 }
 
-inline bool brtrue(int left)
-{
+inline bool brtrue(int left) {
     return left;
 }
 
-template <typename T>
-bool blt_s(T left, T right)
-{
+template<typename T>
+bool blt_s(T left, T right) {
     return left < right;
 }
 
-template <typename T>
-bool blt(T left, T right)
-{
+template<typename T>
+bool blt(T left, T right) {
     return left < right;
 }
 
-template <typename T>
-int32_t conv_i4(T left)
-{
+template<typename T>
+int32_t conv_i4(T left) {
     return left;
 }
