@@ -1,5 +1,3 @@
 ﻿namespace NativeSharp.Operations.Common;
 
-public class UnresolvedMethod : NativeMethodBase
-{
-}
+public class UnresolvedMethod : NativeMethodBase;

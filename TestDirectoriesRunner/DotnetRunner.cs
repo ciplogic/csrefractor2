@@ -39,4 +39,22 @@ public static class DotnetRunner
             return (string.Empty, ex.ToString());
         }
     }
+
+    public static string[] SplitOutputIntoLines(this string output)
+    {
+        var lines = new List<string>();
+        using StringReader reader = new StringReader(output);
+        while (true)
+        {
+            string? line = reader.ReadLine();
+            if (line == null)
+            {
+                break;
+            }
+            lines.Add(line);
+                
+        }
+
+        return lines.ToArray();
+    }
 }

@@ -4,15 +4,16 @@ public record ExecutionResult (string Output, string Error, int ExitCode);
 
 public class Runner
 {
+    private const string SolutionPath = @"C:\oss\csrefractor2";
+    
     public static async Task Main(string[] args)
     {
-        var startPath = @"C:\oss\csrefractor2\Tests\TestSuite\Examples\";
+        var startPath = $@"{SolutionPath}\Tests\TestSuite\Examples\";
         var currentPath = Directory.GetCurrentDirectory();
         var directories = new DirectoryInfo(startPath).GetDirectories();
         foreach (var directory in directories)
         {
             Directory.SetCurrentDirectory(directory.FullName);
-            AddCsProj(directory.FullName);
             await BuildLocally(directory);
             Console.WriteLine(directory.FullName);
         }
@@ -26,13 +27,18 @@ public class Runner
         var (output, error) = resultExecute;
         Console.WriteLine(output);
         Console.WriteLine(error);
-        if (string.IsNullOrEmpty(error))
+        if (!string.IsNullOrEmpty(error))
         {
-            await DotnetRunner.RunDotnetRunAsync(directory.FullName, "build");
+            Console.WriteLine($"Error: {error} when building directory: {directory.FullName}");
+            return;
         }
+
+        await AddCsProj(directory.FullName);
+        await DotnetRunner.RunDotnetRunAsync(directory.FullName, "build");
+        
     }
 
-    private static void AddCsProj(string path)
+    private static async Task AddCsProj(string path)
     {
         var projectContent =
             """
@@ -46,6 +52,6 @@ public class Runner
                 </PropertyGroup>
             </Project>
             """;
-        File.WriteAllText(Path.Combine(path, "app.csproj"), projectContent);
+        await File.WriteAllTextAsync(Path.Combine(path, "app.csproj"), projectContent);
     }
 }

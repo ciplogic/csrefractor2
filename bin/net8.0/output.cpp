@@ -1,7 +1,6 @@
 #include "native_sharp.hpp"
 // headers imported by native methods
-#include <cstdio>
-#include <cwchar>
+#include <iostream>
 
 struct System_String;
 struct TargetApp_MinimalSwitchSample;
@@ -16,7 +15,7 @@ namespace {
     Ref<System_String> _str(int index);
 }
 void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args);
-void System_Console_WriteLine(Ref<System_String> value);
+void System_Console_WriteLine(int32_t value);
 Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32_t>* startPos, Arr<int32_t>* lengths, Arr<uint8_t>* data);
 Ref<System_String> Texts_BuildSystemString(int32_t code, Arr<uint8_t>* data, int32_t startPos, int32_t len);
 void System_Array_Copy(Arr<uint8_t>* sourceArray, int32_t sourceIndex, Arr<uint8_t>* destinationArray, int32_t destinationIndex, int32_t len);
@@ -28,37 +27,25 @@ return 0;
 }
 void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args)
 {
-  int32_t vreg_3;
-  bool vreg_4,vreg_5,vreg_6;
+  int32_t local_0,local_1,vreg_4,vreg_9;
 
-  vreg_3 = 2;
-  vreg_4 = cgt (2, 0);
-  if (brfalse(vreg_4)) goto label_27;
-  vreg_5 = cgt (vreg_3, 1);
-  if (brfalse(vreg_5)) goto label_40;
-  vreg_6 = cgt (vreg_3, 2);
-  if (brfalse(vreg_6)) goto label_53;
-  goto label_66;
-  label_27:
-  System_Console_WriteLine(_str(0));
-  goto label_66;
-  label_40:
-  System_Console_WriteLine(_str(1));
-  goto label_66;
-  label_53:
-  System_Console_WriteLine(_str(2));
-  label_66:
+  local_0 = 2;
+  local_1 = 3;
+  vreg_4 = cgt (2, 3);
+  if (brfalse_s(vreg_4)) goto label_22;
+  System_Console_WriteLine(local_0);
+  label_22:
+  vreg_9 = clt (local_0, 3);
+  if (brfalse_s(vreg_9)) goto label_41;
+  System_Console_WriteLine(local_0);
+  goto label_50;
+  label_41:
+  System_Console_WriteLine(local_1);
+  label_50:
 }
 
-void System_Console_WriteLine(Ref<System_String> value) {
-auto arrText= marshallStringCharStar(value.get());
-if (value->Coder){
-    wchar_t *text = (wchar_t*)arrText.data();
-    wprintf(L"%ls\n", text);
-} else {
-  char *text = (char*)arrText.data();
-  printf("%s\n", text);
-}
+void System_Console_WriteLine(int32_t value) {
+std::cout<<value<<'\n';
 }
 
 Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32_t>* startPos, Arr<int32_t>* lengths, Arr<uint8_t>* data)
@@ -66,7 +53,7 @@ Ref<System_String> Texts_FromIndex(int32_t index, Arr<int32_t>* codes, Arr<int32
   Ref<System_String> local_3;
   int32_t vreg_2,vreg_5,vreg_8;
 
-  vreg_2 = (*startPos)[index];
+  vreg_2 = ((*startPos)[index]);
   vreg_5 = ((*lengths)[index]);
   vreg_8 = ((*codes)[index]);
   local_3 = Texts_BuildSystemString(vreg_8, data, vreg_2, vreg_5);
@@ -106,10 +93,10 @@ void System_Array_Copy(Arr<uint8_t>* sourceArray, int32_t sourceIndex, Arr<uint8
 }
 
 namespace {
-    RefArr<int> _coders = makeArr<int> ({0,0,0});
-    RefArr<int> _startPos = makeArr<int> ({0,1,4});
-    RefArr<int> _lengths = makeArr<int> ({1,3,16});
-    RefArr<uint8_t> _joinedTexts = makeArr<uint8_t> ({120,97,98,99,109,97,121,98,101,32,105,116,32,105,115,32,116,114,117,101});
+    RefArr<int> _coders = makeArr<int> ({});
+    RefArr<int> _startPos = makeArr<int> ({});
+    RefArr<int> _lengths = makeArr<int> ({});
+    RefArr<uint8_t> _joinedTexts = makeArr<uint8_t> ({});
     Ref<System_String> _str(int index) {
        return Texts_FromIndex(index, _coders.get(), _startPos.get(), _lengths.get(), _joinedTexts.get());
     }

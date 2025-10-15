@@ -5,33 +5,19 @@ public class MinimalSwitchSample
     public static void Main(string[] args)
     {
         int x = 2;
-        switch (x)
+        var v2 = 3;
+        if (x > v2)
         {
-            case 0:
-                Console.WriteLine("x");
-                break;
-            case 1:
-                Console.WriteLine("abc");
-                break;
-            case 2:
-                Console.WriteLine("maybe it is true");
-                break;
+            Console.WriteLine(x);
         }
-    }
-    public static void Main3(string[] args)
-    {
-        int x = 2;
-        if (x == 0)
+
+        if (x < 3)
         {
-            Console.WriteLine("x");
+            Console.WriteLine(x);
         }
-        else if (x == 1)
+        else
         {
-            Console.WriteLine("abc");
-        }
-        else if (x == 2)
-        {
-            Console.WriteLine("maybe it is true");
+            Console.WriteLine(v2);
         }
     }
 }

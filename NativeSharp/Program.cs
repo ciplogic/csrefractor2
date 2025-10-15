@@ -15,6 +15,11 @@ internal class Program
 {
     private static void Main(string[] args)
     {
+        var assemblyNameToScan = "TargetApp.dll";
+        if (args.Length > 0)
+        {
+            assemblyNameToScan = args[0];
+        }
         var sw = Stopwatch.StartNew();
         CompilerOptions options = new()
         {
@@ -32,7 +37,7 @@ internal class Program
         
         CodeGeneratorBaseTypes.DefaultTypeMappings();
 
-        Assembly asm = Assembly.LoadFrom("TargetApp.dll");
+        Assembly asm = Assembly.LoadFrom(assemblyNameToScan);
         MethodInfo entryPoint = asm.EntryPoint!;
         AssemblyScanner.DefaultMappings();
         AssemblyScanner.ScanAssembly(typeof(Texts).Assembly);
