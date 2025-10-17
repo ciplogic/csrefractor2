@@ -6,10 +6,12 @@ namespace NativeSharp.Optimizations.BlockOptimizations.Common;
 
 public abstract class BlockBasedOptimizationBase : OptimizationBase
 {
+    protected CilOperationsMethod Method { get; private set; } = null!;
     public abstract bool OptimizeSegment(ArraySegment<BaseOp> segment);
 
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
+        Method =  cilOperationsMethod;
         ArraySegment<BaseOp>[] basicBlocks = BasicBlocksExtraction(cilOperationsMethod.Operations);
         bool optimized = false;
         foreach (ArraySegment<BaseOp> basicBlock in basicBlocks)

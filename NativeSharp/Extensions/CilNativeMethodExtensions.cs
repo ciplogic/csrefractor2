@@ -25,6 +25,18 @@ public static class CilNativeMethodExtensions
         cilOperationsMethod.Operations = newOps.ToArray();
     }
 
+    public static bool Contains<TOperation>(this Span<BaseOp> cilOperationsMethod) where TOperation : BaseOp
+    {
+        foreach (var op in cilOperationsMethod)
+        {
+            if (op is TOperation)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static CilOperationsMethod[] CilMethodsFromCache()
     {
         NativeMethodBase[] methodCacheValues = MethodResolver.MethodCache.Values.ToArray();
