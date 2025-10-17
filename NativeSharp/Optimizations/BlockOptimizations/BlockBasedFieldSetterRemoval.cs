@@ -12,8 +12,9 @@ internal class BlockBasedFieldSetterRemoval : BlockBasedOptimizationBase
     public override bool OptimizeSegment(ArraySegment<BaseOp> segment)
     {
         var containsFieldSetter = segment.AsSpan().Contains<StoreFieldOp>();
+        var containsFieldGetter = segment.AsSpan().Contains<LoadFieldOp>();
 
-        if (!containsFieldSetter)
+        if (!containsFieldSetter || containsFieldGetter)
         {
             return false;
         }

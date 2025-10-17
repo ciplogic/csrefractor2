@@ -24,6 +24,7 @@ public class OptimizationSteps(bool isOptimizing)
         [
             new BlockBasedPropagation(),
             new BlockBasedFieldSetterRemoval(),
+            
             new RemovedUnusedAssignsAndVars(),
             new GotoOpsOptimization(),
             new HandleConstMethodCalls(),
