@@ -36,6 +36,8 @@ public static class CilNativeMethodExtensions
         }
         return false;
     }
+    public static bool Contains<TOperation>(this CilOperationsMethod cilOperationsMethod) where TOperation : BaseOp 
+        => cilOperationsMethod.Operations.AsSpan().Contains<TOperation>();
 
     public static CilOperationsMethod[] CilMethodsFromCache()
     {

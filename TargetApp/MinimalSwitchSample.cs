@@ -2,7 +2,7 @@
 
 public class MinimalSwitchSample
 {
-    public static void Main(string[] args)
+    public static void Main2(string[] args)
     {
         int x = 2;
         var v2 = 3;

@@ -9,6 +9,11 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
+        if (!cilOperationsMethod.Contains<LabelOp>())
+        {
+            return false;
+        }
+        
         int[] visitedRows = VisitedOps(cilOperationsMethod);
         if (visitedRows.Length == cilOperationsMethod.Operations.Length)
         {
@@ -22,7 +27,7 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
 
     private static int[] VisitedOps(CilOperationsMethod cilOperationsMethod)
     {
-        HashSet<int> foundRows = [];
+        SortedSet<int> foundRows = [];
         var operations = cilOperationsMethod.Operations;
         List<int> nextToVisit = [0];
         while (nextToVisit.Count > 0)
@@ -35,35 +40,39 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
         return foundRows.ToArray();
     }
 
-    private static void VisitBlock(HashSet<int> foundRows, BaseOp[] operations, int startRow, List<int> nextToVisit)
+    private static void VisitBlock(SortedSet<int> foundRows, BaseOp[] operations, int startRow, List<int> nextToVisit)
     {
         while (startRow < operations.Length)
         {
-            foundRows.Add(startRow);
-            var currentOp = operations[startRow++];
-            if (currentOp is GotoOp gotoOp)
+            if (foundRows.Count == operations.Length)
             {
-                AddNextToVisit(gotoOp.Offset);
                 return;
             }
+            foundRows.Add(startRow);
+            var currentOp = operations[startRow];
 
-            if (currentOp is BranchOp branchOp)
+            startRow++;
+            if (currentOp is not JumpToOffset jumpToOffset)
             {
-                AddNextToVisit( branchOp.Offset);
+                continue;
             }
-        }
 
-        return;
-
-        void AddNextToVisit(int offset)
-        {
-            if (!foundRows.Contains(offset))
+            int labelIndex = IndexOfLabel(operations, jumpToOffset.Offset);
+            AddNextToVisit(labelIndex, foundRows, nextToVisit);
+            if (currentOp is GotoOp)
             {
-                nextToVisit.Add(IndexOfLabel(operations, offset));
+                return;
             }
         }
     }
 
+    private static void AddNextToVisit(int indexOfLabel, SortedSet<int> foundRows, List<int> toVisit)
+    {
+        if (!foundRows.Contains(indexOfLabel))
+        {
+            toVisit.Add(indexOfLabel);
+        }
+    }
     private static int IndexOfLabel(BaseOp[] ops, int offset)
     {
         for (var index = 0; index < ops.Length; index++)
