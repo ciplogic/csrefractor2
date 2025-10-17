@@ -34,7 +34,7 @@ public class OneAssignPropagation : OptimizationBase
                 continue;
             }
             leftOp.Left = assignOp.Left;
-            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, [i]);
+            cilOperationsMethod.RemoveIndices([i]);
             return true;
         }
 

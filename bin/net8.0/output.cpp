@@ -27,16 +27,7 @@ return 0;
 }
 void TargetApp_MinimalSwitchSample_Main(RefArr<Ref<System_String>> args)
 {
-  int32_t local_0,local_1,vreg_9;
-
-  local_0 = 2;
-  local_1 = 3;
-
-  System_Console_WriteLine(local_0);
-  System_Console_WriteLine(local_0);
-  goto label_50;
-  System_Console_WriteLine(local_1);
-  label_50:
+  System_Console_WriteLine(2);
 }
 
 void System_Console_WriteLine(int32_t value) {
@@ -84,7 +75,7 @@ void System_Array_Copy(Arr<uint8_t>* sourceArray, int32_t sourceIndex, Arr<uint8
   local_0 = add (local_0, 1);
   label_27:
   vreg_18 = clt (local_0, len);
-  if (brtrue_s(vreg_18)) goto label_5;
+  if (brtrue(vreg_18)) goto label_5;
 }
 
 namespace {

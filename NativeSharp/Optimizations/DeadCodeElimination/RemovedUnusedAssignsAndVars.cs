@@ -34,7 +34,7 @@ public class RemovedUnusedAssignsAndVars : OptimizationBase
 
         int[] indicesToRemove = GetAssignmentIndicesToRemove(cilOperationsMethod, candidatesForRemoval);
 
-        CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, indicesToRemove); 
+        cilOperationsMethod.RemoveIndices(indicesToRemove); 
         
         return candidatesForRemoval.Count != 0;
     }

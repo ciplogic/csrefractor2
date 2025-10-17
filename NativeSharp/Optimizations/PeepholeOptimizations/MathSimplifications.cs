@@ -36,6 +36,7 @@ public class MathSimplifications : OptimizationBase
         {
             "div" => TryOptimizeDivFloat(baseOps, index, binaryOp),
             "cgt" => TryOptimizeCompareGreaterThan(baseOps, index, binaryOp),
+            "clt" => TryOptimizeCompareLessThan(baseOps, index, binaryOp),
             _ => false
         };
     }
@@ -58,9 +59,57 @@ public class MathSimplifications : OptimizationBase
 
         return false;
     }
+    private static bool TryOptimizeCompareLessThan(BaseOp[] baseOps, int index, BinaryOp binaryOp)
+    {
+        if (UpdateBinaryOperation<float>(baseOps, index, (leftValue, rightValue) => leftValue < rightValue ? 1 : 0))
+        {
+            return true;
+        }
 
+        if (UpdateBinaryOperation<double>(baseOps, index, (leftValue, rightValue) => leftValue < rightValue ? 1 : 0))
+        {
+            return true;
+        }
+        if (UpdateBinaryOperation<int>(baseOps, index, (leftValue, rightValue) => leftValue < rightValue ? 1 : 0))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryOptimizeDivConstants(BaseOp[] baseOps, int index, BinaryOp binaryOp)
+    {
+        if (binaryOp.LeftExpression is not ConstantValueExpression || binaryOp.RightExpression is not ConstantValueExpression)
+        {
+            return false;
+        }
+        if (UpdateBinaryOperation<double>(baseOps, index, (leftValue, rightValue) => leftValue / rightValue))
+        {
+            return true;
+        }
+        if (UpdateBinaryOperation<float>(baseOps, index, (leftValue, rightValue) => leftValue / rightValue))
+        {
+            return true;
+        }
+        if (UpdateBinaryOperation<int>(baseOps, index, (leftValue, rightValue) => leftValue / rightValue))
+        {
+            return true;
+        }
+        if (UpdateBinaryOperation<long>(baseOps, index, (leftValue, rightValue) => leftValue / rightValue))
+        {
+            return true;
+        }
+        return false;
+
+    }
     private static bool TryOptimizeDivFloat(BaseOp[] baseOps, int index, BinaryOp binaryOp)
     {
+        if (TryOptimizeDivConstants(baseOps, index, binaryOp))
+        {
+            return true;
+        }
+        
         IValueExpression rightExpression = binaryOp.RightExpression;
         if (rightExpression is ConstantValueExpression constantValueExpression)
         {

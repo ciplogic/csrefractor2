@@ -15,14 +15,14 @@ public class GotoOpsOptimization : OptimizationBase
 
         if (indicesToRemove.Length != 0)
         {
-            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, indicesToRemove.ToArray());
+            cilOperationsMethod.RemoveIndices(indicesToRemove.ToArray());
             result = true;
         }
 
         int[] labelsToRemove = LabelsToRemove(cilOperationsMethod);
         if (labelsToRemove.Length != 0)
         {
-            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, labelsToRemove);
+            cilOperationsMethod.RemoveIndices(labelsToRemove);
             result = true;
         }
 

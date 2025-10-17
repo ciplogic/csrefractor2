@@ -27,7 +27,7 @@ public static class ComplexInlinerStep
             GetOpsToInline(target, fromToVariables);
         if (opsToInline.OpsCloned.Length == 0)
         {
-            CilNativeMethodExtensions.RemoveIndices(cilOperationsMethod, [row]);
+            cilOperationsMethod.RemoveIndices([row]);
             return true;
         }
 

@@ -11,7 +11,7 @@ internal class BranchOp : JumpToOffset
     public BranchOp(int offset, string name, IValueExpression condition)
         : base(offset)
     {
-        Name = name;
+        Name = name.MapNameToTruthBranch();
         Condition = condition;
     }
 

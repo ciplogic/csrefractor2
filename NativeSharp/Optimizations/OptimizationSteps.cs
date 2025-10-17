@@ -28,6 +28,9 @@ public class OptimizationSteps(bool isOptimizing)
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
             new MathSimplifications(),
+            new BranchIfConstantsOptimizations(),
+            new DataflowUnreachableCodeDeleter(),
+            
             new RemoveUnusedVars(),
             new InlinerOptimization()
         ];

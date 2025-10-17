@@ -6,8 +6,7 @@ namespace NativeSharp.Extensions;
 
 public static class CilNativeMethodExtensions
 {
-    
-    public static void RemoveIndices(CilOperationsMethod cilOperationsMethod, int[] indicesToRemove)
+    public static void RemoveIndices(this CilOperationsMethod cilOperationsMethod, int[] indicesToRemove)
     {
         if (indicesToRemove.Length == 0)
         {
