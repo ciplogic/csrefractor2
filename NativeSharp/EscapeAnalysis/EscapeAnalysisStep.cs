@@ -34,7 +34,7 @@ public class EscapeAnalysisStep
             {
                 continue;
             }
-            foreach (var methodArg in method.Args)
+            foreach (ArgumentVariable methodArg in method.Args)
             {
                 methodArg.EscapeResult = EscapeKind.Escapes;
             }

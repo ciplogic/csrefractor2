@@ -31,15 +31,15 @@ internal static class CompactNumberWriter
             return "0";
         }
 
-        var chars = new List<char>();
-        var len = _chars.Length;
+        List<char> chars = new List<char>();
+        int len = _chars.Length;
         while (offset > 0)
         {
-            var reminder =  offset % len;
+            int reminder =  offset % len;
             chars.Add(_chars[reminder]);
             offset /= len;
         }
-        var charArray = chars.ToArray();
+        char[] charArray = chars.ToArray();
         Array.Reverse(charArray);
         return new string(charArray);
     }

@@ -7,8 +7,8 @@ internal static class SystemStringUtilities
 {
     public static System_String ToSystemString(this string text)
     {
-        var decoded = StringEncoders.EncodeBytes(text);
-        var result = new System_String()
+        (byte[] Data, int Coder) decoded = StringEncoders.EncodeBytes(text);
+        System_String result = new System_String()
         {
             Coder = decoded.Coder,
             Data = decoded.Data,

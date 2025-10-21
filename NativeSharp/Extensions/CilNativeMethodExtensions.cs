@@ -27,7 +27,7 @@ public static class CilNativeMethodExtensions
 
     public static bool Contains<TOperation>(this Span<BaseOp> cilOperationsMethod) where TOperation : BaseOp
     {
-        foreach (var op in cilOperationsMethod)
+        foreach (BaseOp op in cilOperationsMethod)
         {
             if (op is TOperation)
             {

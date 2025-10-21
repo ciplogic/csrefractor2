@@ -12,7 +12,7 @@ public static class ResolvedMethods
 
     public static System_String System_String_Concat(System_String text, System_String text2)
     {
-        var data = new byte[text.Length + text2.Length];
+        byte[] data = new byte[text.Length + text2.Length];
         Array.Copy(text.Data, data, text.Length);
 
         Array.Copy(text2.Data, 0, data, text.Length, text2.Length);
@@ -71,7 +71,7 @@ public static class ResolvedMethods
 
     public static void System_Array_Copy(byte[] sourceArray, byte[] destinationArray, int len)
     {
-        for (var i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
             destinationArray[i] = sourceArray[i];
         }
@@ -80,7 +80,7 @@ public static class ResolvedMethods
     public static void System_Array_Copy(byte[] sourceArray, int sourceIndex, byte[] destinationArray,
         int destinationIndex, int len)
     {
-        for (var i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
             int index = sourceIndex + i;
             int destArrayIndex = destinationIndex + i;

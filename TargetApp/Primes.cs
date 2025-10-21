@@ -31,8 +31,8 @@ internal class Primes
     [PureMethod]
     private static int GetPrimeCount(int rangeValue)
     {
-        var primeCount = 0;
-        for (var i = 0; i < rangeValue; i++)
+        int primeCount = 0;
+        for (int i = 0; i < rangeValue; i++)
         {
             if (IsPrime(i))
             {
@@ -45,7 +45,7 @@ internal class Primes
 
     private static void Main2()
     {
-        var primeCount = GetPrimeCount(10_000_000);
+        int primeCount = GetPrimeCount(10_000_000);
 
         Console.WriteLine(primeCount);
     }
@@ -53,7 +53,7 @@ internal class Primes
     private static void MainSimple()
     {
         bool isTrue = false;
-        var trueText = isTrue.ToString();
+        string trueText = isTrue.ToString();
         Console.WriteLine("Hello...");
         Console.WriteLine(trueText);
     }

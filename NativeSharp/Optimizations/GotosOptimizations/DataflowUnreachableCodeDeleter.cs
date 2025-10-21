@@ -28,11 +28,11 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
     private static int[] VisitedOps(CilOperationsMethod cilOperationsMethod)
     {
         SortedSet<int> foundRows = [];
-        var operations = cilOperationsMethod.Operations;
+        BaseOp[] operations = cilOperationsMethod.Operations;
         List<int> nextToVisit = [0];
         while (nextToVisit.Count > 0)
         {
-            var rowToVisit = nextToVisit[^1];
+            int rowToVisit = nextToVisit[^1];
             nextToVisit.RemoveAt(nextToVisit.Count-1);
             VisitBlock(foundRows, operations, rowToVisit, nextToVisit);
         }
@@ -49,7 +49,7 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
                 return;
             }
             foundRows.Add(startRow);
-            var currentOp = operations[startRow];
+            BaseOp currentOp = operations[startRow];
 
             startRow++;
             if (currentOp is not JumpToOffset jumpToOffset)
@@ -75,9 +75,9 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
     }
     private static int IndexOfLabel(BaseOp[] ops, int offset)
     {
-        for (var index = 0; index < ops.Length; index++)
+        for (int index = 0; index < ops.Length; index++)
         {
-            var op = ops[index];
+            BaseOp op = ops[index];
             if (op is LabelOp labelOp)
             {
                 if (labelOp.Offset == offset)
@@ -91,8 +91,8 @@ public class DataflowUnreachableCodeDeleter : OptimizationBase
 
     private static int[] CalculateUnusedRows(int[] visitedRows, int operationsLength)
     {
-        var hash = new HashSet<int>(visitedRows);
-        var itemsToRemove = Enumerable.Range(0, operationsLength)
+        HashSet<int> hash = new HashSet<int>(visitedRows);
+        int[] itemsToRemove = Enumerable.Range(0, operationsLength)
             .Where(it => !hash.Contains(it))
             .ToArray();
         return itemsToRemove;

@@ -7,7 +7,7 @@ public static class DotnetRunner
     {
         try
         {
-            var psi = new ProcessStartInfo
+            ProcessStartInfo psi = new ()
             {
                 FileName = "dotnet",
                 Arguments = arguments,
@@ -18,7 +18,7 @@ public static class DotnetRunner
                 CreateNoWindow = true
             };
 
-            using var process = new Process { StartInfo = psi };
+            using Process process = new() { StartInfo = psi };
             process.Start();
 
             Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
@@ -42,7 +42,7 @@ public static class DotnetRunner
 
     public static string[] SplitOutputIntoLines(this string output)
     {
-        var lines = new List<string>();
+        List<string> lines = new List<string>();
         using StringReader reader = new StringReader(output);
         while (true)
         {

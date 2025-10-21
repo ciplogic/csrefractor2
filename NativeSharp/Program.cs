@@ -15,12 +15,12 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var assemblyNameToScan = "TargetApp.dll";
+        string assemblyNameToScan = "TargetApp.dll";
         if (args.Length > 0)
         {
             assemblyNameToScan = args[0];
         }
-        var sw = Stopwatch.StartNew();
+        Stopwatch sw = Stopwatch.StartNew();
         CompilerOptions options = new()
         {
             Optimize = true

@@ -8,10 +8,10 @@ public class Runner
     
     public static async Task Main(string[] args)
     {
-        var startPath = $@"{SolutionPath}\Tests\TestSuite\Examples\";
-        var currentPath = Directory.GetCurrentDirectory();
-        var directories = new DirectoryInfo(startPath).GetDirectories();
-        foreach (var directory in directories)
+        string startPath = $@"{SolutionPath}\Tests\TestSuite\Examples\";
+        string currentPath = Directory.GetCurrentDirectory();
+        DirectoryInfo[] directories = new DirectoryInfo(startPath).GetDirectories();
+        foreach (DirectoryInfo directory in directories)
         {
             Directory.SetCurrentDirectory(directory.FullName);
             await BuildLocally(directory);
@@ -23,8 +23,8 @@ public class Runner
 
     private static async Task BuildLocally(DirectoryInfo directory)
     {
-        var resultExecute = await DotnetRunner.RunDotnetRunAsync(directory.FullName, "run App.cs");
-        var (output, error) = resultExecute;
+        (string Output, string Error) resultExecute = await DotnetRunner.RunDotnetRunAsync(directory.FullName, "run App.cs");
+        (string output, string error) = resultExecute;
         Console.WriteLine(output);
         Console.WriteLine(error);
         if (!string.IsNullOrEmpty(error))
@@ -40,7 +40,7 @@ public class Runner
 
     private static async Task AddCsProj(string path)
     {
-        var projectContent =
+        string projectContent =
             """
             <Project Sdk="Microsoft.NET.Sdk">
                 <PropertyGroup>

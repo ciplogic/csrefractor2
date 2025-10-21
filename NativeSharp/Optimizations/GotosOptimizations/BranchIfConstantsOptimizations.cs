@@ -10,7 +10,7 @@ public class BranchIfConstantsOptimizations : OptimizationBase
 {
     public override bool Optimize(CilOperationsMethod cilOperationsMethod)
     {
-        var ops = cilOperationsMethod.Operations;
+        BaseOp[] ops = cilOperationsMethod.Operations;
         bool result = ReplaceWithGotos(ops);
 
         int[] removedFalseBranches = RemovedFalseBranchIfs(ops);
@@ -22,9 +22,9 @@ public class BranchIfConstantsOptimizations : OptimizationBase
     private static bool ReplaceWithGotos(BaseOp[] ops)
     {
         bool result = false;
-        for (var index = 0; index < ops.Length; index++)
+        for (int index = 0; index < ops.Length; index++)
         {
-            var baseOp = ops[index];
+            BaseOp baseOp = ops[index];
             if (!IsBranchOpEquivalentWithGoto(baseOp))
             {
                 continue;
@@ -41,9 +41,9 @@ public class BranchIfConstantsOptimizations : OptimizationBase
     private static int[] RemovedFalseBranchIfs(BaseOp[] ops)
     {
         List<int> result = [];
-        for (var index = 0; index < ops.Length; index++)
+        for (int index = 0; index < ops.Length; index++)
         {
-            var baseOp = ops[index];
+            BaseOp baseOp = ops[index];
             if (IsBranchOpIsFalse(baseOp))
             {
                 result.Add(index);

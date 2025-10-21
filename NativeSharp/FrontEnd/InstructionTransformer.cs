@@ -154,14 +154,14 @@ internal class InstructionTransformer
 
     private BaseOp TransformSwitchOp(Instruction instruction, LocalVariablesStackAndState localVariablesStackAndState)
     {
-        var jumps = (Instruction[])instruction.Operand;
-        var jumpIndices = jumps.Select(j => j.Offset).ToArray();
+        Instruction[] jumps = (Instruction[])instruction.Operand;
+        int[] jumpIndices = jumps.Select(j => j.Offset).ToArray();
         IValueExpression indexToSwitch = localVariablesStackAndState.Pop();
-        var opsList = new List<BaseOp>();
-        for (var index = 0; index < jumpIndices.Length; index++)
+        List<BaseOp> opsList = new List<BaseOp>();
+        for (int index = 0; index < jumpIndices.Length; index++)
         {
-            var offset = jumpIndices[index];
-            var newLocal = localVariablesStackAndState.NewVirtVar<bool>();
+            int offset = jumpIndices[index];
+            VReg newLocal = localVariablesStackAndState.NewVirtVar<bool>();
             opsList.Add(new BinaryOp(newLocal, "cgt")
             {
                 LeftExpression = indexToSwitch,

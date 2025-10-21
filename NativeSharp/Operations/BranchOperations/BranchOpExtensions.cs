@@ -6,7 +6,7 @@ internal static class BranchOpExtensions
 {
     public static string MapNameToTruthBranch(this string nameOp)
     {
-        var cleanedName = nameOp.CleanupFieldName();
+        string cleanedName = nameOp.CleanupFieldName();
         switch (cleanedName)
         {
             case "brfalse_s":

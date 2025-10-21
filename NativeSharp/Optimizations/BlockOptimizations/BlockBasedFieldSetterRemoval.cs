@@ -11,8 +11,8 @@ internal class BlockBasedFieldSetterRemoval : BlockBasedOptimizationBase
 {
     public override bool OptimizeSegment(ArraySegment<BaseOp> segment)
     {
-        var containsFieldSetter = segment.AsSpan().Contains<StoreFieldOp>();
-        var containsFieldGetter = segment.AsSpan().Contains<LoadFieldOp>();
+        bool containsFieldSetter = segment.AsSpan().Contains<StoreFieldOp>();
+        bool containsFieldGetter = segment.AsSpan().Contains<LoadFieldOp>();
 
         if (!containsFieldSetter || containsFieldGetter)
         {
@@ -23,9 +23,9 @@ internal class BlockBasedFieldSetterRemoval : BlockBasedOptimizationBase
 
         Dictionary<IndexedVariable, List<(string FieldName, int Index)>> previousValueFieldSet = [];
 
-        for (var index = 0; index < segment.Count; index++)
+        for (int index = 0; index < segment.Count; index++)
         {
-            var op = segment[index];
+            BaseOp op = segment[index];
             if (op is LeftOp leftOp)
             {
                 if (!leftOp.Left.ExpressionType.IsValueType)
@@ -38,7 +38,7 @@ internal class BlockBasedFieldSetterRemoval : BlockBasedOptimizationBase
 
             if (op is StoreFieldOp storeFieldOp)
             {
-                if (!previousValueFieldSet.TryGetValue(storeFieldOp.ThisPtr, out var previousValues))
+                if (!previousValueFieldSet.TryGetValue(storeFieldOp.ThisPtr, out List<(string FieldName, int Index)>? previousValues))
                 {
                     List<(string, int)> items = [(storeFieldOp.FieldName, index)];
                     previousValueFieldSet[storeFieldOp.ThisPtr] = items;

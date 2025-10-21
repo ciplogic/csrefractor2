@@ -37,10 +37,10 @@ public class InheritanceTests
 {
     public static void MainInherited()
     {
-        var foo = new Foo();
+        Foo foo = new Foo();
         Console.WriteLine(foo.GetBasicFoo());
         Console.WriteLine(foo.GetFoo());
-        var bar = new Bar();
+        Bar bar = new Bar();
         Console.WriteLine(bar.GetFoo());
         
     }

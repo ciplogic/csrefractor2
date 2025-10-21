@@ -52,11 +52,11 @@ public static class StringEncoders
     {
         if (coder == 0)
         {
-            var chars = bytes.SelectToArray(b => (char)b);
+            char[] chars = bytes.SelectToArray(b => (char)b);
             return new string(chars);
         }
 
-        var charsU16 = new char[bytes.Length / 2];
+        char[] charsU16 = new char[bytes.Length / 2];
         for (int index = 0; index < bytes.Length; index += 2)
         {
             char ch = (char)(bytes[index] + (bytes[index + 1] << 8));

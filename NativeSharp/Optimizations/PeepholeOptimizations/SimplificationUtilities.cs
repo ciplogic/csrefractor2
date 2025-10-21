@@ -8,7 +8,7 @@ public static class SimplificationUtilities
     
     public static bool UpdateBinaryOperation<T>(BaseOp[] baseOps, int index, Func<T, T, object> mapper)
     {
-        var current = baseOps[index] as BinaryOp;
+        BinaryOp? current = baseOps[index] as BinaryOp;
         if (current?.LeftExpression is not ConstantValueExpression leftExpression || leftExpression.ExpressionType != typeof(T))
         {
             return false;
