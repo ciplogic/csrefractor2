@@ -34,7 +34,7 @@ public class OptimizationSteps(bool isOptimizing)
             new DataflowUnreachableCodeDeleter(),
             
             new RemoveUnusedVars(),
-            new InlinerOptimization()
+            //new InlinerOptimization()
         ];
     }
 

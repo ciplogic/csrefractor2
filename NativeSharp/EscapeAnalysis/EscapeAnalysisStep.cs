@@ -11,16 +11,37 @@ using NativeSharp.Optimizations.Inliner;
 
 namespace NativeSharp.EscapeAnalysis;
 
-public class EscapeAnalysisStep
+public abstract class EscapeAnalysisStep
 {
-    public static void ApplyStaticAnalysis()
+    public static void ApplyStaticAnalysis(EscapeAnalysisMode analysisMode)
     {
         CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
-        
+        if (analysisMode == EscapeAnalysisMode.None)
+        {
+            DisableEa(cilMethods);
+            return;
+        }
+
         MarkNonClrMethodsAsEscaping();
         foreach (CilOperationsMethod cilMethod in cilMethods)
         {
-            Analyze(cilMethod);
+            Analyze(cilMethod, analysisMode);
+        }
+    }
+
+    private static void DisableEa(CilOperationsMethod[] cilMethods)
+    {
+        foreach (CilOperationsMethod cilMethod in cilMethods)
+        {
+            foreach (ArgumentVariable methodArg in cilMethod.Args)
+            {
+                methodArg.EscapeResult = EscapeKind.Escapes;
+            }
+
+            foreach (IndexedVariable methodArg in cilMethod.Locals)
+            {
+                methodArg.EscapeResult = EscapeKind.Escapes;
+            }
         }
     }
 
@@ -34,6 +55,7 @@ public class EscapeAnalysisStep
             {
                 continue;
             }
+
             foreach (ArgumentVariable methodArg in method.Args)
             {
                 methodArg.EscapeResult = EscapeKind.Escapes;
@@ -41,7 +63,7 @@ public class EscapeAnalysisStep
         }
     }
 
-    private static void Analyze(CilOperationsMethod cilMethod)
+    private static void Analyze(CilOperationsMethod cilMethod, EscapeAnalysisMode analysisMode)
     {
         cilMethod.Analysis.EscapeAnalysis = AnalysisProgress.InProgress;
         Dictionary<string, Variable> variables = PopulateVariables(cilMethod);
@@ -54,13 +76,14 @@ public class EscapeAnalysisStep
                 UpdateVarUsage(usage, variables, EscapeKind.Local);
             }
 
-            AddEscapingInstruction(instruction, variables);
+            AddEscapingInstruction(instruction, variables, analysisMode);
         }
 
         cilMethod.Analysis.EscapeAnalysis = AnalysisProgress.Done;
     }
 
-    private static void AddEscapingInstruction(BaseOp instruction, Dictionary<string, Variable> variables)
+    private static void AddEscapingInstruction(BaseOp instruction, Dictionary<string, Variable> variables,
+        EscapeAnalysisMode analysisMode)
     {
         switch (instruction)
         {
@@ -83,26 +106,36 @@ public class EscapeAnalysisStep
                 return;
             }
             case CallOp callOp:
-                UpdateArgsVariableUsage(callOp.Args, callOp.TargetMethod, variables);
+                UpdateArgsVariableUsage(callOp.Args, callOp.TargetMethod, variables, analysisMode);
                 return;
             case CallReturnOp callReturnOp:
-                UpdateArgsVariableUsage(callReturnOp.Args, callReturnOp.TargetMethod, variables);
+                UpdateArgsVariableUsage(callReturnOp.Args, callReturnOp.TargetMethod, variables, analysisMode);
                 UpdateVarUsage(callReturnOp.Left.Code(), variables, EscapeKind.Escapes);
                 return;
         }
     }
 
-    private static void UpdateArgsVariableUsage(
-        IValueExpression[] callOpArgs,
+    private static void UpdateArgsAsEscaping(IValueExpression[] args)
+    {
+        foreach (IValueExpression arg in args)
+        {
+            if (arg is Variable variable)
+            {
+                variable.EscapeResult = EscapeKind.Escapes;
+            }
+        }
+    }
+
+    private static void UpdateArgsVariableUsage(IValueExpression[] callOpArgs,
         MethodBase targetMethod,
-        Dictionary<string, Variable> variables)
+        Dictionary<string, Variable> variables, EscapeAnalysisMode analysisMode)
     {
         CilOperationsMethod? cilMethod = InlinerExtensions.ResolvedMethod(targetMethod);
         if (cilMethod is not null)
         {
             if (cilMethod.Analysis.EscapeAnalysis == AnalysisProgress.NotDone)
             {
-                Analyze(cilMethod);
+                Analyze(cilMethod, analysisMode);
             }
 
             for (int index = 0; index < callOpArgs.Length; index++)

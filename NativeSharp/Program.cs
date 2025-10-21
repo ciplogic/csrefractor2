@@ -56,7 +56,7 @@ internal class Program
 
         ApplyDefaultOptimizations(options.Optimize);
 
-        EscapeAnalysisStep.ApplyStaticAnalysis();
+        EscapeAnalysisStep.ApplyStaticAnalysis(EscapeAnalysisMode.None);
         
         TreeShaker treeShaker = new TreeShaker();
         treeShaker.SetEntryPointsMethods(entryPoint, typeof(Texts).GetMethod("FromIndex")!);
