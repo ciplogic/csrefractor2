@@ -1,4 +1,4 @@
-﻿internal class nbody2
+﻿internal class Nbody2
 {
     public static void Main3()
     {
@@ -7,18 +7,18 @@
         Bodies bodies = new Bodies();
         for (int i = 0; i < n; i++)
         {
-            bodies.advance(0.01);
+            bodies.Advance(0.01);
         }
-        Console.WriteLine(bodies.energy);
+        Console.WriteLine(bodies.Energy);
     }
 }
 
 internal class Bodies
 {
-    public double energy;
+    public double Energy;
 
-    public void advance(double d)
+    public void Advance(double d)
     {
-        energy += d;
+        Energy += d;
     }
 }

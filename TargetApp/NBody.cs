@@ -1,14 +1,25 @@
-﻿internal class nbody
+﻿using System.Diagnostics;
+
+internal class Nbody
 {
     public static void Main()
     {
-        int n = 100_000_000;
+        Run();
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        Run();
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+    }
+
+    private static void Run()
+    {
+        int n = 100000000;
 
         NBodySystem bodies = new NBodySystem();
-        Console.WriteLine(bodies.energy());
+        Console.WriteLine(bodies.Energy());
         for (int i = 0; i < n; ++i)
-            bodies.advance(0.01);
-        Console.WriteLine(bodies.energy());
+            bodies.Advance(0.01);
+        Console.WriteLine(bodies.Energy());
     }
 }
 
@@ -20,11 +31,11 @@ internal class NBodySystem
     {
         bodies = new Body[]
         {
-            Body.sun(),
-            Body.jupiter(),
-            Body.saturn(),
-            Body.uranus(),
-            Body.neptune()
+            Body.Sun(),
+            Body.Jupiter(),
+            Body.Saturn(),
+            Body.Uranus(),
+            Body.Neptune()
         };
 
         double px = 0.0;
@@ -37,13 +48,12 @@ internal class NBodySystem
             pz += bodies[i].Vz * bodies[i].Mass;
         }
 
-        bodies[0].offsetMomentum(px, py, pz);
+        bodies[0].OffsetMomentum(px, py, pz);
     }
 
-    public void advance(double dt)
+    public void Advance(double dt)
     {
         AdvanceTwoLoops(dt);
-
         AdvanceBodiesEnergy(dt);
     }
 
@@ -64,12 +74,12 @@ internal class NBodySystem
             Body iBody = bodies[i];
             for (int j = i + 1; j < bodies.Length; ++j)
             {
-                advanceInnerLoop(dt, iBody, j);
+                AdvanceInnerLoop(dt, iBody, j);
             }
         }
     }
 
-    private void advanceInnerLoop(double dt, Body iBody, int j)
+    private void AdvanceInnerLoop(double dt, Body iBody, int j)
     {
         double dx = iBody.X - bodies[j].X;
         double dy = iBody.Y - bodies[j].Y;
@@ -88,7 +98,7 @@ internal class NBodySystem
         bodies[j].Vz += dz * iBody.Mass * mag;
     }
 
-    public double energy()
+    public double Energy()
     {
         double dx, dy, dz, distance;
         double e = 0.0;
@@ -120,9 +130,9 @@ internal class NBodySystem
 
 internal class Body
 {
-    private const double PI = 3.141592653589793;
-    private const double SOLAR_MASS = 4 * PI * PI;
-    private const double DAYS_PER_YEAR = 365.24;
+    private const double Pi = 3.141592653589793;
+    private const double SolarMass = 4 * Pi * Pi;
+    private const double DaysPerYear = 365.24;
 
     public double X { get; set; }
     public double Y { get; set; }
@@ -134,70 +144,70 @@ internal class Body
     {
     }
 
-    internal static Body jupiter()
+    internal static Body Jupiter()
     {
         Body p = new Body();
         p.X = 4.84143144246472090e+00;
         p.Y = -1.16032004402742839e+00;
         p.Z = -1.03622044471123109e-01;
-        p.Vx = 1.66007664274403694e-03 * DAYS_PER_YEAR;
-        p.Vy = 7.69901118419740425e-03 * DAYS_PER_YEAR;
-        p.Vz = -6.90460016972063023e-05 * DAYS_PER_YEAR;
-        p.Mass = 9.54791938424326609e-04 * SOLAR_MASS;
+        p.Vx = 1.66007664274403694e-03 * DaysPerYear;
+        p.Vy = 7.69901118419740425e-03 * DaysPerYear;
+        p.Vz = -6.90460016972063023e-05 * DaysPerYear;
+        p.Mass = 9.54791938424326609e-04 * SolarMass;
         return p;
     }
 
-    internal static Body saturn()
+    internal static Body Saturn()
     {
         Body p = new Body();
         p.X = 8.34336671824457987e+00;
         p.Y = 4.12479856412430479e+00;
         p.Z = -4.03523417114321381e-01;
-        p.Vx = -2.76742510726862411e-03 * DAYS_PER_YEAR;
-        p.Vy = 4.99852801234917238e-03 * DAYS_PER_YEAR;
-        p.Vz = 2.30417297573763929e-05 * DAYS_PER_YEAR;
-        p.Mass = 2.85885980666130812e-04 * SOLAR_MASS;
+        p.Vx = -2.76742510726862411e-03 * DaysPerYear;
+        p.Vy = 4.99852801234917238e-03 * DaysPerYear;
+        p.Vz = 2.30417297573763929e-05 * DaysPerYear;
+        p.Mass = 2.85885980666130812e-04 * SolarMass;
         return p;
     }
 
-    internal static Body uranus()
+    internal static Body Uranus()
     {
         Body p = new Body();
         p.X = 1.28943695621391310e+01;
         p.Y = -1.51111514016986312e+01;
         p.Z = -2.23307578892655734e-01;
-        p.Vx = 2.96460137564761618e-03 * DAYS_PER_YEAR;
-        p.Vy = 2.37847173959480950e-03 * DAYS_PER_YEAR;
-        p.Vz = -2.96589568540237556e-05 * DAYS_PER_YEAR;
-        p.Mass = 4.36624404335156298e-05 * SOLAR_MASS;
+        p.Vx = 2.96460137564761618e-03 * DaysPerYear;
+        p.Vy = 2.37847173959480950e-03 * DaysPerYear;
+        p.Vz = -2.96589568540237556e-05 * DaysPerYear;
+        p.Mass = 4.36624404335156298e-05 * SolarMass;
         return p;
     }
 
-    internal static Body neptune()
+    internal static Body Neptune()
     {
         Body p = new Body();
         p.X = 1.53796971148509165e+01;
         p.Y = -2.59193146099879641e+01;
         p.Z = 1.79258772950371181e-01;
-        p.Vx = 2.68067772490389322e-03 * DAYS_PER_YEAR;
-        p.Vy = 1.62824170038242295e-03 * DAYS_PER_YEAR;
-        p.Vz = -9.51592254519715870e-05 * DAYS_PER_YEAR;
-        p.Mass = 5.15138902046611451e-05 * SOLAR_MASS;
+        p.Vx = 2.68067772490389322e-03 * DaysPerYear;
+        p.Vy = 1.62824170038242295e-03 * DaysPerYear;
+        p.Vz = -9.51592254519715870e-05 * DaysPerYear;
+        p.Mass = 5.15138902046611451e-05 * SolarMass;
         return p;
     }
 
-    internal static Body sun()
+    internal static Body Sun()
     {
         Body p = new Body();
-        p.Mass = SOLAR_MASS;
+        p.Mass = SolarMass;
         return p;
     }
 
-    internal Body offsetMomentum(double px, double py, double pz)
+    internal Body OffsetMomentum(double px, double py, double pz)
     {
-        Vx = -px / SOLAR_MASS;
-        Vy = -py / SOLAR_MASS;
-        Vz = -pz / SOLAR_MASS;
+        Vx = -px / SolarMass;
+        Vy = -py / SolarMass;
+        Vz = -pz / SolarMass;
         return this;
     }
 }
