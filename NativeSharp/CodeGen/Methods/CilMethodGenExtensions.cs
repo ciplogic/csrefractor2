@@ -1,4 +1,5 @@
-﻿using NativeSharp.Operations.Common;
+﻿using NativeSharp.EscapeAnalysis;
+using NativeSharp.Operations.Common;
 using NativeSharp.Operations.Vars;
 
 namespace NativeSharp.CodeGen.Methods;
@@ -16,8 +17,11 @@ public static class CilMethodGenExtensions
 
     static string MangleArg(ArgumentVariable x)
     {
-        return x.ExpressionType.IsValueType 
-            ? $"{x.ExpressionType.Mangle(x.EscapeResult)} {x.GenCodeImpl()}"
-            : $"{x.ExpressionType.Mangle(x.EscapeResult)}& {x.GenCodeImpl()}";
+        if (x.ExpressionType.IsValueType || x.EscapeResult == EscapeKind.Local)
+        {
+            return $"{x.ExpressionType.Mangle(x.EscapeResult)} {x.GenCodeImpl()}";
+        }
+
+        return $"{x.ExpressionType.Mangle(x.EscapeResult)}& {x.GenCodeImpl()}";
     }
 }

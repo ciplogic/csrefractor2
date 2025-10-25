@@ -63,8 +63,9 @@ internal class Program
         {
             Optimize =
             {
-                UseFieldDeduplication = false,
-                UseInlining = true
+                UseFieldDeduplication = true,
+                UseInlining = true,
+                EscapeAnalysisMode = EscapeAnalysisMode.Standard
             }
         };
 
