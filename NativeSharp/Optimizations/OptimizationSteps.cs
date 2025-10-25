@@ -1,4 +1,5 @@
-﻿using NativeSharp.Extensions;
+﻿using NativeSharp.Common;
+using NativeSharp.Extensions;
 using NativeSharp.Operations.Common;
 using NativeSharp.Optimizations.BlockOptimizations;
 using NativeSharp.Optimizations.ConstExprOptimization;
@@ -9,22 +10,18 @@ using NativeSharp.Optimizations.PeepholeOptimizations;
 
 namespace NativeSharp.Optimizations;
 
-public class OptimizationSteps(bool isOptimizing)
+public class OptimizationSteps(OptimizationOptions isOptimizing)
 {
     public OptimizationBase[] CilMethodOptimizations = BuildOptimizations(isOptimizing).ToArray();
 
-    private static List<OptimizationBase> BuildOptimizations(bool isOptimizing)
+    private static OptimizationBase[] BuildOptimizations(OptimizationOptions optimizationOptions)
     {
-        if (!isOptimizing)
-        {
-            return [];
-        }
 
-        return
+        List<OptimizationBase> optimizationList =
         [
             new BlockBasedPropagation(),
             new BlockBasedFieldSetterRemoval(),
-            
+
             new RemovedUnusedAssignsAndVars(),
             new GotoOpsOptimization(),
             new HandleConstMethodCalls(),
@@ -32,13 +29,17 @@ public class OptimizationSteps(bool isOptimizing)
             new MathSimplifications(),
             new BranchIfConstantsOptimizations(),
             new DataflowUnreachableCodeDeleter(),
-            
-            new RemoveUnusedVars(),
-            new InlinerOptimization()
         ];
+        if (optimizationOptions.UseInlining)
+        {
+            optimizationList.Add(new InlinerOptimization());
+        }
+
+        return optimizationList.ToArray();
     }
 
-    public static void OptimizeMethodSet(CilOperationsMethod[] methodsToOptimize, OptimizationBase[] cilMethodOptimizations)
+    public static void OptimizeMethodSet(CilOperationsMethod[] methodsToOptimize,
+        OptimizationBase[] cilMethodOptimizations)
     {
         bool canOptimize;
         do
@@ -66,6 +67,5 @@ public class OptimizationSteps(bool isOptimizing)
     {
         CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
         OptimizeMethodSet(cilMethods, optimizerCilMethodOptimizations);
-      
     }
 }

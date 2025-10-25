@@ -50,18 +50,18 @@ public static class ClassHierarchyAnalysis
     public static int GetTypeId(Type targetType) 
         => RegisteredTypes.Set(targetType);
 
-    public static bool DevirtualizeCalls()
+    public static bool DevirtualizeCalls(OptimizationOptions optimizationOptions)
     {
         bool result = false;
         CilOperationsMethod[] cilMethods = CilNativeMethodExtensions.CilMethodsFromCache();
         foreach (CilOperationsMethod cilMethod in cilMethods)
         {
-            result = DevirtualizeCallsInMethod(cilMethod) || result;
+            result = DevirtualizeCallsInMethod(cilMethod, optimizationOptions) || result;
         }
         return result;
     }
 
-    public static bool DevirtualizeCallsInMethod(CilOperationsMethod cilMethod)
+    public static bool DevirtualizeCallsInMethod(CilOperationsMethod cilMethod, OptimizationOptions optimizationOptions)
     {
         bool found = false;
         do
@@ -80,7 +80,7 @@ public static class ClassHierarchyAnalysis
                 if (IsEffectivelySealed(declaringType))
                 {
                     MakeCallStatic(cilMethod, virtCallIndex);
-                    Program.ApplyDefaultOptimizations(true);
+                    Program.ApplyDefaultOptimizations(optimizationOptions);
                     found = true;
                     break;
                 }

@@ -2,15 +2,6 @@
 
 public class CompilerOptions
 {
-    public bool Optimize { get; set; } = true;
+    public OptimizationOptions Optimize { get; set; } = new();
     public TimingMainKind TimingMain { get; set; } = TimingMainKind.Millisecond;
-}
-
-public enum TimingMainKind
-{
-    None,
-    Nanosecond,
-    Millisecond,
-    Second,
-    Microsecond
 }

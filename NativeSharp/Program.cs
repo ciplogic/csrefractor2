@@ -23,8 +23,12 @@ internal class Program
         Stopwatch sw = Stopwatch.StartNew();
         CompilerOptions options = new()
         {
-            Optimize = true
+            Optimize =
+            {
+                UseInlining = true
+            }
         };
+        
         if (!File.Exists("compiler_options.json"))
         {
             File.WriteAllText("compiler_options.json", JsonSerializer.Serialize(options));
@@ -48,7 +52,7 @@ internal class Program
 
         MethodResolver.ResolveAllTree(typeof(Texts).GetMethod("FromIndex")!);
 
-        while (ClassHierarchyAnalysis.DevirtualizeCalls())
+        while (ClassHierarchyAnalysis.DevirtualizeCalls(options.Optimize))
         {
             ApplyDefaultOptimizations(options.Optimize);
         }
@@ -69,9 +73,9 @@ internal class Program
         Console.WriteLine($"Time to compile: {sw.Elapsed}");
     }
 
-    public static void ApplyDefaultOptimizations(bool optimize = true)
+    public static void ApplyDefaultOptimizations(OptimizationOptions optimizationOptions)
     {
-        OptimizationSteps optimizer = new OptimizationSteps(optimize);
+        OptimizationSteps optimizer = new OptimizationSteps(optimizationOptions);
         OptimizationSteps.OptimizeMethodSet(optimizer.CilMethodOptimizations.ToArray());
     }
 }
