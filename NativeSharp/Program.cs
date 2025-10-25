@@ -21,24 +21,8 @@ internal class Program
             assemblyNameToScan = args[0];
         }
         Stopwatch sw = Stopwatch.StartNew();
-        CompilerOptions options = new()
-        {
-            Optimize =
-            {
-                UseInlining = true
-            }
-        };
-        
-        if (!File.Exists("compiler_options.json"))
-        {
-            File.WriteAllText("compiler_options.json", JsonSerializer.Serialize(options));
-        }
-        else
-        {
-            string json = File.ReadAllText("compiler_options.json");
-            options = JsonSerializer.Deserialize<CompilerOptions>(json) ?? new CompilerOptions();
-        }
-        
+        var options = ReadCompilerOptions();
+
         CodeGeneratorBaseTypes.DefaultTypeMappings();
 
         Assembly asm = Assembly.LoadFrom(assemblyNameToScan);
@@ -66,11 +50,33 @@ internal class Program
         treeShaker.SetEntryPointsMethods(entryPoint, typeof(Texts).GetMethod("FromIndex")!);
 
         CodeGenerator codeGen = new CodeGenerator();
-        codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName(), entryPoint);
+        codeGen.WriteMethodsAndMain(entryPoint.MangleMethodName(), entryPoint, options.Optimize.EscapeAnalysisMode);
         CodeGeneratorBaseTypes.GenerateNativeMappings();
         
         sw.Stop();
         Console.WriteLine($"Time to compile: {sw.Elapsed}");
+    }
+
+    private static CompilerOptions ReadCompilerOptions()
+    {
+        CompilerOptions options = new()
+        {
+            Optimize =
+            {
+                UseFieldDeduplication = false,
+                UseInlining = true
+            }
+        };
+
+        if (File.Exists("compiler_options.json"))
+        {
+            string json = File.ReadAllText("compiler_options.json");
+            //options = JsonSerializer.Deserialize<CompilerOptions>(json) ?? new CompilerOptions();
+        }
+
+        File.WriteAllText("compiler_options.json", JsonSerializer.Serialize(options));
+
+        return options;
     }
 
     public static void ApplyDefaultOptimizations(OptimizationOptions optimizationOptions)

@@ -18,7 +18,7 @@ public class BlockBasedDededuplicatedFieldReads : BlockBasedOptimizationBase
         }
 
         BaseOp[] methodOperations = Method.Operations;
-        HashSet<string> changingVariables = CalculateModifiedVariables(methodOperations);
+        HashSet<string> changingVariables = CalculateModifiedVariables(segment);
 
         List<InterestingLoadFieldOp> interestingSetFields = [];
         for (int index = 0; index < segment.Count; index++)

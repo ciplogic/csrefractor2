@@ -31,11 +31,11 @@ internal static class CppNameMangler
         };
     }
     
-    public static string Mangle(this Type? clrType, EscapeKind escapeKind)
+    public static string Mangle(this Type clrType, EscapeKind escapeKind)
     {
         if (ClassHierarchyAnalysis.MappedType.TryGetValue(clrType, out Type? mappedClrType))
         {
-            clrType = mappedClrType;
+            clrType = mappedClrType!;
         }
 
         if (clrType.IsValueType)
@@ -75,15 +75,6 @@ internal static class CppNameMangler
         }
 
         return $"{declaringType}_{methodName}";
-    }
-
-    public static string MangledMethodHeader(this NativeMethodBase cil)
-    {
-        string args = string.Join(", ",
-            cil.Args.Select(x => $"{x.ExpressionType.Mangle(x.EscapeResult)} {x.GenCodeImpl()}"));
-        string methodHeader =
-            $"{cil.Target.MangleMethodReturnType()} {cil.Target.MangleMethodName()}({args})";
-        return methodHeader;
     }
 
     public static string MangleMethodReturnType(this MethodBase method)

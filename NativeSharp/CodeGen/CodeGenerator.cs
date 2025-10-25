@@ -3,6 +3,7 @@ using NativeSharp.Cha;
 using NativeSharp.Cha.Resolving;
 using NativeSharp.CodeGen.Methods;
 using NativeSharp.Common;
+using NativeSharp.EscapeAnalysis;
 using NativeSharp.FrontEnd;
 using NativeSharp.Lib;
 using NativeSharp.Operations.Common;
@@ -19,7 +20,7 @@ public class CodeGenerator
         cilMethodCodeGen = new CilMethodCodeGen(Code);
     }
 
-    public void WriteMethodsAndMain(string entryPoint, MethodInfo mainMethod)
+    public void WriteMethodsAndMain(string entryPoint, MethodInfo mainMethod, EscapeAnalysisMode escapeAnalysisMode)
     {
         Code.AddLine("#include \"native_sharp.hpp\"");
 
@@ -29,7 +30,7 @@ public class CodeGenerator
 
         foreach (NativeMethodBase method in MethodResolver.MethodCache.Values)
         {
-            WriteCilMethodHeader(method);
+            Code.AddLine($"{method.MangledMethodHeader()};");
         }
 
         WriteMainBody(entryPoint, mainMethod.GetParameters().Length == 1 ? "args" : "");
@@ -49,7 +50,7 @@ public class CodeGenerator
             Code.AddLine();
         }
 
-        WriteStringPool();
+        WriteStringPool(escapeAnalysisMode);
 
         Code.WriteToFile();
     }
@@ -116,15 +117,8 @@ public class CodeGenerator
             }
             """);
     }
-
-
-    private void WriteCilMethodHeader(NativeMethodBase cil)
-    {
-        Code.AddLine($"{cil.MangledMethodHeader()};");
-    }
-
-
-    private void WriteStringPool()
+    
+    private void WriteStringPool(EscapeAnalysisMode escapeAnalysisMode)
     {
         StringPool stringPool = StringPool.Instance;
         List<int> startPositions = [];
@@ -139,6 +133,10 @@ public class CodeGenerator
             joinedTexts.AddRange(utf8Text);
         }
 
+        var invokeCodeOfFromIndex = escapeAnalysisMode == EscapeAnalysisMode.None
+            ? "return Texts_FromIndex(index, _coders, _startPos, _lengths, _joinedTexts);"
+            : "return Texts_FromIndex(index, _coders.get(), _startPos.get(), _lengths.get(), _joinedTexts.get());";
+
         Code
             .AddLine("namespace {")
             .AddLine($"    RefArr<int> _coders = makeArr<int> ({{{string.Join(',', stringPool.Coders)}}});")
@@ -147,8 +145,10 @@ public class CodeGenerator
             .AddLine(
                 $"    RefArr<uint8_t> _joinedTexts = makeArr<uint8_t> ({{{string.Join(',', joinedTexts)}}});")
             .AddLine("""
-                         Ref<System_String> _str(int index) {
-                            return Texts_FromIndex(index, _coders.get(), _startPos.get(), _lengths.get(), _joinedTexts.get());
+                     Ref<System_String> _str(int index) {
+                     """
+                     + invokeCodeOfFromIndex +
+                     """
                          }
                      }
                      """);

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using NativeSharp.Cha.Resolving;
 using NativeSharp.CodeGen;
+using NativeSharp.CodeGen.Methods;
 using NativeSharp.Operations;
 using NativeSharp.Operations.Calls;
 using NativeSharp.Operations.Common;

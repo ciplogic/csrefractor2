@@ -23,6 +23,7 @@ public class OptimizationSteps(OptimizationOptions isOptimizing)
             new BlockBasedFieldSetterRemoval(),
 
             new RemovedUnusedAssignsAndVars(),
+            new RemoveUnusedVars(),
             new GotoOpsOptimization(),
             new HandleConstMethodCalls(),
             new OneAssignPropagation(),
