@@ -35,6 +35,12 @@ public class OptimizationSteps(OptimizationOptions isOptimizing)
             optimizationList.Add(new InlinerOptimization());
         }
 
+        if (optimizationOptions.UseFieldDeduplication)
+        {
+            optimizationList.Add(new BlockBasedDededuplicatedFieldReads());
+            optimizationList.Add(new BlockBasedDededuplicatedArrayReads());
+        }
+
         return optimizationList.ToArray();
     }
 

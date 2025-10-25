@@ -36,6 +36,18 @@ public static class CilNativeMethodExtensions
         }
         return false;
     }
+    public static int CountOf<TOperation>(this Span<BaseOp> cilOperationsMethod) where TOperation : BaseOp
+    {
+        var count = 0;
+        foreach (BaseOp op in cilOperationsMethod)
+        {
+            if (op is TOperation)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
     public static bool Contains<TOperation>(this CilOperationsMethod cilOperationsMethod) where TOperation : BaseOp 
         => cilOperationsMethod.Operations.AsSpan().Contains<TOperation>();
 

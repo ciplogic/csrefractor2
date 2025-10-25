@@ -5,10 +5,6 @@ internal class Nbody
     public static void Main()
     {
         Run();
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        Run();
-        stopwatch.Stop();
-        Console.WriteLine(stopwatch.ElapsedMilliseconds);
     }
 
     private static void Run()
